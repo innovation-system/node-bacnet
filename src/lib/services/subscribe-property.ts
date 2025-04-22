@@ -40,13 +40,13 @@ export const decode = (buffer: Buffer, offset: number) => {
 	const value: any = {}
 	let result: any
 	let decodedValue: any
-	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 0)) return
+	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 0)) return undefined
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
 	decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
 	len += decodedValue.len
 	value.subscriberProcessId = decodedValue.value
-	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 1)) return
+	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 1)) return undefined
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
 	decodedValue = baAsn1.decodeObjectId(buffer, offset + len)
@@ -72,10 +72,11 @@ export const decode = (buffer: Buffer, offset: number) => {
 		len += decodedValue.len
 		value.lifetime = decodedValue.value
 	}
-	if (!baAsn1.decodeIsOpeningTagNumber(buffer, offset + len, 4)) return
+	if (!baAsn1.decodeIsOpeningTagNumber(buffer, offset + len, 4))
+		return undefined
 	len++
 	value.monitoredProperty = {}
-	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 0)) return
+	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 0)) return undefined
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
 	decodedValue = baAsn1.decodeEnumerated(buffer, offset + len, result.value)
@@ -89,7 +90,8 @@ export const decode = (buffer: Buffer, offset: number) => {
 		len += decodedValue.len
 		value.monitoredProperty.index = decodedValue.value
 	}
-	if (!baAsn1.decodeIsClosingTagNumber(buffer, offset + len, 4)) return
+	if (!baAsn1.decodeIsClosingTagNumber(buffer, offset + len, 4))
+		return undefined
 	len++
 	value.covIncrement = 0
 	if (baAsn1.decodeIsContextTag(buffer, offset + len, 5)) {
