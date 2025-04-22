@@ -37,16 +37,8 @@ export const buildMessage = (result: {
 	code: number
 }): string => {
 	return (
-		'BacnetError Class: ' +
-		baEnum.ErrorClassName[result.class] +
-		' ' +
-		'(' +
-		result.class +
-		') ' +
-		'Code: ' +
-		baEnum.ErrorCodeName[result.code] +
-		' (' +
-		result.code +
-		')'
+		`BacnetError Class: ${baEnum.ErrorClassName[result.class]} ` +
+		`(${result.class}) ` +
+		`Code: ${baEnum.ErrorCodeName[result.code]} (${result.code})`
 	)
 }

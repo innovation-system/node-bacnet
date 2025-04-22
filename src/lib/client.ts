@@ -495,7 +495,7 @@ export default class Client extends EventEmitter {
 		// Use type assertion to access potential invokeId property
 		const confirmedMsg = content as Partial<ConfirmedServiceRequest> &
 			BACnetMessageBase
-		const id = confirmedMsg.invokeId ? '@' + confirmedMsg.invokeId : ''
+		const id = confirmedMsg.invokeId ? `@${confirmedMsg.invokeId}` : ''
 		trace(`Received service request${id}:`, name)
 
 		// Find a function to decode the packet.
@@ -513,7 +513,7 @@ export default class Client extends EventEmitter {
 				// during decoding, but we don't want these to terminate the program, so
 				// we'll just log them and ignore them.
 				debug('Exception thrown when processing message:', e)
-				debug('Original message was', name + ':', content)
+				debug('Original message was', `${name}:`, content)
 				return
 			}
 			if (!content.payload) {
@@ -526,7 +526,7 @@ export default class Client extends EventEmitter {
 
 		// Call the user code, if they've defined a callback.
 		if (this.listenerCount(name)) {
-			trace('listener count by name emits ' + name + ' with content')
+			trace(`listener count by name emits ${name} with content`)
 			this.emit(name, content)
 		} else {
 			if (this.listenerCount('unhandledEvent')) {
@@ -537,8 +537,9 @@ export default class Client extends EventEmitter {
 				// This is better than doing nothing, which can often make the other
 				// device think we have gone offline.
 				trace(
-					'no unhandled event handler with header: ' +
-						JSON.stringify(content.header),
+					`no unhandled event handler with header: ${JSON.stringify(
+						content.header,
+					)}`,
 				)
 				if (content.header?.expectingReply) {
 					debug('Replying with error for unhandled service:', name)
@@ -845,9 +846,9 @@ export default class Client extends EventEmitter {
 
 			default:
 				debug(
-					'Received unknown BVLC function ' +
-						result.func +
-						' -> Drop package',
+					`Received unknown BVLC function ${
+						result.func
+					} -> Drop package`,
 				)
 				break
 		}

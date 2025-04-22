@@ -441,7 +441,7 @@ export const encodeBacnetDate = (buffer: EncodeBuffer, value: Date): void => {
 	} else if (value.getFullYear() < MAX_YEARS /* 1900 + 255 max */) {
 		buffer.buffer[buffer.offset++] = value.getFullYear()
 	} else {
-		throw new Error('invalid year: ' + value.getFullYear())
+		throw new Error(`invalid year: ${value.getFullYear()}`)
 	}
 	buffer.buffer[buffer.offset++] = value.getMonth()
 	buffer.buffer[buffer.offset++] = value.getDate()

@@ -75,7 +75,7 @@ export const decode = (
 
 			// Only add the port if it's not the usual one.
 			if (port !== DEFAULT_BACNET_PORT) {
-				originatingIP += ':' + port
+				originatingIP += `:${port}`
 			}
 
 			len = 10

@@ -67,6 +67,7 @@ export default defineConfig([
 			'no-sparse-arrays': 'off',
 			'consistent-return': 'off',
 			'object-shorthand': 'error',
+			'prefer-template': 'error',
 			'@typescript-eslint/explicit-function-return-type': 'off',
 			'@typescript-eslint/no-explicit-any': 'off',
 			'@typescript-eslint/no-unused-vars': 'off',

@@ -41,9 +41,9 @@ export function getEnumName(
 ): string | null {
 	if (!Number.isInteger(value)) {
 		throw new Error(
-			'getEnumName() can only be passed an integer value, was given "' +
-				value +
-				'"',
+			`getEnumName() can only be passed an integer value, was given "${
+				value
+			}"`,
 		)
 	}
 	let foundEntry: string | null = null
@@ -56,7 +56,7 @@ export function getEnumName(
 		if (foundEntry === undefined) {
 			foundEntry = value.toString()
 		} else if (addNumberValue) {
-			foundEntry += '(' + value + ')'
+			foundEntry += `(${value})`
 		}
 	} catch (e) {
 		console.trace((e as Error).message)
