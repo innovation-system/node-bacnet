@@ -43,23 +43,24 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 	let decodedValue: any
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
-	if (result.tagNumber !== 0 || apduLen <= len) return
+	if (result.tagNumber !== 0 || apduLen <= len) return undefined
 	apduLen -= len
-	if (apduLen < 4) return
+	if (apduLen < 4) return undefined
 	decodedValue = baAsn1.decodeObjectId(buffer, offset + len)
 	len += decodedValue.len
 	const objectId = {
 		type: decodedValue.objectType,
 		instance: decodedValue.instance,
 	}
-	if (!baAsn1.decodeIsOpeningTagNumber(buffer, offset + len, 1)) return
+	if (!baAsn1.decodeIsOpeningTagNumber(buffer, offset + len, 1))
+		return undefined
 	len++
 	const _values = []
 	while (apduLen - len > 1) {
 		const newEntry: any = {}
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 		len += result.len
-		if (result.tagNumber !== 0) return
+		if (result.tagNumber !== 0) return undefined
 		decodedValue = baAsn1.decodeEnumerated(
 			buffer,
 			offset + len,
@@ -86,7 +87,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 			result.tagNumber !== 2 ||
 			!baAsn1.decodeIsOpeningTag(buffer, offset + len - 1)
 		)
-			return
+			return undefined
 		const values = []
 		while (
 			len + offset <= buffer.length &&
@@ -99,7 +100,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 				objectId.type,
 				propertyId,
 			)
-			if (!value) return
+			if (!value) return undefined
 			len += value.len
 			delete value.len
 			values.push(value)
@@ -123,7 +124,8 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 		newEntry.priority = priority
 		_values.push(newEntry)
 	}
-	if (!baAsn1.decodeIsClosingTagNumber(buffer, offset + len, 1)) return
+	if (!baAsn1.decodeIsClosingTagNumber(buffer, offset + len, 1))
+		return undefined
 	len++
 	return {
 		len,
