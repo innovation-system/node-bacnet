@@ -26,7 +26,7 @@ export const encode = (
 		baAsn1.encodeContextUnsigned(
 			buffer,
 			2,
-			arrayIndex || baEnum.ASN1_ARRAY_ALL,
+			arrayIndex || arrayIndex === 0 ? arrayIndex : baEnum.ASN1_ARRAY_ALL,
 		)
 	}
 }
