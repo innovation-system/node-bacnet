@@ -24,18 +24,18 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 	if (apduLen <= 0) return {}
 	let result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
-	if (result.tagNumber !== 0) return
-	if (apduLen <= len) return
+	if (result.tagNumber !== 0) return undefined
+	if (apduLen <= len) return undefined
 	let decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
 	len += decodedValue.len
 	if (decodedValue.value <= baEnum.ASN1_MAX_INSTANCE) {
 		value.lowLimit = decodedValue.value
 	}
-	if (apduLen <= len) return
+	if (apduLen <= len) return undefined
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
-	if (result.tagNumber !== 1) return
-	if (apduLen <= len) return
+	if (result.tagNumber !== 1) return undefined
+	if (apduLen <= len) return undefined
 	decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
 	len += decodedValue.len
 	if (decodedValue.value <= baEnum.ASN1_MAX_INSTANCE) {
