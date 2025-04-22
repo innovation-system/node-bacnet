@@ -27,13 +27,13 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 	const value: any = {}
 	let result: any
 	let decodedValue: any
-	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 0)) return
+	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 0)) return undefined
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
 	decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
 	len += decodedValue.len
 	value.subscriberProcessId = decodedValue.value
-	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 1)) return
+	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 1)) return undefined
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
 	decodedValue = baAsn1.decodeObjectId(buffer, offset + len)
