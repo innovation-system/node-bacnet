@@ -16,6 +16,18 @@ export interface ReceiverAddress {
 	forwardedFrom?: string
 }
 
+export type AddressParameter = string | ReceiverAddress
+
+export interface PropertyReference {
+	id: number
+	index: number
+}
+
+export interface TypedValue {
+	type: number
+	value: any
+}
+
 export interface TransportSettings {
 	port?: number
 	interface?: string

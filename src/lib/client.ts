@@ -11,6 +11,7 @@ import * as baNpdu from './npdu'
 import * as baBvlc from './bvlc'
 import * as baEnum from './enum'
 import {
+	AddressParameter,
 	BACNetObjectID,
 	BACNetPropertyID,
 	BACNetAppData,
@@ -48,6 +49,8 @@ import {
 	ComplexAckMessage,
 	HasInvokeId,
 	ReceiverAddress,
+	PropertyReference,
+	TypedValue,
 } from './types'
 
 const debug = debugLib('bacnet')
@@ -139,9 +142,9 @@ export default class Client extends EventEmitter {
 
 		this._settings = {
 			port: options.port || 47808,
-			interface: options.interface || ALL_INTERFACES,
+			interface: options.interface || ALL_INTERFACES, // Usa la costante
 			transport: options.transport,
-			broadcastAddress: options.broadcastAddress || BROADCAST_ADDRESS,
+			broadcastAddress: options.broadcastAddress || BROADCAST_ADDRESS, // Usa la costante
 			apduTimeout: options.apduTimeout || 3000,
 		}
 
@@ -939,10 +942,7 @@ export default class Client extends EventEmitter {
 	 * @param receiver - IP address or sender object of the target device
 	 * @param dateTime - The date and time to set on the target device
 	 */
-	timeSync(
-		receiver: string | { address: string; forwardedFrom?: string },
-		dateTime: Date,
-	): void {
+	timeSync(receiver: AddressParameter, dateTime: Date): void {
 		const buffer: EncodeBuffer = this._getBuffer(
 			receiver && typeof receiver !== 'string' && receiver.forwardedFrom,
 		)
@@ -965,10 +965,7 @@ export default class Client extends EventEmitter {
 	 * @param receiver - IP address or sender object of the target device
 	 * @param dateTime - The date and time to set on the target device
 	 */
-	timeSyncUTC(
-		receiver: string | { address: string; forwardedFrom?: string },
-		dateTime: Date,
-	): void {
+	timeSyncUTC(receiver: AddressParameter, dateTime: Date): void {
 		const buffer: EncodeBuffer = this._getBuffer(
 			receiver && typeof receiver !== 'string' && receiver.forwardedFrom,
 		)
@@ -1008,7 +1005,7 @@ export default class Client extends EventEmitter {
 		callback: DataCallback<DecodeAcknowledgeSingleResult>,
 	): void
 	readProperty(
-		receiver: string | { address: string; forwardedFrom?: string },
+		receiver: AddressParameter,
 		objectId: BACNetObjectID,
 		propertyId: number,
 		options: ReadPropertyOptions | DataCallback<any>,
@@ -1272,8 +1269,8 @@ export default class Client extends EventEmitter {
 		values: Array<{
 			objectId: BACNetObjectID
 			values: Array<{
-				property: { id: number; index: number }
-				value: Array<{ type: number; value: any }>
+				property: PropertyReference
+				value: TypedValue[]
 				priority: number
 			}>
 		}>,
@@ -1320,14 +1317,14 @@ export default class Client extends EventEmitter {
 	 * systems that have registered with us via a subscribeCOV message.
 	 */
 	confirmedCOVNotification(
-		receiver: string | { address: string; forwardedFrom?: string },
+		receiver: AddressParameter,
 		monitoredObject: BACNetObjectID,
 		subscribeId: number,
 		initiatingDeviceId: number,
 		lifetime: number,
 		values: Array<{
-			property: { id: number }
-			value: Array<{ type: number; value: any }>
+			property: PropertyReference
+			value: TypedValue[]
 		}>,
 		options: ServiceOptions | ErrorCallback,
 		next?: ErrorCallback,
