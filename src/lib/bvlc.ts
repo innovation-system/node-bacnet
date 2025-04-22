@@ -35,8 +35,7 @@ export const encode = (
 	} else {
 		if (func === baEnum.BvlcResultPurpose.FORWARDED_NPDU) {
 			throw new Error(
-				'Must specify originatingIP if ' +
-					'BvlcResultPurpose.FORWARDED_NPDU is used.',
+				'Must specify originatingIP if BvlcResultPurpose.FORWARDED_NPDU is used.',
 			)
 		}
 	}
