@@ -50,7 +50,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 	let position: number
 	let time: Date
 	let count: number
-	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 0)) return
+	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 0)) return undefined
 	len++
 	decodedValue = baAsn1.decodeObjectId(buffer, offset + len)
 	len += decodedValue.len
@@ -61,7 +61,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 	const property: any = {}
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
-	if (result.tagNumber !== 1) return
+	if (result.tagNumber !== 1) return undefined
 	decodedValue = baAsn1.decodeEnumerated(buffer, offset + len, result.value)
 	len += decodedValue.len
 	property.id = decodedValue.value
@@ -157,7 +157,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 				break
 			}
 			default:
-				return
+				return undefined
 		}
 		result = baAsn1.decodeTagNumber(buffer, offset + len)
 		len += result.len
@@ -219,7 +219,7 @@ export const decodeAcknowledge = (
 	let len = 0
 	let result: any
 	let decodedValue: any
-	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 0)) return
+	if (!baAsn1.decodeIsContextTag(buffer, offset + len, 0)) return undefined
 	len++
 	decodedValue = baAsn1.decodeObjectId(buffer, offset + len)
 	len += decodedValue.len
@@ -230,7 +230,7 @@ export const decodeAcknowledge = (
 	const property: any = { index: baEnum.ASN1_ARRAY_ALL }
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
-	if (result.tagNumber !== 1) return
+	if (result.tagNumber !== 1) return undefined
 	decodedValue = baAsn1.decodeEnumerated(buffer, offset + len, result.value)
 	len += decodedValue.len
 	property.id = decodedValue.value
@@ -251,7 +251,7 @@ export const decodeAcknowledge = (
 	decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
 	len += decodedValue.len
 	const itemCount = decodedValue.value
-	if (!baAsn1.decodeIsOpeningTag(buffer, offset + len)) return
+	if (!baAsn1.decodeIsOpeningTag(buffer, offset + len)) return undefined
 	len++
 	const rangeBuffer = buffer.slice(offset + len, apduLen - 3)
 	return {
