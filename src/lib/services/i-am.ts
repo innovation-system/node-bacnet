@@ -1,3 +1,28 @@
+/**
+ * The iAm event represents the response to a whoIs request to detect all
+ * devices in a BACNET network.
+ *
+ * @event bacnet.iAm
+ * @param {number} deviceId - The BACNET device-id of the detected device.
+ * @param {number} maxApdu - The max APDU size the detected device supports.
+ * @param {number} segmentation - The type of segmentation the detected device supports.
+ * @param {number} vendorId - The BACNET vendor-id of the detected device.
+ *
+ * @example
+ * const bacnet = require('node-bacnet');
+ * const client = new bacnet();
+ *
+ * client.on('iAm', (msg) => {
+ *   console.log(
+ *     'address: ', msg.header.address,
+ *     ' - deviceId: ', msg.payload.deviceId,
+ *     ' - maxApdu: ', msg.payload.maxApdu,
+ *     ' - segmentation: ', msg.payload.segmentation,
+ *     ' - vendorId: ', msg.payload.vendorId
+ *   );
+ * });
+ */
+
 import { EncodeBuffer } from '../types'
 
 import * as baAsn1 from '../asn1'
@@ -22,30 +47,33 @@ export const decode = (buffer: Buffer, offset: number) => {
 	const orgOffset = offset
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + apduLen)
 	apduLen += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.OBJECTIDENTIFIER) return
+	if (result.tagNumber !== baEnum.ApplicationTag.OBJECTIDENTIFIER)
+		return undefined
 	result = baAsn1.decodeObjectId(buffer, offset + apduLen)
 	apduLen += result.len
-	if (result.objectType !== baEnum.ObjectType.DEVICE) return
+	if (result.objectType !== baEnum.ObjectType.DEVICE) return undefined
 	const deviceId = result.instance
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + apduLen)
 	apduLen += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.UNSIGNED_INTEGER) return
+	if (result.tagNumber !== baEnum.ApplicationTag.UNSIGNED_INTEGER)
+		return undefined
 	result = baAsn1.decodeUnsigned(buffer, offset + apduLen, result.value)
 	apduLen += result.len
 	const maxApdu = result.value
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + apduLen)
 	apduLen += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.ENUMERATED) return
+	if (result.tagNumber !== baEnum.ApplicationTag.ENUMERATED) return undefined
 	result = baAsn1.decodeEnumerated(buffer, offset + apduLen, result.value)
 	apduLen += result.len
-	if (result.value > baEnum.Segmentation.NO_SEGMENTATION) return
+	if (result.value > baEnum.Segmentation.NO_SEGMENTATION) return undefined
 	const segmentation = result.value
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + apduLen)
 	apduLen += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.UNSIGNED_INTEGER) return
+	if (result.tagNumber !== baEnum.ApplicationTag.UNSIGNED_INTEGER)
+		return undefined
 	result = baAsn1.decodeUnsigned(buffer, offset + apduLen, result.value)
 	apduLen += result.len
-	if (result.value > 0xffff) return
+	if (result.value > 0xffff) return undefined
 	const vendorId = result.value
 	return {
 		len: offset - orgOffset,
