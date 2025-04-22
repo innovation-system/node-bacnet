@@ -3,6 +3,7 @@
   "version": "1.0.0-beta.3",
   "description": "A BACnet® protocol stack written in pure TypeScript.",
   "main": "./dist/index.js",
+  "type": "module",
   "dependencies": {
     "debug": "^4.3.4",
     "iconv-lite": "^0.6.3"
@@ -15,10 +16,12 @@
     "build": "tsc -p tsconfig.build.json",
     "lint": "eslint src/**/*.*",
     "lint:fix": "eslint --fix \"src/**/*\"",
-    "test": "npx jest -c jest.config.ts --coverageDirectory reports/coverage-test test/unit/*.spec.ts",
-    "coverage": "npx jest -c jest.config.coverage.ts --coverage --detectOpenHandles --forceExit --bail --logHeapUsage --debug",
-    "integration": "jest --coverageDirectory reports/coverage-integration test/integration/*.spec.ts",
-    "compliance": "jest --coverageDirectory reports/coverage-compliance test/compliance/*.spec.ts",
+    "test": "node --loader ts-node/esm --test test/unit/*.spec.ts",
+    "coverage": "node --loader ts-node/esm --test --experimental-test-coverage --test-coverage-config=node-test-coverage.mjs test/unit/*.spec.ts",
+    "integration": "node --loader ts-node/esm --test test/integration/*.spec.ts",
+    "compliance": "node --loader ts-node/esm --test test/compliance/*.spec.ts",
+    "test:all": "node --loader ts-node/esm --test test/**/*.spec.ts",
+    "coverage:all": "node --loader ts-node/esm --test --experimental-test-coverage --test-coverage-config=node-test-coverage.mjs test/**/*.spec.ts",
     "docs": "typedoc --out docs --entryPoint '\"client\"' --excludeExternals --excludeNotExported --excludePrivate src/lib/client.ts",
     "release": "read -p 'GITHUB_TOKEN: ' GITHUB_TOKEN && export GITHUB_TOKEN=$GITHUB_TOKEN && release-it"
   },
@@ -100,6 +103,7 @@
     "eslint-plugin-prettier": "^5.2.6",
     "prettier": "^3.2.5",
     "release-it": "^18.1.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "files": [

@@ -17,7 +17,9 @@
 		"noImplicitAny": false,
 		"strictBindCallApply": false,
 		"forceConsistentCasingInFileNames": false,
-		"noFallthroughCasesInSwitch": false
+		"noFallthroughCasesInSwitch": false,
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext"
 	},
 	"include": [
 		"src/**/*.ts",
