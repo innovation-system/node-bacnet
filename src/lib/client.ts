@@ -601,8 +601,8 @@ export default class Client extends EventEmitter {
 				offset += msg.len
 				length -= msg.len
 				this._invokeCallback((msg as HasInvokeId).invokeId, null, {
-					msg: msg,
-					buffer: buffer,
+					msg,
+					buffer,
 					offset: offset + msg.len,
 					length: length - msg.len,
 				})
@@ -620,8 +620,8 @@ export default class Client extends EventEmitter {
 					0
 				) {
 					this._invokeCallback((msg as HasInvokeId).invokeId, null, {
-						msg: msg,
-						buffer: buffer,
+						msg,
+						buffer,
 						offset: offset + msg.len,
 						length: length - msg.len,
 					})
@@ -658,8 +658,8 @@ export default class Client extends EventEmitter {
 				msg = baApdu.decodeError(buffer, offset) as BACnetError &
 					BACnetMessageBase
 				this._invokeCallback((msg as HasInvokeId).invokeId, null, {
-					msg: msg,
-					buffer: buffer,
+					msg,
+					buffer,
 					offset: offset + msg.len,
 					length: length - msg.len,
 				})
@@ -829,7 +829,7 @@ export default class Client extends EventEmitter {
 					)
 				}
 				this.emit('registerForeignDevice', {
-					header: header,
+					header,
 					payload: decodeResult,
 				})
 				break

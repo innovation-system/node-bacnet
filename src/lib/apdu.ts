@@ -86,13 +86,13 @@ export const decodeConfirmedServiceRequest = (
 	const service = buffer[offset++]
 	return {
 		len: offset - orgOffset,
-		type: type,
-		service: service,
-		maxSegments: maxSegments,
-		maxApdu: maxApdu,
-		invokeId: invokeId,
-		sequencenumber: sequencenumber,
-		proposedWindowNumber: proposedWindowNumber,
+		type,
+		service,
+		maxSegments,
+		maxApdu,
+		invokeId,
+		sequencenumber,
+		proposedWindowNumber,
 	}
 }
 
@@ -185,11 +185,11 @@ export const decodeComplexAck = (
 	const service = buffer[offset++]
 	return {
 		len: offset - orgOffset,
-		type: type,
-		service: service,
-		invokeId: invokeId,
-		sequencenumber: sequencenumber,
-		proposedWindowNumber: proposedWindowNumber,
+		type,
+		service,
+		invokeId,
+		sequencenumber,
+		proposedWindowNumber,
 	}
 }
 
@@ -217,10 +217,10 @@ export const decodeSegmentAck = (
 	const actualWindowSize = buffer[offset++]
 	return {
 		len: offset - orgOffset,
-		type: type,
-		originalInvokeId: originalInvokeId,
-		sequencenumber: sequencenumber,
-		actualWindowSize: actualWindowSize,
+		type,
+		originalInvokeId,
+		sequencenumber,
+		actualWindowSize,
 	}
 }
 
