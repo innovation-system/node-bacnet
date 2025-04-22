@@ -1,5 +1,3 @@
-'use strict'
-
 import { describe, it } from '@jest/globals'
 
 import * as utils from './utils'

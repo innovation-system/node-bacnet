@@ -1,5 +1,3 @@
-'use strict'
-
 import { describe, expect, it } from '@jest/globals'
 
 import * as baAsn1 from '../../src/lib/asn1'

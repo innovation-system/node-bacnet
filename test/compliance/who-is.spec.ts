@@ -1,5 +1,3 @@
-'use strict'
-
 import { describe, expect, it } from '@jest/globals'
 
 import { Client } from '../../src/lib/client'

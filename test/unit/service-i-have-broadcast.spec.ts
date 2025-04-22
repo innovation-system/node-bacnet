@@ -1,5 +1,3 @@
-'use strict'
-
 import { describe, expect, it } from '@jest/globals'
 
 import * as utils from './utils'
@@ -14,11 +12,7 @@ describe('bacnet - Services layer iHave unit', () => {
 			{ type: 0, instance: 4 },
 			'LgtCmd01',
 		)
-		const result = baServices.iHave.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = baServices.iHave.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		expect(result).toEqual({
 			deviceId: { type: 8, instance: 443 },
