@@ -22,6 +22,7 @@ import {
 	WritePropertyOptions,
 	ErrorCallback,
 	DataCallback,
+	DecodeAcknowledgeSingleResult,
 	DecodeAcknowledgeMultipleResult,
 	BACNetReadAccessSpecification,
 	DeviceCommunicationOptions,
@@ -993,6 +994,19 @@ export default class Client extends EventEmitter {
 	 * @param next - The callback containing an error, in case of a failure and value object in case of success
 	 */
 	readProperty(
+		address: string,
+		objectId: BACNetObjectID,
+		propertyId: number,
+		callback: DataCallback<DecodeAcknowledgeSingleResult>,
+	): void
+	readProperty(
+		address: string,
+		objectId: BACNetObjectID,
+		propertyId: number,
+		options: ReadPropertyOptions,
+		callback: DataCallback<DecodeAcknowledgeSingleResult>,
+	): void
+	readProperty(
 		receiver: string | { address: string; forwardedFrom?: string },
 		objectId: BACNetObjectID,
 		propertyId: number,
@@ -1085,6 +1099,14 @@ export default class Client extends EventEmitter {
 	 * @param next - The callback containing an error, in case of a failure and value object in case of success
 	 */
 	writeProperty(
+		address: string,
+		objectId: BACNetObjectID,
+		propertyId: number,
+		values: BACNetAppData[],
+		options: WritePropertyOptions,
+		callback: ErrorCallback,
+	): void
+	writeProperty(
 		receiver: string | { address: string; forwardedFrom?: string },
 		objectId: BACNetObjectID,
 		propertyId: number,
@@ -1156,6 +1178,17 @@ export default class Client extends EventEmitter {
 	 * The readPropertyMultiple command reads multiple properties in multiple objects from a device.
 	 */
 	readPropertyMultiple(
+		address: string,
+		propertiesArray: BACNetReadAccessSpecification[],
+		callback: DataCallback<DecodeAcknowledgeMultipleResult>,
+	): void
+	readPropertyMultiple(
+		address: string,
+		propertiesArray: BACNetReadAccessSpecification[],
+		options: ServiceOptions,
+		callback: DataCallback<DecodeAcknowledgeMultipleResult>,
+	): void
+	readPropertyMultiple(
 		receiver: string | { address: string; forwardedFrom?: string },
 		propertiesArray: BACNetReadAccessSpecification[],
 		options: ServiceOptions | DataCallback<DecodeAcknowledgeMultipleResult>,
@@ -1222,6 +1255,17 @@ export default class Client extends EventEmitter {
 	/**
 	 * The writePropertyMultiple command writes multiple properties in multiple objects to a device.
 	 */
+	writePropertyMultiple(
+		address: string,
+		values: any[],
+		callback: ErrorCallback,
+	): void
+	writePropertyMultiple(
+		address: string,
+		values: any[],
+		options: ServiceOptions,
+		callback: ErrorCallback,
+	): void
 	writePropertyMultiple(
 		receiver: string | { address: string; forwardedFrom?: string },
 		values: Array<{
