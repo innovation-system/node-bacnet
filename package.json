@@ -3,7 +3,6 @@
   "version": "1.0.0-beta.3",
   "description": "A BACnet® protocol stack written in pure TypeScript.",
   "main": "./dist/index.js",
-  "type": "module",
   "dependencies": {
     "debug": "^4.3.4",
     "iconv-lite": "^0.6.3"
