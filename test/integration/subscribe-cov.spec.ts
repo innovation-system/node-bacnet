@@ -8,7 +8,7 @@ test.describe('bacnet - subscribeCOV integration', () => {
 		return new Promise((resolve) => {
 			const client = new utils.BacnetClient({ apduTimeout: 200 })
 			client.subscribeCov(
-				'127.0.0.1',
+				'127.0.0.2',
 				{ type: 5, instance: 3 },
 				7,
 				false,

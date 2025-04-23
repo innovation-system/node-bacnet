@@ -14,7 +14,7 @@ test.describe('bacnet - readPropertyMultiple integration', () => {
 				},
 			]
 			client.readPropertyMultiple(
-				'127.0.0.1',
+				'127.0.0.2',
 				requestArray,
 				{},
 				(err, value) => {
@@ -42,7 +42,7 @@ test.describe('bacnet - readPropertyMultiple integration', () => {
 				},
 			]
 			client.readPropertyMultiple(
-				'127.0.0.1',
+				'127.0.0.2',
 				requestArray,
 				{},
 				(err, response) => {
@@ -126,7 +126,7 @@ test.describe('bacnet - readPropertyMultiple integration', () => {
 					resolve()
 				},
 			)
-			transport.emit('message', data, '127.0.0.1')
+			transport.emit('message', data, '127.0.0.2')
 		})
 	})
 
@@ -145,7 +145,7 @@ test.describe('bacnet - readPropertyMultiple integration', () => {
 				},
 			]
 			client.readPropertyMultiple(
-				'127.0.0.1',
+				'127.0.0.2',
 				requestArray,
 				{},
 				(err, response) => {
@@ -252,7 +252,7 @@ test.describe('bacnet - readPropertyMultiple integration', () => {
 					resolve()
 				},
 			)
-			transport.emit('message', data, '127.0.0.1')
+			transport.emit('message', data, '127.0.0.2')
 		})
 	})
 })
