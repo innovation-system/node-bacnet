@@ -1,10 +1,11 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer SubscribeProperty unit', () => {
-	it('should successfully encode and decode with cancellation request', () => {
+test.describe('bacnet - Services layer SubscribeProperty unit', () => {
+	test('should successfully encode and decode with cancellation request', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.subscribeProperty.encode(
 			buffer,
@@ -19,7 +20,7 @@ describe('bacnet - Services layer SubscribeProperty unit', () => {
 		)
 		const result = baServices.subscribeProperty.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			cancellationRequest: true,
 			covIncrement: 1,
 			issueConfirmedNotifications: false,
@@ -36,7 +37,7 @@ describe('bacnet - Services layer SubscribeProperty unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode without cancellation request', () => {
+	test('should successfully encode and decode without cancellation request', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.subscribeProperty.encode(
 			buffer,
@@ -51,7 +52,7 @@ describe('bacnet - Services layer SubscribeProperty unit', () => {
 		)
 		const result = baServices.subscribeProperty.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			cancellationRequest: false,
 			covIncrement: 0,
 			issueConfirmedNotifications: true,

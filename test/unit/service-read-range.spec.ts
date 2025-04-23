@@ -1,11 +1,12 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 import * as baEnum from '../../src/lib/enum'
 
-describe('bacnet - Services layer ReadRange unit', () => {
-	it('should successfully encode and decode by position', () => {
+test.describe('bacnet - Services layer ReadRange unit', () => {
+	test('should successfully encode and decode by position', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.readRange.encode(
 			buffer,
@@ -23,7 +24,7 @@ describe('bacnet - Services layer ReadRange unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			count: 0,
 			objectId: { type: 61, instance: 35 },
 			position: 10,
@@ -36,7 +37,7 @@ describe('bacnet - Services layer ReadRange unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode by position with array index', () => {
+	test('should successfully encode and decode by position with array index', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.readRange.encode(
 			buffer,
@@ -54,7 +55,7 @@ describe('bacnet - Services layer ReadRange unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			count: 0,
 			objectId: { type: 61, instance: 35 },
 			position: 10,
@@ -67,7 +68,7 @@ describe('bacnet - Services layer ReadRange unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode by sequence', () => {
+	test('should successfully encode and decode by sequence', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.readRange.encode(
 			buffer,
@@ -85,7 +86,7 @@ describe('bacnet - Services layer ReadRange unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			count: 1111,
 			objectId: { type: 61, instance: 35 },
 			position: 11,
@@ -98,7 +99,7 @@ describe('bacnet - Services layer ReadRange unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode by time', () => {
+	test('should successfully encode and decode by time', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date(1, 1, 1)
 		date.setMilliseconds(990)
@@ -118,7 +119,7 @@ describe('bacnet - Services layer ReadRange unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			count: -1111,
 			objectId: { type: 61, instance: 35 },
 			position: undefined,
@@ -132,8 +133,8 @@ describe('bacnet - Services layer ReadRange unit', () => {
 	})
 })
 
-describe('ReadRangeAcknowledge', () => {
-	it('should successfully encode and decode', () => {
+test.describe('ReadRangeAcknowledge', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.readRange.encodeAcknowledge(
 			buffer,
@@ -152,7 +153,7 @@ describe('ReadRangeAcknowledge', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			objectId: { type: 12, instance: 500 },
 			itemCount: 12,
 			property: { id: 5048, index: 0xffffffff },

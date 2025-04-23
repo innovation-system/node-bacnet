@@ -1,10 +1,11 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer ReinitializeDevice unit', () => {
-	it('should successfully encode and decode', () => {
+test.describe('bacnet - Services layer ReinitializeDevice unit', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
 		let password
 		baServices.reinitializeDevice.encode(buffer, 5, password)
@@ -14,12 +15,12 @@ describe('bacnet - Services layer ReinitializeDevice unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			state: 5,
 		})
 	})
 
-	it('should successfully encode and decode with password', () => {
+	test('should successfully encode and decode with password', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.reinitializeDevice.encode(buffer, 5, 'Test1234$')
 		const result = baServices.reinitializeDevice.decode(
@@ -28,7 +29,7 @@ describe('bacnet - Services layer ReinitializeDevice unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			state: 5,
 			password: 'Test1234$',
 		})

@@ -1,10 +1,11 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer ReadPropertyMultiple unit', () => {
-	it('should successfully encode and decode', () => {
+test.describe('bacnet - Services layer ReadPropertyMultiple unit', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.readPropertyMultiple.encode(buffer, [
 			{
@@ -21,7 +22,7 @@ describe('bacnet - Services layer ReadPropertyMultiple unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			properties: [
 				{
 					objectId: { type: 51, instance: 1 },
@@ -35,8 +36,8 @@ describe('bacnet - Services layer ReadPropertyMultiple unit', () => {
 	})
 })
 
-describe('ReadPropertyMultipleAcknowledge', () => {
-	it('should successfully encode and decode', () => {
+test.describe('ReadPropertyMultipleAcknowledge', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
@@ -87,11 +88,15 @@ describe('ReadPropertyMultipleAcknowledge', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(Math.floor(0.1 * 10000)).toEqual(
-			Math.floor(result.values[0].values[0].value[12].value * 10000),
-		)
-		result.values[0].values[0].value[12].value = 0
-		expect(result).toEqual({
+
+		// Handle floating point comparison
+		const roundedResult = JSON.parse(JSON.stringify(result))
+		roundedResult.values[0].values[0].value[12].value =
+			Math.floor(
+				roundedResult.values[0].values[0].value[12].value * 10000,
+			) / 10000
+
+		assert.deepStrictEqual(roundedResult, {
 			values: [
 				{
 					objectId: {
@@ -139,7 +144,7 @@ describe('ReadPropertyMultipleAcknowledge', () => {
 		})
 	})
 
-	it('should successfully encode and decode an error', () => {
+	test('should successfully encode and decode an error', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.readPropertyMultiple.encodeAcknowledge(buffer, [
 			{
@@ -167,7 +172,7 @@ describe('ReadPropertyMultipleAcknowledge', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			values: [
 				{
 					objectId: {

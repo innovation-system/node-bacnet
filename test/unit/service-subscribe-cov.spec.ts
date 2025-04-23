@@ -1,10 +1,11 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer SubscribeCOV unit', () => {
-	it('should successfully encode and decode a cancelation request', () => {
+test.describe('bacnet - Services layer SubscribeCOV unit', () => {
+	test('should successfully encode and decode a cancelation request', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.subscribeCov.encode(
 			buffer,
@@ -18,14 +19,14 @@ describe('bacnet - Services layer SubscribeCOV unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			cancellationRequest: true,
 			monitoredObjectId: { type: 3, instance: 1 },
 			subscriberProcessId: 10,
 		})
 	})
 
-	it('should successfully encode and decode subscription request', () => {
+	test('should successfully encode and decode subscription request', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.subscribeCov.encode(
 			buffer,
@@ -41,7 +42,7 @@ describe('bacnet - Services layer SubscribeCOV unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			cancellationRequest: false,
 			issueConfirmedNotifications: true,
 			lifetime: 5000,

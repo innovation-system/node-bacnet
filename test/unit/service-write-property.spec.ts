@@ -1,16 +1,17 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer WriteProperty unit', () => {
-	it('should successfully encode and decode', () => {
+test.describe('bacnet - Services layer WriteProperty unit', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
 		baServices.writeProperty.encode(buffer, 31, 12, 80, 0xffffffff, 0, [
-			{ type: 0, value: null }, // Todo: it is to check if value is correct here in the test
+			{ type: 0, value: null },
 			{ type: 1, value: null },
 			{ type: 1, value: true },
 			{ type: 1, value: false },
@@ -36,7 +37,7 @@ describe('bacnet - Services layer WriteProperty unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			objectId: {
 				instance: 12,
 				type: 31,
@@ -72,7 +73,7 @@ describe('bacnet - Services layer WriteProperty unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode with defined priority', () => {
+	test('should successfully encode and decode with defined priority', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
@@ -104,7 +105,7 @@ describe('bacnet - Services layer WriteProperty unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			objectId: {
 				instance: 12,
 				type: 31,
@@ -140,7 +141,7 @@ describe('bacnet - Services layer WriteProperty unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode with defined array index', () => {
+	test('should successfully encode and decode with defined array index', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
@@ -172,7 +173,7 @@ describe('bacnet - Services layer WriteProperty unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			objectId: {
 				instance: 12,
 				type: 31,

@@ -1,10 +1,11 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer LifeSafetyOperation unit', () => {
-	it('should successfully encode and decode', () => {
+test.describe('bacnet - Services layer LifeSafetyOperation unit', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.lifeSafetyOperation.encode(buffer, 8, 'User01', 7, {
 			type: 0,
@@ -16,7 +17,7 @@ describe('bacnet - Services layer LifeSafetyOperation unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			processId: 8,
 			requestingSource: 'User01',
 			operation: 7,

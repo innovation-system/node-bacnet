@@ -1,15 +1,16 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer WhoIs unit', () => {
-	it('should successfully encode and decode', () => {
+test.describe('bacnet - Services layer WhoIs unit', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.whoIs.encode(buffer, 1, 3000)
 		const result = baServices.whoIs.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			lowLimit: 1,
 			highLimit: 3000,
 		})
