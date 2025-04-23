@@ -4,7 +4,7 @@ import assert from 'node:assert'
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-test.describe('bacnet - Services layer SubscribeCOV unit', () => {
+test.describe('bacnet - Services layer subscribeCov unit', () => {
 	test('should successfully encode and decode a cancelation request', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.subscribeCov.encode(

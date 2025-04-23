@@ -40,7 +40,7 @@ following services are already supported at this point in time:
 | Remove List Element            |                                       yes¹                                        | yes¹                                                                          |
 | Create Object                  |                                       yes¹                                        | yes¹                                                                          |
 | Delete Object                  |         [yes](http://books.plus4nodered.com/ts-node-bacnet/deleteObject)         | yes¹                                                                          |
-| Subscribe COV                  |         [yes](http://books.plus4nodered.com/ts-node-bacnet/subscribeCOV)         | yes¹                                                                          |
+| Subscribe COV                  |         [yes](http://books.plus4nodered.com/ts-node-bacnet/subscribeCov)         | yes¹                                                                          |
 | Subscribe Property             |      [yes](http://books.plus4nodered.com/ts-node-bacnet/subscribeProperty)       | yes¹                                                                          |
 | Atomic Read File               |           [yes](http://books.plus4nodered.com/ts-node-bacnet/readFile)           | yes¹                                                                          |
 | Atomic Write File              |          [yes](http://books.plus4nodered.com/ts-node-bacnet/writeFile)           | yes¹                                                                          |

@@ -3,7 +3,7 @@ import assert from 'node:assert'
 
 import * as utils from './utils'
 
-test.describe('bacnet - subscribeCOV integration', () => {
+test.describe('bacnet - subscribeCov integration', () => {
 	test('should return a timeout error if no device is available', (t) => {
 		return new Promise((resolve) => {
 			const client = new utils.BacnetClient({ apduTimeout: 200 })

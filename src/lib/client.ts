@@ -1314,7 +1314,7 @@ export default class Client extends EventEmitter {
 
 	/**
 	 * The confirmedCOVNotification command is used to push notifications to other
-	 * systems that have registered with us via a subscribeCOV message.
+	 * systems that have registered with us via a subscribeCov message.
 	 */
 	confirmedCOVNotification(
 		receiver: AddressParameter,
