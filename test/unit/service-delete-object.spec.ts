@@ -1,10 +1,11 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer DeleteObject unit', () => {
-	it('should successfully encode and decode', () => {
+test.describe('bacnet - Services layer DeleteObject unit', () => {
+	test('should successfully encode and decode', () => {
 		const buffer = utils.getBuffer()
 		baServices.deleteObject.encode(buffer, { type: 1, instance: 10 })
 		const result = baServices.deleteObject.decode(
@@ -13,7 +14,7 @@ describe('bacnet - Services layer DeleteObject unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			objectType: 1,
 			instance: 10,
 		})

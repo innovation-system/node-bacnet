@@ -1,10 +1,11 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer CreateObject unit', () => {
-	it('should successfully encode and decode', () => {
+test.describe('bacnet - Services layer CreateObject unit', () => {
+	test('should successfully encode and decode', () => {
 		const buffer = utils.getBuffer()
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
@@ -54,7 +55,7 @@ describe('bacnet - Services layer CreateObject unit', () => {
 		delete result.len
 		result.values[0].value[12].value =
 			Math.floor(result.values[0].value[12].value * 1000) / 1000
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			objectId: {
 				type: 1,
 				instance: 10,
