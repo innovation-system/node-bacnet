@@ -1,31 +1,32 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
-import { Client } from '../../src/lib/client'
+import Client from '../../src/lib/client'
 import * as baEnum from '../../src/lib/enum'
 
-describe('bacnet - whoIs compliance', () => {
-	let client: Client
-	let externalClient: Client
+test.describe('bacnet - whoIs compliance', () => {
+	let client
+	let externalClient
 
-	beforeEach(() => {
+	test.beforeEach(() => {
 		client = new Client()
 		externalClient = new Client()
 	})
 
-	afterEach(() => {
+	test.afterEach(() => {
 		client.close()
 		externalClient.close()
 	})
 
-	it('should find the device simulator', (next) => {
+	test('should find the device simulator', async (t) => {
 		client.on('iAm', (device) => {
-			expect(device.deviceId).toEqual(1234)
-			expect(device.maxApdu).toEqual(1482)
-			expect(device.segmentation).toEqual(
+			assert.strictEqual(device.deviceId, 1234)
+			assert.strictEqual(device.maxApdu, 1482)
+			assert.strictEqual(
+				device.segmentation,
 				baEnum.Segmentation.NO_SEGMENTATION,
 			)
-			expect(device.vendorId).toEqual(260)
-			next()
+			assert.strictEqual(device.vendorId, 260)
 		})
 
 		externalClient.on('whoIs', () => {
@@ -39,10 +40,9 @@ describe('bacnet - whoIs compliance', () => {
 		client.whoIs()
 	})
 
-	it('should find the device simulator with provided min device ID', (next) => {
+	test('should find the device simulator with provided min device ID', async (t) => {
 		client.on('iAm', (device) => {
-			expect(device.deviceId).toEqual(1234)
-			next()
+			assert.strictEqual(device.deviceId, 1234)
 		})
 
 		externalClient.on('whoIs', () => {
@@ -56,10 +56,9 @@ describe('bacnet - whoIs compliance', () => {
 		client.whoIs({ lowLimit: 1233 })
 	})
 
-	it('should find the device simulator with provided min/max device ID and IP', (next) => {
+	test('should find the device simulator with provided min/max device ID and IP', async (t) => {
 		client.on('iAm', (device) => {
-			expect(device.deviceId).toEqual(1234)
-			next()
+			assert.strictEqual(device.deviceId, 1234)
 		})
 
 		externalClient.on('whoIs', () => {
