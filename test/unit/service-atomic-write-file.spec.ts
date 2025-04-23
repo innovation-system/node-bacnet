@@ -1,10 +1,11 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer AtomicWriteFile unit', () => {
-	it('should successfully encode and decode as stream', () => {
+test.describe('bacnet - Services layer AtomicWriteFile unit', () => {
+	test('should successfully encode and decode as stream', () => {
 		const buffer = utils.getBuffer()
 		baServices.atomicWriteFile.encode(
 			buffer,
@@ -19,7 +20,7 @@ describe('bacnet - Services layer AtomicWriteFile unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			objectId: { type: 12, instance: 51 },
 			isStream: true,
 			position: 5,
@@ -27,7 +28,7 @@ describe('bacnet - Services layer AtomicWriteFile unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode as non-stream', () => {
+	test('should successfully encode and decode as non-stream', () => {
 		const buffer = utils.getBuffer()
 		baServices.atomicWriteFile.encode(
 			buffer,
@@ -45,7 +46,7 @@ describe('bacnet - Services layer AtomicWriteFile unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			objectId: { type: 12, instance: 88 },
 			isStream: false,
 			position: 10,
@@ -57,8 +58,8 @@ describe('bacnet - Services layer AtomicWriteFile unit', () => {
 	})
 })
 
-describe('AtomicWriteFileAcknowledge', () => {
-	it('should successfully encode and decode streamed file', () => {
+test.describe('AtomicWriteFileAcknowledge', () => {
+	test('should successfully encode and decode streamed file', () => {
 		const buffer = utils.getBuffer()
 		baServices.atomicWriteFile.encodeAcknowledge(buffer, true, -10)
 		const result = baServices.atomicWriteFile.decodeAcknowledge(
@@ -66,13 +67,13 @@ describe('AtomicWriteFileAcknowledge', () => {
 			0,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			isStream: true,
 			position: -10,
 		})
 	})
 
-	it('should successfully encode and decode non-streamed file', () => {
+	test('should successfully encode and decode non-streamed file', () => {
 		const buffer = utils.getBuffer()
 		baServices.atomicWriteFile.encodeAcknowledge(buffer, false, 10)
 		const result = baServices.atomicWriteFile.decodeAcknowledge(
@@ -80,7 +81,7 @@ describe('AtomicWriteFileAcknowledge', () => {
 			0,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			isStream: false,
 			position: 10,
 		})
