@@ -1,11 +1,12 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 import * as baEnum from '../../src/lib/enum'
 
-describe('bacnet - Services layer AlarmAcknowledge unit', () => {
-	it('should successfully encode and decode with time timestamp', () => {
+test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
+	test('should successfully encode and decode with time timestamp', () => {
 		const buffer = utils.getBuffer()
 		const eventTime = new Date(1, 1, 1)
 		eventTime.setMilliseconds(990)
@@ -26,7 +27,7 @@ describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			acknowledgedProcessId: 57,
 			eventObjectId: {
 				type: 0,
@@ -39,7 +40,7 @@ describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode with sequence timestamp', () => {
+	test('should successfully encode and decode with sequence timestamp', () => {
 		const buffer = utils.getBuffer()
 		const eventTime = 5
 		const ackTime = 6
@@ -58,7 +59,7 @@ describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			acknowledgedProcessId: 57,
 			eventObjectId: {
 				type: 0,
@@ -71,7 +72,7 @@ describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode with datetime timestamp', () => {
+	test('should successfully encode and decode with datetime timestamp', () => {
 		const buffer = utils.getBuffer()
 		const eventTime = new Date(1, 1, 1)
 		eventTime.setMilliseconds(990)
@@ -92,7 +93,7 @@ describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			acknowledgedProcessId: 57,
 			eventObjectId: {
 				type: 0,

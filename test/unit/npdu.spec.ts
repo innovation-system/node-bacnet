@@ -1,24 +1,25 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baNpdu from '../../src/lib/npdu'
 
-describe('bacnet - NPDU layer', () => {
-	it('should successfully decode the NPDU function', () => {
+test.describe('bacnet - NPDU layer', () => {
+	test('should successfully decode the NPDU function', () => {
 		const result = baNpdu.decodeFunction(Buffer.from([0, 1, 12]), 1)
-		expect(result).toEqual(12)
+		assert.strictEqual(result, 12)
 	})
 
-	it('should fail decoding the NPDU function if invalid version', () => {
+	test('should fail decoding the NPDU function if invalid version', () => {
 		const result = baNpdu.decodeFunction(Buffer.from([0, 2, 12]), 1)
-		expect(result).toBeUndefined()
+		assert.strictEqual(result, undefined)
 	})
 
-	it('should successfully encode and decode a basic NPDU package', () => {
+	test('should successfully encode and decode a basic NPDU package', () => {
 		const buffer = utils.getBuffer()
 		baNpdu.encode(buffer, 1)
 		const result = baNpdu.decode(buffer.buffer, 0)
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			len: 2,
 			funct: 1,
 			destination: undefined,
@@ -29,12 +30,12 @@ describe('bacnet - NPDU layer', () => {
 		})
 	})
 
-	it('should successfully encode and decode a NPDU package with destination', () => {
+	test('should successfully encode and decode a NPDU package with destination', () => {
 		const buffer = utils.getBuffer()
 		const destination = { net: 1000, adr: [1, 2, 3] }
 		baNpdu.encode(buffer, 1, destination, undefined, 11, 5, 7)
 		const result = baNpdu.decode(buffer.buffer, 0)
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			len: 9,
 			funct: 33,
 			destination: { type: 0, net: 1000, adr: [1, 2, 3] },
@@ -45,13 +46,13 @@ describe('bacnet - NPDU layer', () => {
 		})
 	})
 
-	it('should successfully encode and decode a NPDU package with destination and source', () => {
+	test('should successfully encode and decode a NPDU package with destination and source', () => {
 		const buffer = utils.getBuffer()
 		const destination = { net: 1000, adr: [1, 2, 3] }
 		const source = { net: 1000, adr: [1, 2, 3] }
 		baNpdu.encode(buffer, 1, destination, source, 13, 10, 11)
 		const result = baNpdu.decode(buffer.buffer, 0)
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			len: 15,
 			funct: 41,
 			destination: { type: 0, net: 1000, adr: [1, 2, 3] },
@@ -62,13 +63,13 @@ describe('bacnet - NPDU layer', () => {
 		})
 	})
 
-	it('should successfully encode and decode a NPDU package with broadcast destination and source', () => {
+	test('should successfully encode and decode a NPDU package with broadcast destination and source', () => {
 		const buffer = utils.getBuffer()
 		const destination = { net: 65535 }
 		const source = { net: 1000 }
 		baNpdu.encode(buffer, 1, destination, source, 12, 8, 9)
 		const result = baNpdu.decode(buffer.buffer, 0)
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			len: 9,
 			funct: 41,
 			destination: { type: 0, net: 65535 },
@@ -79,11 +80,11 @@ describe('bacnet - NPDU layer', () => {
 		})
 	})
 
-	it('should successfully encode and decode a network layer NPDU package', () => {
+	test('should successfully encode and decode a network layer NPDU package', () => {
 		const buffer = utils.getBuffer()
 		baNpdu.encode(buffer, 128, undefined, undefined, 1, 128, 7777)
 		const result = baNpdu.decode(buffer.buffer, 0)
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			len: 5,
 			funct: 128,
 			destination: undefined,
@@ -94,11 +95,11 @@ describe('bacnet - NPDU layer', () => {
 		})
 	})
 
-	it('should successfully encode and decode a who is router to network layer NPDU package', () => {
+	test('should successfully encode and decode a who is router to network layer NPDU package', () => {
 		const buffer = utils.getBuffer()
 		baNpdu.encode(buffer, 128, undefined, undefined, 1, 0, 7777)
 		const result = baNpdu.decode(buffer.buffer, 0)
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			len: 5,
 			funct: 128,
 			destination: undefined,
@@ -109,11 +110,11 @@ describe('bacnet - NPDU layer', () => {
 		})
 	})
 
-	it('should fail if invalid BACNET version', () => {
+	test('should fail if invalid BACNET version', () => {
 		const buffer = utils.getBuffer()
 		baNpdu.encode(buffer, 12, undefined, undefined, 1, 2, 3)
 		buffer.buffer[0] = 2
 		const result = baNpdu.decode(buffer.buffer, 0)
-		expect(result).toBeUndefined()
+		assert.strictEqual(result, undefined)
 	})
 })
