@@ -3,6 +3,10 @@
   "version": "1.0.1",
   "description": "A BACnet® protocol stack written in pure TypeScript.",
   "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./enum": "./dist/lib/enum.js"
+  },
   "dependencies": {
     "debug": "^4.3.4",
     "iconv-lite": "^0.6.3"
