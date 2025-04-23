@@ -18,8 +18,8 @@
 		"strictBindCallApply": false,
 		"forceConsistentCasingInFileNames": false,
 		"noFallthroughCasesInSwitch": false,
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext"
+		"module": "commonjs",
+		"moduleResolution": "node" 
 	},
 	"include": [
 		"src/**/*.ts",
