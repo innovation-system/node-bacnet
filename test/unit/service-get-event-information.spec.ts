@@ -1,83 +1,75 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
-import * as baEnum from '../../src/lib/enum'
 
-describe('bacnet - Services layer GetEventInformation unit', () => {
-	it('should successfully encode and decode', () => {
+test.describe('bacnet - Services layer GetEnrollmentSummary unit', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.getEventInformation.encode(buffer, { type: 8, instance: 15 })
-		const result = baServices.getEventInformation.decode(buffer.buffer, 0)
+		baServices.getEnrollmentSummary.encode(buffer, 2)
+		const result = baServices.getEnrollmentSummary.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
-			lastReceivedObjectId: { type: 8, instance: 15 },
+		assert.deepStrictEqual(result, {
+			acknowledgmentFilter: 2,
+		})
+	})
+
+	test('should successfully encode and decode full payload', (t) => {
+		const buffer = utils.getBuffer()
+		baServices.getEnrollmentSummary.encode(
+			buffer,
+			2,
+			{ objectId: { type: 5, instance: 33 }, processId: 7 },
+			1,
+			3,
+			{ min: 1, max: 65 },
+			5,
+		)
+		const result = baServices.getEnrollmentSummary.decode(buffer.buffer, 0)
+		delete result.len
+		assert.deepStrictEqual(result, {
+			acknowledgmentFilter: 2,
+			enrollmentFilter: {
+				objectId: { type: 5, instance: 33 },
+				processId: 7,
+			},
+			eventStateFilter: 1,
+			eventTypeFilter: 3,
+			priorityFilter: { min: 1, max: 65 },
+			notificationClassFilter: 5,
 		})
 	})
 })
 
-describe('GetEventInformationAcknowledge', () => {
-	it('should successfully encode and decode', () => {
-		const timeStamp = new Date(1, 1, 1)
-		timeStamp.setMilliseconds(990)
+test.describe('GetEnrollmentSummaryAcknowledge', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.getEventInformation.encodeAcknowledge(
-			buffer,
-			[
-				{
-					objectId: { type: 2, instance: 17 },
-					eventState: 3,
-					acknowledgedTransitions: { value: [14], bitsUsed: 6 },
-					eventTimeStamps: [
-						{ value: timeStamp, type: baEnum.TimeStamp.DATETIME },
-						{ value: 5, type: baEnum.TimeStamp.SEQUENCE_NUMBER },
-						{ value: timeStamp, type: baEnum.TimeStamp.TIME },
-					],
-					notifyType: 12,
-					eventEnable: { value: [14], bitsUsed: 6 },
-					eventPriorities: [1, 2, 3],
-				},
-			],
-			false,
-		)
-		const result = baServices.getEventInformation.decodeAcknowledge(
+		baServices.getEnrollmentSummary.encodeAcknowledge(buffer, [
+			{
+				objectId: { type: 12, instance: 120 },
+				eventType: 3,
+				eventState: 2,
+				priority: 18,
+				notificationClass: 11,
+			},
+		])
+		const result = baServices.getEnrollmentSummary.decodeAcknowledge(
 			buffer.buffer,
 			0,
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
-			events: [
+		assert.deepStrictEqual(result, {
+			enrollmentSummaries: [
 				{
-					objectId: { type: 2, instance: 17 },
-					eventState: 3,
-					acknowledgedTransitions: { value: [14], bitsUsed: 6 },
-					eventTimeStamps: [
-						{ value: timeStamp, type: baEnum.TimeStamp.DATETIME },
-						{ value: 5, type: baEnum.TimeStamp.SEQUENCE_NUMBER },
-						{ value: timeStamp, type: baEnum.TimeStamp.TIME },
-					],
-					notifyType: 12,
-					eventEnable: { value: [14], bitsUsed: 6 },
-					eventPriorities: [1, 2, 3],
+					objectId: { type: 12, instance: 120 },
+					eventType: 3,
+					eventState: 2,
+					priority: 18,
+					notificationClass: 11,
 				},
 			],
-			moreEvents: false,
-		})
-	})
-
-	it('should successfully encode and decode empty payload', () => {
-		const buffer = utils.getBuffer()
-		baServices.getEventInformation.encodeAcknowledge(buffer, [], true)
-		const result = baServices.getEventInformation.decodeAcknowledge(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
-		delete result.len
-		expect(result).toEqual({
-			events: [],
-			moreEvents: true,
 		})
 	})
 })

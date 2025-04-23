@@ -1,11 +1,12 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 import * as baEnum from '../../src/lib/enum'
 
-describe('bacnet - Services layer EventNotifyData unit', () => {
-	it('should successfully encode and decode a change of bitstring event', () => {
+test.describe('bacnet - Services layer EventNotifyData unit', () => {
+	test('should successfully encode and decode a change of bitstring event', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
@@ -33,7 +34,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 		const result = baServices.eventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			processId: 3,
 			initiatingObjectId: { type: 60, instance: 12 },
 			eventObjectId: { type: 61, instance: 1121 },
@@ -49,7 +50,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode a change of state event', () => {
+	test('should successfully encode and decode a change of state event', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
@@ -74,7 +75,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 		const result = baServices.eventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			processId: 3,
 			initiatingObjectId: { type: 0, instance: 0 },
 			eventObjectId: { type: 0, instance: 0 },
@@ -90,7 +91,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode a change of value event', () => {
+	test('should successfully encode and decode a change of value event', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
@@ -113,7 +114,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 		const result = baServices.eventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			processId: 3,
 			initiatingObjectId: { type: 0, instance: 0 },
 			eventObjectId: { type: 0, instance: 0 },
@@ -129,7 +130,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode a floating limit event', () => {
+	test('should successfully encode and decode a floating limit event', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
@@ -156,7 +157,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 		const result = baServices.eventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			processId: 3,
 			initiatingObjectId: { type: 0, instance: 0 },
 			eventObjectId: { type: 0, instance: 0 },
@@ -172,7 +173,8 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode an out of range event', () => {
+	// Remaining tests follow the same pattern...
+	test('should successfully encode and decode an out of range event', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
@@ -193,7 +195,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 		const result = baServices.eventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			processId: 3,
 			initiatingObjectId: { type: 0, instance: 0 },
 			eventObjectId: { type: 0, instance: 0 },
@@ -209,7 +211,8 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode a change of life-safety event', () => {
+	// I'll continue with the remaining test cases in the same pattern
+	test('should successfully encode and decode a change of life-safety event', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
@@ -233,7 +236,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 		const result = baServices.eventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			processId: 3,
 			initiatingObjectId: { type: 0, instance: 0 },
 			eventObjectId: { type: 0, instance: 0 },
@@ -249,7 +252,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode a buffer ready event', () => {
+	test('should successfully encode and decode a buffer ready event', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
@@ -274,7 +277,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 		const result = baServices.eventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			processId: 3,
 			initiatingObjectId: { type: 0, instance: 0 },
 			eventObjectId: { type: 0, instance: 0 },
@@ -290,7 +293,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 	})
 
-	it('should successfully encode and decode a unsigned range event', () => {
+	test('should successfully encode and decode a unsigned range event', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
@@ -313,7 +316,7 @@ describe('bacnet - Services layer EventNotifyData unit', () => {
 		})
 		const result = baServices.eventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			processId: 3,
 			initiatingObjectId: { type: 0, instance: 0 },
 			eventObjectId: { type: 0, instance: 0 },

@@ -1,20 +1,21 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer GetEnrollmentSummary unit', () => {
-	it('should successfully encode and decode', () => {
+test.describe('bacnet - Services layer GetEnrollmentSummary unit', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.getEnrollmentSummary.encode(buffer, 2)
 		const result = baServices.getEnrollmentSummary.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			acknowledgmentFilter: 2,
 		})
 	})
 
-	it('should successfully encode and decode full payload', () => {
+	test('should successfully encode and decode full payload', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.getEnrollmentSummary.encode(
 			buffer,
@@ -27,7 +28,7 @@ describe('bacnet - Services layer GetEnrollmentSummary unit', () => {
 		)
 		const result = baServices.getEnrollmentSummary.decode(buffer.buffer, 0)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			acknowledgmentFilter: 2,
 			enrollmentFilter: {
 				objectId: { type: 5, instance: 33 },
@@ -41,8 +42,8 @@ describe('bacnet - Services layer GetEnrollmentSummary unit', () => {
 	})
 })
 
-describe('GetEnrollmentSummaryAcknowledge', () => {
-	it('should successfully encode and decode', () => {
+test.describe('GetEnrollmentSummaryAcknowledge', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
 		baServices.getEnrollmentSummary.encodeAcknowledge(buffer, [
 			{
@@ -59,7 +60,7 @@ describe('GetEnrollmentSummaryAcknowledge', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			enrollmentSummaries: [
 				{
 					objectId: { type: 12, instance: 120 },

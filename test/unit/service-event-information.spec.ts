@@ -1,10 +1,11 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
-describe('bacnet - Services layer EventInformation unit', () => {
-	it('should successfully encode and decode', () => {
+test.describe('bacnet - Services layer EventInformation unit', () => {
+	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
 		const date1 = new Date()
 		date1.setMilliseconds(990)
@@ -33,7 +34,7 @@ describe('bacnet - Services layer EventInformation unit', () => {
 			buffer.offset,
 		)
 		delete result.len
-		expect(result).toEqual({
+		assert.deepStrictEqual(result, {
 			alarms: [
 				{
 					objectId: {
