@@ -13,18 +13,39 @@ test.describe('bacnet - BVLC layer', () => {
 			len: 4,
 			func: 10,
 			msgLength: 1482,
+			originatingIP: null,
 		})
 	})
 
 	test('should successfuly encode and decode a forwarded package', () => {
 		const buffer = utils.getBuffer()
-		baBvlc.encode(buffer.buffer, 4, 1482)
+		baBvlc.encode(buffer.buffer, 4, 1482, '1.2.255.0')
 		const result = baBvlc.decode(buffer.buffer, 0)
 		assert.deepStrictEqual(result, {
 			len: 10,
 			func: 4,
 			msgLength: 1482,
+			originatingIP: '1.2.255.0', // omit port if default
 		})
+	})
+
+	test('should successfuly encode and decode a forwarded package on a different port', () => {
+		const buffer = utils.getBuffer()
+		baBvlc.encode(buffer.buffer, 4, 1482, '1.2.255.0:47810')
+		const result = baBvlc.decode(buffer.buffer, 0)
+		assert.deepStrictEqual(result, {
+			len: 10,
+			func: 4,
+			msgLength: 1482,
+			originatingIP: '1.2.255.0:47810', // include port if non-default
+		})
+	})
+
+	test('should fail forwarding a non FORWARDED_NPU', () => {
+		const buffer = utils.getBuffer()
+		assert.throws(() => {
+			baBvlc.encode(buffer.buffer, 3, 1482, '1.2.255.0')
+		}, /Cannot specify originatingIP unless/)
 	})
 
 	test('should fail if invalid BVLC type', () => {
@@ -52,7 +73,7 @@ test.describe('bacnet - BVLC layer', () => {
 
 	test('should fail if unsuported function', () => {
 		const buffer = utils.getBuffer()
-		baBvlc.encode(buffer.buffer, 5, 1482)
+		baBvlc.encode(buffer.buffer, 99, 1482)
 		const result = baBvlc.decode(buffer.buffer, 0)
 		assert.strictEqual(result, undefined)
 	})
