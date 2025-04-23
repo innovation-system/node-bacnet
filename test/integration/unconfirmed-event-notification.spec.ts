@@ -1,9 +1,9 @@
-import { describe, it } from '@jest/globals'
+import test from 'node:test'
 
 import * as utils from './utils'
 
-describe('bacnet - unconfirmedEventNotification integration', () => {
-	it('should correctly send a telegram', () => {
+test.describe('bacnet - unconfirmedEventNotification integration', () => {
+	test('should correctly send a telegram', () => {
 		const client = new utils.BacnetClient({ apduTimeout: 200 })
 		const date = new Date()
 		date.setMilliseconds(880)

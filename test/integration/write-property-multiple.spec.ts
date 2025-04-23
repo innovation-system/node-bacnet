@@ -1,26 +1,29 @@
-import { describe, expect, it } from '@jest/globals'
+import test from 'node:test'
+import assert from 'node:assert'
 
 import * as utils from './utils'
 
-describe('bacnet - writePropertyMultiple integration', () => {
-	it('should return a timeout error if no device is available', (next) => {
-		const client = new utils.BacnetClient({ apduTimeout: 200 })
-		const values = [
-			{
-				objectId: { type: 8, instance: 44301 },
-				values: [
-					{
-						property: { id: 28, index: 12 },
-						value: [{ type: 1, value: true }],
-						priority: 8,
-					},
-				],
-			},
-		]
-		client.writePropertyMultiple('127.0.0.1', values, {}, (err) => {
-			expect(err.message).toEqual('ERR_TIMEOUT')
-			client.close()
-			next()
+test.describe('bacnet - writePropertyMultiple integration', () => {
+	test('should return a timeout error if no device is available', (t) => {
+		return new Promise((resolve) => {
+			const client = new utils.BacnetClient({ apduTimeout: 200 })
+			const values = [
+				{
+					objectId: { type: 8, instance: 44301 },
+					values: [
+						{
+							property: { id: 28, index: 12 },
+							value: [{ type: 1, value: true }],
+							priority: 8,
+						},
+					],
+				},
+			]
+			client.writePropertyMultiple('127.0.0.1', values, {}, (err) => {
+				assert.strictEqual(err.message, 'ERR_TIMEOUT')
+				client.close()
+				resolve()
+			})
 		})
 	})
 })
