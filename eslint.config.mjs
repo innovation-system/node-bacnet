@@ -16,8 +16,29 @@ const compat = new FlatCompat({
 })
 
 export default defineConfig([
-	globalIgnores(['examples/', 'dist/', '**/*.js']),
+	globalIgnores(['examples/', 'dist/']),
+
+	// Configuration for JavaScript files
 	{
+		files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
+		languageOptions: {
+			globals: {
+				...globals.node,
+			},
+			ecmaVersion: 2022,
+			sourceType: 'module',
+		},
+		extends: compat.extends('plugin:prettier/recommended'),
+		rules: {
+			// Specific rules for JavaScript
+			'object-shorthand': 'error',
+			'prefer-template': 'error',
+		},
+	},
+
+	// Configuration for TypeScript files
+	{
+		files: ['**/*.ts'],
 		extends: compat.extends(
 			'plugin:prettier/recommended',
 			'plugin:@typescript-eslint/recommended',
@@ -75,12 +96,6 @@ export default defineConfig([
 			'@typescript-eslint/dot-notation': 'off',
 			'@typescript-eslint/no-use-before-define': 'off',
 		},
-		ignores: [
-			'node_modules/',
-			'dist/',
-			'examples/',
-			'coverage/',
-			'**/*.js',
-		],
+		ignores: ['node_modules/', 'dist/', 'examples/', 'coverage/'],
 	},
 ])
