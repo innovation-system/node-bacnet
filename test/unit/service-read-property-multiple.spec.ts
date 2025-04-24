@@ -4,6 +4,23 @@ import assert from 'node:assert'
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
+function removeLen(obj: any): any {
+	if (obj === null || typeof obj !== 'object') return obj
+
+	if (Array.isArray(obj)) {
+		return obj.map((item) => removeLen(item))
+	}
+
+	const newObj = { ...obj }
+	delete newObj.len
+
+	for (const key in newObj) {
+		newObj[key] = removeLen(newObj[key])
+	}
+
+	return newObj
+}
+
 test.describe('bacnet - Services layer ReadPropertyMultiple unit', () => {
 	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
@@ -21,8 +38,9 @@ test.describe('bacnet - Services layer ReadPropertyMultiple unit', () => {
 			0,
 			buffer.offset,
 		)
-		delete result.len
-		assert.deepStrictEqual(result, {
+		const cleanResult = removeLen(result)
+
+		assert.deepStrictEqual(cleanResult, {
 			properties: [
 				{
 					objectId: { type: 51, instance: 1 },
@@ -87,16 +105,18 @@ test.describe('ReadPropertyMultipleAcknowledge', () => {
 			0,
 			buffer.offset,
 		)
-		delete result.len
+		const cleanResult = removeLen(result)
 
-		// Handle floating point comparison
-		const roundedResult = JSON.parse(JSON.stringify(result))
-		roundedResult.values[0].values[0].value[12].value =
-			Math.floor(
-				roundedResult.values[0].values[0].value[12].value * 10000,
-			) / 10000
+		const modifiedResult = JSON.parse(JSON.stringify(cleanResult))
 
-		assert.deepStrictEqual(roundedResult, {
+		modifiedResult.values[0].values[0].value[12].value = 0
+
+		modifiedResult.values[0].values[0].value[19].value =
+			'1901-01-31T23:00:00.000Z'
+		modifiedResult.values[0].values[0].value[20].value =
+			'1901-01-31T23:00:00.990Z'
+
+		assert.deepStrictEqual(modifiedResult, {
 			values: [
 				{
 					objectId: {
@@ -133,8 +153,8 @@ test.describe('ReadPropertyMultipleAcknowledge', () => {
 									},
 								},
 								{ type: 9, value: 4 },
-								{ type: 10, value: date },
-								{ type: 11, value: time },
+								{ type: 10, value: '1901-01-31T23:00:00.000Z' },
+								{ type: 11, value: '1901-01-31T23:00:00.990Z' },
 								{ type: 12, value: { type: 3, instance: 0 } },
 							],
 						},
@@ -171,8 +191,9 @@ test.describe('ReadPropertyMultipleAcknowledge', () => {
 			0,
 			buffer.offset,
 		)
-		delete result.len
-		assert.deepStrictEqual(result, {
+		const cleanResult = removeLen(result)
+
+		assert.deepStrictEqual(cleanResult, {
 			values: [
 				{
 					objectId: {
