@@ -1,33 +1,33 @@
 {
 	"extends": "@tsconfig/node20/tsconfig.json",
 	"compilerOptions": {
-		"outDir": "./dist",
-		"declaration": true,
-		"removeComments": true,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"allowSyntheticDefaultImports": true,
-		"sourceMap": true,
-		"incremental": true,
-		"skipLibCheck": true,
-		"preserveSymlinks": true,
-		"esModuleInterop": true,
-		"resolveJsonModule": true,
-		"strictNullChecks": false,
-		"noImplicitAny": false,
-		"strictBindCallApply": false,
-		"forceConsistentCasingInFileNames": false,
-		"noFallthroughCasesInSwitch": false,
-		"module": "commonjs",
-		"moduleResolution": "node" 
+	  "outDir": "./dist",
+	  "declaration": true,
+	  "removeComments": true,
+	  "emitDecoratorMetadata": true,
+	  "experimentalDecorators": true,
+	  "allowSyntheticDefaultImports": true,
+	  "sourceMap": true,
+	  "incremental": true,
+	  "skipLibCheck": true,
+	  "preserveSymlinks": true,
+	  "esModuleInterop": true,
+	  "resolveJsonModule": true,
+	  "strictNullChecks": false,
+	  "noImplicitAny": false,
+	  "strictBindCallApply": false,
+	  "forceConsistentCasingInFileNames": false,
+	  "noFallthroughCasesInSwitch": false,
+	  "module": "commonjs",
+	  "moduleResolution": "node"
 	},
 	"include": [
-		"src/**/*.ts",
-		"test/**/*.ts",
-		"eslint.config.mjs",
+	  "src/**/*.ts",
+	  "test/**/*.ts",
+	  "eslint.config.mjs"
 	],
 	"exclude": [
-		"dist",
-		"node_modules",
+	  "dist",
+	  "node_modules"
 	]
-}
+  }
