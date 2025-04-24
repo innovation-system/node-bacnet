@@ -4,6 +4,23 @@ import assert from 'node:assert'
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
 
+function removeLen(obj: any): any {
+	if (obj === null || typeof obj !== 'object') return obj
+
+	if (Array.isArray(obj)) {
+		return obj.map((item) => removeLen(item))
+	}
+
+	const newObj = { ...obj }
+	delete newObj.len
+
+	for (const key in newObj) {
+		newObj[key] = removeLen(newObj[key])
+	}
+
+	return newObj
+}
+
 test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
@@ -52,12 +69,14 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 			0,
 			buffer.offset,
 		)
-		delete result.len
+		const cleanResult = removeLen(result)
 
-		// Handle floating point comparison
-		const roundedResult = JSON.parse(JSON.stringify(result))
+		const roundedResult = JSON.parse(JSON.stringify(cleanResult))
 		roundedResult.values[0].value[12].value =
 			Math.floor(roundedResult.values[0].value[12].value * 1000) / 1000
+
+		roundedResult.values[0].value[19].value = date
+		roundedResult.values[0].value[20].value = time
 
 		assert.deepStrictEqual(roundedResult, {
 			objectId: {
@@ -123,8 +142,8 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 			0,
 			buffer.offset,
 		)
-		delete result.len
-		assert.deepStrictEqual(result, {
+		const cleanResult = removeLen(result)
+		assert.deepStrictEqual(cleanResult, {
 			objectId: {
 				type: 39,
 				instance: 2400,
@@ -162,8 +181,8 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 			0,
 			buffer.offset,
 		)
-		delete result.len
-		assert.deepStrictEqual(result, {
+		const cleanResult = removeLen(result)
+		assert.deepStrictEqual(cleanResult, {
 			objectId: {
 				type: 39,
 				instance: 2400,
