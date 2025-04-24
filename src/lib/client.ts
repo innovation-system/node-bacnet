@@ -15,6 +15,7 @@ import {
 	BACNetObjectID,
 	BACNetPropertyID,
 	BACNetAppData,
+	BACNetTimestamp,
 	TransportSettings,
 	ClientOptions,
 	WhoIsOptions,
@@ -2204,8 +2205,8 @@ export default class Client extends EventEmitter {
 	 * @param objectId - Object identifier
 	 * @param eventState - Event state to acknowledge
 	 * @param ackText - Acknowledgement text
-	 * @param evTimeStamp - Event timestamp
-	 * @param ackTimeStamp - Acknowledgement timestamp
+	 * @param evTimeStamp - Event timestamp object with type and value properties
+	 * @param ackTimeStamp - Acknowledgement timestamp object with type and value properties
 	 * @param options - Service options
 	 * @param next - Callback function
 	 */
@@ -2214,8 +2215,8 @@ export default class Client extends EventEmitter {
 		objectId: BACNetObjectID,
 		eventState: number,
 		ackText: string,
-		evTimeStamp: Date,
-		ackTimeStamp: Date,
+		evTimeStamp: BACNetTimestamp,
+		ackTimeStamp: BACNetTimestamp,
 		options: ServiceOptions | ErrorCallback,
 		next?: ErrorCallback,
 	): void {

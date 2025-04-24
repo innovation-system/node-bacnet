@@ -112,6 +112,11 @@ export interface BACNetEventInformation {
 	eventPriorities: number[]
 }
 
+export interface BACNetTimestamp {
+	type: number
+	value: any
+}
+
 export interface Decode<T> {
 	len: number
 	value: T
@@ -386,7 +391,6 @@ export interface BACnetMessageHeader {
 	confirmedService?: boolean
 }
 
-// Interfacce base che rappresentano capacità
 export interface BACnetMessageBase {
 	len: number
 	type?: number
