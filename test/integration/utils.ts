@@ -18,8 +18,21 @@ export class TransportStub extends EventEmitter {
 	close() {}
 }
 
-export const propertyFormater = (object: { id: number; value: any }[]) => {
+export const propertyFormater = (object: any[]) => {
 	const converted: { [name: number]: any } = {}
-	object.forEach((property) => (converted[property.id] = property.value))
+	object.forEach((property) => {
+		if (property.value && Array.isArray(property.value)) {
+			const cleanValues = property.value.map((value: any) => {
+				if (value && typeof value === 'object' && 'len' in value) {
+					const { len, ...rest } = value
+					return rest
+				}
+				return value
+			})
+			converted[property.id] = cleanValues
+		} else {
+			converted[property.id] = property.value
+		}
+	})
 	return converted
 }
