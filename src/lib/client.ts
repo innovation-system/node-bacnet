@@ -1489,7 +1489,7 @@ export default class Client extends EventEmitter {
 		receiver: string | { address: string; forwardedFrom?: string },
 		objectId: BACNetObjectID,
 		position: number,
-		fileBuffer: Buffer,
+		fileBuffer: number[][],
 		options: ServiceOptions | DataCallback<any>,
 		next?: DataCallback<any>,
 	): void {
@@ -1523,7 +1523,7 @@ export default class Client extends EventEmitter {
 			0,
 			0,
 		)
-		const blocks: number[][] = [Array.from(fileBuffer)]
+		const blocks: number[][] = fileBuffer
 		baServices.atomicWriteFile.encode(
 			buffer,
 			false,
