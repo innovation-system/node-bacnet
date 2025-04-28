@@ -24,6 +24,11 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run test
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2.3.4
+        if: matrix.node == '20'
+        with:
+          github-token: ${{ secrets.github_token }}
      # TODO: deploy coverage results
      # - run: yarn integration
      # - run: yarn docs
