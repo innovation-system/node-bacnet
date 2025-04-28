@@ -15,11 +15,20 @@
     "build": "tsc -p tsconfig.build.json",
     "lint": "eslint src/**/*.*",
     "lint:fix": "eslint --fix \"src/**/*\"",
-    "coverage": "node --require ts-node/register --test --experimental-test-coverage --test-coverage-config=node-test-coverage.mjs test/unit/*.spec.ts",
-    "integration": "node --require ts-node/register --test test/integration/*.spec.ts",
-    "compliance": "node --require ts-node/register --test test/compliance/*.spec.ts",
+    
     "test": "node --require ts-node/register --test test/**/*.spec.ts",
+    "test:unit": "node --require ts-node/register --test test/unit/*.spec.ts",
+    "test:integration": "node --require ts-node/register --test test/integration/*.spec.ts",
+    "test:compliance": "node --require ts-node/register --test test/compliance/*.spec.ts",
+
+    "coverage": "node --require ts-node/register --test --experimental-test-coverage --test-coverage-config=node-test-coverage.mjs test/unit/*.spec.ts",
     "coverage:all": "node --require ts-node/register --test --experimental-test-coverage --test-coverage-config=node-test-coverage.mjs test/**/*.spec.ts",
+    
+    "bacnet:start": "docker compose up -d",
+    "bacnet:stop": "docker compose down",
+    "bacnet:logs": "docker compose logs -f",
+    "bacnet:restart": "npm run bacnet:stop && npm run bacnet:start",
+
     "docs": "typedoc --out docs --entryPoint '\"client\"' --excludeExternals --excludeNotExported --excludePrivate src/lib/client.ts",
     "release": "read -p 'GITHUB_TOKEN: ' GITHUB_TOKEN && export GITHUB_TOKEN=$GITHUB_TOKEN && release-it"
   },
