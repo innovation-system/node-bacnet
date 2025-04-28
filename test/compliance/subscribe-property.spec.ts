@@ -3,12 +3,10 @@ import assert from 'node:assert'
 
 import * as utils from './utils'
 
-import * as baEnum from '../../src/lib/enum'
-
 // you need to have this run against the official backstack c
 // demo device started as deviceId 1234
 // use "npm run docker" to execute this
-test.describe('bacnet - subscribe cov compliance', () => {
+test.describe('bacnet - subscribe property compliance', () => {
 	let bacnetClient: any
 	let discoveredAddress: any
 	const onClose: ((callback: () => void) => void) | null = null
