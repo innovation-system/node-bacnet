@@ -6,7 +6,7 @@ import * as utils from './utils'
 test.describe('bacnet - confirmedEventNotification integration', () => {
 	test('should return a timeout error if no device is available', (t) => {
 		return new Promise((resolve) => {
-			const client = new utils.BacnetClient({ apduTimeout: 200 })
+			const client = utils.createBacnetClient({ apduTimeout: 200 })
 			const date = new Date()
 			date.setMilliseconds(880)
 			client.confirmedEventNotification(
