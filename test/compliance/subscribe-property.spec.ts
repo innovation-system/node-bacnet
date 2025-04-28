@@ -71,5 +71,41 @@ test.describe('bacnet - subscribe property compliance', () => {
 		})
 	})
 
+	test('subscribe property BINARY_VALUE,2 from device, expect not supported error', async () => {
+		return new Promise<void>((next, reject) => {
+			const timeoutId = setTimeout(() => {
+				reject(new Error('Test timed out waiting for response'))
+			}, 10000)
+
+			bacnetClient.subscribeProperty(
+				discoveredAddress,
+				{ type: 5, instance: 2 },
+				{ id: 85, index: utils.index },
+				1000,
+				false,
+				false,
+				(err: Error) => {
+					clearTimeout(timeoutId)
+
+					try {
+						assert.ok(err, 'Expected an error but got none')
+						assert.ok(
+							err.message.includes('BacnetAbort'),
+							`Expected error message to include "BacnetAbort", got: ${err.message}`,
+						)
+
+						utils.debug(
+							`Ricevuto errore accettabile: ${err.message}`,
+						)
+
+						next()
+					} catch (error) {
+						reject(error)
+					}
+				},
+			)
+		})
+	})
+
 	// TODO tests missing for routing cases where "receiver" parameter is used to call whoIs
 })
