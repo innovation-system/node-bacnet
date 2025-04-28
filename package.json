@@ -16,10 +16,10 @@
     "lint": "eslint src/**/*.*",
     "lint:fix": "eslint --fix \"src/**/*\"",
     
-    "test": "node --require ts-node/register --test test/**/*.spec.ts",
-    "test:unit": "node --require ts-node/register --test test/unit/*.spec.ts",
-    "test:integration": "node --require ts-node/register --test test/integration/*.spec.ts",
-    "test:compliance": "node --require ts-node/register --test test/compliance/*.spec.ts",
+    "test": "node --require ts-node/register --test --no-parallel test/**/*.spec.ts",
+    "test:unit": "node --require ts-node/register --test --no-parallel test/unit/*.spec.ts",
+    "test:integration": "node --require ts-node/register --test --no-parallel test/integration/*.spec.ts",
+    "test:compliance": "node --require ts-node/register --test --no-parallel test/compliance/*.spec.ts",
 
     "coverage": "node --require ts-node/register --test --experimental-test-coverage --test-coverage-config=node-test-coverage.mjs test/unit/*.spec.ts",
     "coverage:all": "node --require ts-node/register --test --experimental-test-coverage --test-coverage-config=node-test-coverage.mjs test/**/*.spec.ts",
