@@ -3,10 +3,14 @@ import assert from 'node:assert'
 
 import * as utils from './utils'
 
+// Importa direttamente l'enum dal modulo
+// Nota: adatta il percorso in base alla tua struttura
+import * as baEnum from '../../src/lib/enum'
+
 // you need to have this run against the official backstack c
 // demo device started as deviceId 1234
 // use "npm run docker" to execute this
-test.describe('bacnet - read property compliance', () => {
+test.describe('bacnet - subscribe cov compliance', () => {
 	let bacnetClient: any
 	let discoveredAddress: any
 	const onClose: ((callback: () => void) => void) | null = null
@@ -68,82 +72,6 @@ test.describe('bacnet - read property compliance', () => {
 				}
 			})
 			bacnetClient.whoIs()
-		})
-	})
-
-	test('read property VENDOR_NAME (121) from device', async () => {
-		return new Promise<void>((next, reject) => {
-			const timeoutId = setTimeout(() => {
-				reject(new Error('Test timed out waiting for response'))
-			}, 10000)
-
-			bacnetClient.readProperty(
-				discoveredAddress,
-				{ type: 8, instance: utils.deviceUnderTest },
-				121,
-				(err: Error | null, value: any) => {
-					clearTimeout(timeoutId)
-
-					try {
-						assert.strictEqual(err, null)
-						assert.ok(value, 'value should be an object')
-						assert.deepStrictEqual(value, {
-							len: 39,
-							objectId: {
-								type: 8,
-								instance: utils.deviceUnderTest,
-							},
-							property: { id: 121, index: utils.index },
-							values: [
-								{
-									type: 7,
-									value: 'BACnet Stack at SourceForge',
-									encoding: 0,
-								},
-							],
-						})
-						next()
-					} catch (error) {
-						reject(error)
-					}
-				},
-			)
-		})
-	})
-
-	test('read property PRESENT_VALUE from analog-output,2 from device', async () => {
-		return new Promise<void>((next, reject) => {
-			const timeoutId = setTimeout(() => {
-				reject(new Error('Test timed out waiting for response'))
-			}, 10000)
-
-			bacnetClient.readProperty(
-				discoveredAddress,
-				{ type: 1, instance: 2 },
-				85,
-				(err: Error | null, value: any) => {
-					clearTimeout(timeoutId)
-
-					try {
-						assert.strictEqual(err, null)
-						assert.ok(value, 'value should be an object')
-						assert.deepStrictEqual(value, {
-							len: 14,
-							objectId: { type: 1, instance: 2 },
-							property: { id: 85, index: utils.index },
-							values: [
-								{
-									type: 4,
-									value: 0,
-								},
-							],
-						})
-						next()
-					} catch (error) {
-						reject(error)
-					}
-				},
-			)
 		})
 	})
 
