@@ -66,9 +66,8 @@ jobs:
 
           # format will be downloaded-artifacts/node20-docker-test/*.json
           
-          # merge content of folders inside downloaded-artifacts into .nyc_output
           for dir in downloaded-artifacts/*; do
-              mv downloaded-artifacts/$dir/* .nyc_output/
+              mv "$dir"/* .nyc_output/
           done
           
           # merge all coverage.json files into one
