@@ -42,6 +42,7 @@ jobs:
         run: |
           if [ -d ".nyc_output" ]; then
             echo "Directory .nyc_output exists."
+            ls -la .nyc_output
           else
             echo "Directory .nyc_output does not exist."
             ls -la
