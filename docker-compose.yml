@@ -7,9 +7,9 @@ services:
   bacnet-client:
     image: ${NODE_IMAGE:-node:20}
     working_dir: /bacnet
+    user: node
     volumes:
       - .:/bacnet
     command: |
       bash -c "tail -f /dev/null"
-  
 
