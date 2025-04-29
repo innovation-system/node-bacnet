@@ -35,7 +35,7 @@ jobs:
       - name: Test:compliance
         if: matrix.node == '20'
         run: |
-          npm run docker:start
+          NODE_IMAGE=node:${{ matrix.node }} docker compose up -d
           npm run docker:test
 
       - name: Coveralls

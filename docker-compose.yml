@@ -5,10 +5,11 @@ services:
       - "47808:47808/udp"
 
   bacnet-client:
-    build:
-      context: .
-    links:
-      - bacnet-device
+    image: ${NODE_IMAGE:-node:20}
+    working_dir: /bacnet
     volumes:
-      - ./reports/coverage:/bacnet/reports/coverage
+      - .:/bacnet
+    command: |
+      bash -c "tail -f /dev/null"
+  
 
