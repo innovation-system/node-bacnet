@@ -64,13 +64,12 @@ jobs:
         run: |
           mkdir -p .nyc_output
 
-          ls -la downloaded-artifacts
-
-          # print files tree in downloaded-artifacts
-          find downloaded-artifacts -type f -exec ls -la {} \;
+          # format will be downloaded-artifacts/node20-docker-test/*.json
           
-          # merge `.nyc_output` folders into one
-          find downloaded-artifacts -type d -name ".nyc_output" -exec cp -r {} .nyc_output \;
+          # merge content of folders inside downloaded-artifacts into .nyc_output
+          for dir in downloaded-artifacts/*; do
+              mv downloaded-artifacts/$dir/* .nyc_output/
+          done
           
           # merge all coverage.json files into one
           npx nyc merge .nyc_output coverage/coverage.json
