@@ -37,6 +37,16 @@ jobs:
       - name: Run test
         timeout-minutes: 2
         run: npm run ${{ inputs.npm_command }}
+
+      - name: Check .nyc_output
+        run: |
+          if [ -d ".nyc_output" ]; then
+            echo "Directory .nyc_output exists."
+          else
+            echo "Directory .nyc_output does not exist."
+            ls -la
+            exit 1
+          fi
       
       - name: Collect artifacts
         uses: actions/upload-artifact@v4
