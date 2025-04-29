@@ -21,19 +21,18 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
+      
       - name: Install dependencies
         run: npm ci
+      
       - name: Lint 
         run: npm run lint
+      
       - name: Build
         if: matrix.node == '22'
         run: npm run build
-      - name: Test:unit
-        run: npm run test:unit
-      - name: Test:integration
-        run: npm run test:integration
-      - name: Test:compliance
-        if: matrix.node == '20'
+    
+      - name: Test
         run: |
           NODE_IMAGE=node:${{ matrix.node }} docker compose up -d
           npm run docker:test
