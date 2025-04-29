@@ -31,35 +31,24 @@ jobs:
       - name: Build
         if: matrix.node == '22'
         run: npm run build
+      
+      - name: Test unit
+        run: npm test:unit:coverage
+
+      - name: Test integration
+        run: npm test:integration:coverage
     
-      - name: Test
+      - name: Test compliance
         run: |
           NODE_IMAGE=node:${{ matrix.node }} docker compose up -d
           npm run docker:test
+
+      - name: Report coverage
+        run: npm run coverage:report
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2.3.4
         if: matrix.node == '20'
         with:
           github-token: ${{ secrets.github_token }}
-     # TODO: deploy coverage results
-     # - run: yarn integration
-     # - run: yarn docs
 
-  # compliance:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - run: docker-compose up --abort-on-container-exit --exit-code-from bacnet-client
-
-  # pages:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 20
-  #         cache: 'yarn'
-  #     - run: yarn --frozen-lockfile
-  #     - run: yarn docs
-      # TODO: deploy pages
