@@ -33,10 +33,10 @@ jobs:
         run: npm run build
       
       - name: Test unit
-        run: npm test:unit:coverage
+        run: npm run test:unit:coverage
 
       - name: Test integration
-        run: npm test:integration:coverage
+        run: npm run test:integration:coverage
     
       - name: Test compliance
         run: |
