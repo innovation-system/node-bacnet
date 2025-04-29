@@ -34,7 +34,9 @@ jobs:
         run: npm run test:integration
       - name: Test:compliance
         if: matrix.node == '20'
-        run: npm run bacnet:start
+        run: |
+          npm run docker:start
+          npm run docker:test
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2.3.4

@@ -11,4 +11,6 @@ RUN npm ci --omit=dev && npm install ts-node
 COPY . .
 
 # Run compliance tests
-CMD DEBUG=bacnet* npm run test:compliance
+# CMD DEBUG=bacnet* npm run test:compliance
+# add empty cmd to keep container running
+CMD ["tail", "-f", "/dev/null"]
