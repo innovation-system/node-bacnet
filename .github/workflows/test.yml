@@ -49,7 +49,7 @@ jobs:
             echo "Directory .nyc_output exists."
             ls -la .nyc_output
             # store absolute path to .nyc_output
-            echo "NYC_OUTPUT_PATH=$(pwd)/.nyc_output/**/*.json" >> $GITHUB_ENV
+            echo "NYC_OUTPUT_PATH=$(pwd)/.nyc_output" >> $GITHUB_ENV
             # sanitize npm_command replacing `:` with `-`
             sanitized_npm_command=$(echo "${{ inputs.npm_command }}" | sed 's/:/-/g')
             # store to environment variable
@@ -67,3 +67,4 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.NYC_OUTPUT_PATH }}
           if-no-files-found: error
+          include-hidden-files: true
