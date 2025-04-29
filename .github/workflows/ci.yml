@@ -77,4 +77,6 @@ jobs:
         uses: coverallsapp/github-action@v2.3.4
         with:
           github-token: ${{ secrets.github_token }}
+          file: coverage/coverage.json     
+
 
