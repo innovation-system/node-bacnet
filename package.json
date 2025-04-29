@@ -24,7 +24,7 @@
     "coverage": "node --require ts-node/register --test --experimental-test-coverage --test-coverage-config=node-test-coverage.mjs test/unit/*.spec.ts",
     "coverage:all": "node --require ts-node/register --test --experimental-test-coverage --test-coverage-config=node-test-coverage.mjs test/**/*.spec.ts",
     
-    "bacnet:start": "docker compose up",
+    "bacnet:start": "docker compose up --abort-on-container-exit",
     "bacnet:stop": "docker compose down",
     "bacnet:logs": "docker compose logs -f",
     "bacnet:restart": "npm run bacnet:stop && npm run bacnet:start",
