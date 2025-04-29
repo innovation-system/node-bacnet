@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  workflow_call:
+    inputs:
+      npm_command:
+        description: 'NPM command to run'
+        type: string
+        required: true
+        default: 'install'
+      docker:
+        description: 'Run inside docker'
+        type: boolean
+        required: false
+        default: false
+jobs:
+  test:
+    strategy:
+      fail-fast: false # prevent test to stop if one fails
+      matrix:
+        node-version: [20.x, 22.x]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+
+      - run: npm ci
+
+      - name: Docker
+        if: ${{ inputs.docker == 'true' }}
+        run: |
+          docker compose up -d
+          docker ps
+
+      - run: npm run ${{ inputs.npm_command }}
+        env:
+          CI: true
+        timeout-minutes: 3
+      
+      - name: Collect artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.node-version == '20.x'
+        with:
+          name: node${{ matrix.node-version }}-${{ inputs.npm_command }}
+          path: coverage/*

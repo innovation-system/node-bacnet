@@ -7,9 +7,9 @@ on:
     branches: [master]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 1
     strategy:
       fail-fast: false
       matrix:
@@ -32,24 +32,45 @@ jobs:
       - name: Build
         if: matrix.node == '22'
         run: npm run build
-      
-      - name: Test unit
-        run: npm run test:unit:coverage
+  
+  test_unit:
+    uses: ./.github/workflows/test.yml
+    with:
+      npm_command: test:unit:coverage
+  
+  test_integration:
+    uses: ./.github/workflows/test.yml
+    with:
+      npm_command: test:integration:coverage
 
-      - name: Test integration
-        run: npm run test:integration:coverage
-    
-      - name: Test compliance
+  test_compliance:
+    uses: ./.github/workflows/test.yml
+    with:
+      docker: true
+      npm_command: docker:test
+
+  collect_artifacts:
+    needs: [build, test_unit, test_integration, test_compliance]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+       
+      - uses: actions/download-artifact@v4
+        with:
+          path: downloaded-artifacts
+
+      - name: Merge coverage reports
         run: |
-          NODE_IMAGE=node:${{ matrix.node }} docker compose up -d
-          npm run docker:test
-
-      - name: Report coverage
-        run: npm run coverage:report
+          mkdir -p coverage
+          # push all coverage.json files into a var
+          FILES=$(ls downloaded-artifacts | grep coverage.json)
+          
+          # merge all coverage.json files into one
+          npx istanbul-merge --out coverage/coverage.json $FILES
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2.3.4
-        if: matrix.node == '20'
         with:
           github-token: ${{ secrets.github_token }}
 
