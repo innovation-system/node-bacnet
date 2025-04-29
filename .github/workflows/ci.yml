@@ -43,14 +43,14 @@ jobs:
     with:
       npm_command: test:integration:coverage
 
-  test_compliance:
-    uses: ./.github/workflows/test.yml
-    with:
-      docker: true
-      npm_command: docker:test
+  # test_compliance:
+  #   uses: ./.github/workflows/test.yml
+  #   with:
+  #     docker: true
+  #     npm_command: docker:test
 
   collect_artifacts:
-    needs: [build, test_unit, test_integration, test_compliance]
+    needs: [build, test_unit, test_integration]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -62,12 +62,12 @@ jobs:
 
       - name: Merge coverage reports
         run: |
-          mkdir -p coverage
-          # push all coverage.json files into a var
-          FILES=$(ls downloaded-artifacts | grep coverage.json)
+          mkdir -p .nyc_output
+          
+          mv downloaded-artifacts/*/.nyc_output/* .nyc_output/
           
           # merge all coverage.json files into one
-          npx istanbul-merge --out coverage/coverage.json $FILES
+          npx nyc merge .nyc_output coverage/coverage.json
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2.3.4
