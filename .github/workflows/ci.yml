@@ -24,7 +24,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run bacnet:start
-      - run: npm run test
+      - run: npm run test:unit
+      - run: npm run test:integration
       - name: Coveralls
         uses: coverallsapp/github-action@v2.3.4
         if: matrix.node == '20'
