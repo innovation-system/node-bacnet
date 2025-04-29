@@ -43,14 +43,14 @@ jobs:
     with:
       npm_command: test:integration:coverage
 
-  # test_compliance:
-  #   uses: ./.github/workflows/test.yml
-  #   with:
-  #     docker: true
-  #     npm_command: docker:test
+  test_compliance:
+    uses: ./.github/workflows/test.yml
+    with:
+      docker: true
+      npm_command: docker:test
 
   collect_artifacts:
-    needs: [build, test_unit, test_integration]
+    needs: [build, test_unit, test_integration] # skip collecting artifacts from compliance for now
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

@@ -34,10 +34,9 @@ jobs:
         run: |
           docker compose up -d
 
-      - run: npm run ${{ inputs.npm_command }}
-        env:
-          CI: true
-        timeout-minutes: 3
+      - name: Run test
+        timeout-minutes: 2
+        run: npm run ${{ inputs.npm_command }}
       
       - name: Collect artifacts
         uses: actions/upload-artifact@v4
@@ -45,3 +44,4 @@ jobs:
         with:
           name: node${{ matrix.node-version }}-${{ inputs.npm_command }}
           path: .nyc_output/*
+          if-no-files-found: error
