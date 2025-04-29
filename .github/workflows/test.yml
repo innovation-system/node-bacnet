@@ -48,8 +48,6 @@ jobs:
           if [ -d ".nyc_output" ]; then
             echo "Directory .nyc_output exists."
             ls -la .nyc_output
-            # store absolute path to .nyc_output
-            echo "NYC_OUTPUT_PATH=$(pwd)/.nyc_output" >> $GITHUB_ENV
             # sanitize npm_command replacing `:` with `-`
             sanitized_npm_command=$(echo "${{ inputs.npm_command }}" | sed 's/:/-/g')
             # store to environment variable
@@ -65,6 +63,6 @@ jobs:
         if: matrix.node-version ==  20
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.NYC_OUTPUT_PATH }}
+          path: .nyc_output
           if-no-files-found: error
-          include-hidden-files: true
+          include-hidden-files: true # needed as .nyc_output is hidden

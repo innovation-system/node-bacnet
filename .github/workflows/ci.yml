@@ -63,8 +63,14 @@ jobs:
       - name: Merge coverage reports
         run: |
           mkdir -p .nyc_output
+
+          ls -la downloaded-artifacts
+
+          # print files tree in downloaded-artifacts
+          find downloaded-artifacts -type f -exec ls -la {} \;
           
-          mv downloaded-artifacts/*/.nyc_output/* .nyc_output/
+          # merge `.nyc_output` folders into one
+          find downloaded-artifacts -type d -name ".nyc_output" -exec cp -r {} .nyc_output \;
           
           # merge all coverage.json files into one
           npx nyc merge .nyc_output coverage/coverage.json
