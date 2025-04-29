@@ -40,7 +40,6 @@ jobs:
         run: npm run test:integration:coverage
     
       - name: Test compliance
-        if: matrix.node == '20'
         run: |
           NODE_IMAGE=node:${{ matrix.node }} docker compose up -d
           npm run docker:test
