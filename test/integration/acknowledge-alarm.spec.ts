@@ -6,7 +6,7 @@ import * as utils from './utils'
 test.describe('bacnet - acknowledgeAlarm integration', () => {
 	test('should return a timeout error if no device is available', (t) => {
 		return new Promise((resolve) => {
-			const client = utils.createBacnetClient({ apduTimeout: 200 })
+			const client = new utils.BacnetClient({ apduTimeout: 200 })
 			client.acknowledgeAlarm(
 				'127.0.0.2',
 				{ type: 2, instance: 3 },
