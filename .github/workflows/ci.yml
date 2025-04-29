@@ -25,12 +25,15 @@ jobs:
         run: npm ci
       - name: Lint 
         run: npm run lint
+      - name: Build
+        if: matrix.node == '22'
+        run: npm run build
       - name: Test:unit
         run: npm run test:unit
       - name: Test:integration
         run: npm run test:integration
       - name: Test:compliance
-        if : matrix.node == '20'
+        if: matrix.node == '20'
         run: npm run bacnet:start
 
       - name: Coveralls
