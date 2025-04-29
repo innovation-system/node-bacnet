@@ -53,5 +53,5 @@ jobs:
         if: matrix.node-version == '20.x'
         with:
           name: node${{ matrix.node-version }}-${{ inputs.npm_command }}
-          path: .nyc_output
+          path: .nyc_output/
           if-no-files-found: error
