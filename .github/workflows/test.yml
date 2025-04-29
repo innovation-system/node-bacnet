@@ -61,5 +61,5 @@ jobs:
         if: matrix.node-version ==  20
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.NYC_OUTPUT }}
+          path: ${{ env.NYC_OUTPUT_PATH }}
           if-no-files-found: error
