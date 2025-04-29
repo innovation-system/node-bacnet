@@ -3,3 +3,12 @@ services:
     image: fh1ch/bacstack-compliance-docker
     ports:
       - "47808:47808/udp"
+
+  bacnet-client:
+    build:
+      context: .
+    links:
+      - bacnet-device
+    volumes:
+      - ./reports/coverage:/bacnet/reports/coverage
+
