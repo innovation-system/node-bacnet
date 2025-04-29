@@ -5,7 +5,7 @@ import * as utils from './utils'
 
 // you need to have this run against the official backstack c
 // demo device started as deviceId 1234
-// use "npm run docker" to execute  this
+// use "npm run docker" to execute this
 test.describe('bacnet - read property multiple compliance', () => {
 	let bacnetClient: any
 	let discoveredAddress: any
