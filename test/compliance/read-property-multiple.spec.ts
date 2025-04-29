@@ -16,6 +16,7 @@ test.describe('bacnet - read property multiple compliance', () => {
 			bacnetClient = new utils.bacnetClient({
 				apduTimeout: utils.apduTimeout,
 				interface: utils.clientListenerInterface,
+				port: 47809,
 				reuseAddr: true,
 			})
 			bacnetClient.on('message', (msg: any, rinfo: any) => {
