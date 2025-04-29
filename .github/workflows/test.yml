@@ -15,6 +15,10 @@ on:
         default: false
 jobs:
   test:
+    permissions:
+      contents: write
+      actions: write
+
     strategy:
       fail-fast: false # prevent test to stop if one fails
       matrix:
@@ -45,7 +49,7 @@ jobs:
             echo "Directory .nyc_output exists."
             ls -la .nyc_output
             # store absolute path to .nyc_output
-            echo "NYC_OUTPUT_PATH=$(pwd)/.nyc_output" >> $GITHUB_ENV
+            echo "NYC_OUTPUT_PATH=$(pwd)/.nyc_output/**/*.json" >> $GITHUB_ENV
             # sanitize npm_command replacing `:` with `-`
             sanitized_npm_command=$(echo "${{ inputs.npm_command }}" | sed 's/:/-/g')
             # store to environment variable
