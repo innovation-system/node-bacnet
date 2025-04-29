@@ -71,7 +71,7 @@ jobs:
           done
           
           # merge all coverage.json files into one
-          npx nyc merge .nyc_output coverage/coverage.json
+          npx nyc report
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2.3.4
