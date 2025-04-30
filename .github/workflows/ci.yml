@@ -50,7 +50,7 @@ jobs:
       npm_command: docker:test
 
   collect_artifacts:
-    needs: [build, test_unit, test_integration] # skip collecting artifacts from compliance for now
+    needs: [build, test_unit, test_integration, test_compliance]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
