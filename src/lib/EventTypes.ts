@@ -8,6 +8,7 @@ import {
 	BACNetAlarm,
 	DecodeAcknowledgeSingleResult,
 	DecodeAcknowledgeMultipleResult,
+	ServiceMessage,
 } from './types'
 
 /**
@@ -17,7 +18,7 @@ export interface BACnetClientEvents {
 	// Base events
 	error: (error: Error) => void
 	listening: () => void
-	unhandledEvent: (content: BACnetMessage) => void
+	unhandledEvent: (content: ServiceMessage | BACnetMessage) => void
 
 	// Confirmed service events
 	readProperty: (content: {
@@ -70,7 +71,6 @@ export interface BACnetClientEvents {
 		payload: any
 	}) => void
 
-	// Others can be added as needed
 	[key: string]: (...args: any[]) => void
 }
 
@@ -82,27 +82,86 @@ export interface TransportEvents {
 	listening: (address: { address: string; port: number }) => void
 	error: (error: Error) => void
 	close: () => void
+
+	[key: string]: (...args: any[]) => void
 }
 
 /**
- * Type definition for a typed event emitter
+ * A type-safe wrapper around EventEmitter
  */
-export type TypedEventEmitter<
-	T extends Record<string, (...args: any[]) => any>,
-> = Omit<
-	EventEmitter,
-	'on' | 'once' | 'emit' | 'addListener' | 'off' | 'removeListener'
-> & {
-	on<K extends keyof T>(event: K, listener: T[K]): TypedEventEmitter<T>
-	once<K extends keyof T>(event: K, listener: T[K]): TypedEventEmitter<T>
-	emit<K extends keyof T>(event: K, ...args: Parameters<T[K]>): boolean
-	addListener<K extends keyof T>(
-		event: K,
-		listener: T[K],
-	): TypedEventEmitter<T>
-	off<K extends keyof T>(event: K, listener: T[K]): TypedEventEmitter<T>
-	removeListener<K extends keyof T>(
-		event: K,
-		listener: T[K],
-	): TypedEventEmitter<T>
+export class TypedEventEmitter<
+	Events extends Record<string, (...args: any[]) => any>,
+> {
+	private emitter = new EventEmitter()
+
+	on<E extends keyof Events>(event: E, listener: Events[E]): this {
+		this.emitter.on(event as string, listener as (...args: any[]) => void)
+		return this
+	}
+
+	once<E extends keyof Events>(event: E, listener: Events[E]): this {
+		this.emitter.once(event as string, listener as (...args: any[]) => void)
+		return this
+	}
+
+	emit<E extends keyof Events>(
+		event: E,
+		...args: Parameters<Events[E]>
+	): boolean {
+		return this.emitter.emit(event as string, ...args)
+	}
+
+	off<E extends keyof Events>(event: E, listener: Events[E]): this {
+		this.emitter.off(event as string, listener as (...args: any[]) => void)
+		return this
+	}
+
+	removeListener<E extends keyof Events>(
+		event: E,
+		listener: Events[E],
+	): this {
+		this.emitter.removeListener(
+			event as string,
+			listener as (...args: any[]) => void,
+		)
+		return this
+	}
+
+	addListener<E extends keyof Events>(event: E, listener: Events[E]): this {
+		this.emitter.addListener(
+			event as string,
+			listener as (...args: any[]) => void,
+		)
+		return this
+	}
+
+	removeAllListeners(event?: keyof Events): this {
+		this.emitter.removeAllListeners(event as string)
+		return this
+	}
+
+	setMaxListeners(n: number): this {
+		this.emitter.setMaxListeners(n)
+		return this
+	}
+
+	getMaxListeners(): number {
+		return this.emitter.getMaxListeners()
+	}
+
+	listeners<E extends keyof Events>(event: E): Array<Events[E]> {
+		return this.emitter.listeners(event as string) as Array<Events[E]>
+	}
+
+	rawListeners<E extends keyof Events>(event: E): Array<Events[E]> {
+		return this.emitter.rawListeners(event as string) as Array<Events[E]>
+	}
+
+	listenerCount<E extends keyof Events>(event: E): number {
+		return this.emitter.listenerCount(event as string)
+	}
+
+	eventNames(): (string | symbol)[] {
+		return this.emitter.eventNames()
+	}
 }
