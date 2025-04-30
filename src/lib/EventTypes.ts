@@ -24,6 +24,7 @@ import {
 	WhoHasPayload,
 	TimeSyncPayload,
 	IHavePayload,
+	ServiceResponse,
 } from './types'
 
 export type Constructor<T = object> = new (...args: any[]) => T
@@ -66,128 +67,38 @@ export function applyMixin(
 export interface BACnetClientEvents {
 	error: (error: Error) => void
 	listening: () => void
-	unhandledEvent: (content: ServiceMessage | BACnetMessage) => void
-	readProperty: (content: {
-		header?: BACnetMessageHeader
-		payload: DecodeAcknowledgeSingleResult
-	}) => void
-	writeProperty: (content: {
-		header?: BACnetMessageHeader
-		payload: SimpleAckPayload
-	}) => void
-	readPropertyMultiple: (content: {
-		header?: BACnetMessageHeader
-		payload: DecodeAcknowledgeMultipleResult
-	}) => void
-	writePropertyMultiple: (content: {
-		header?: BACnetMessageHeader
-		payload: SimpleAckPayload
-	}) => void
-	covNotify: (content: {
-		header?: BACnetMessageHeader
-		payload: CovNotifyPayload
-	}) => void
-	atomicWriteFile: (content: {
-		header?: BACnetMessageHeader
-		payload: AtomicFilePayload
-	}) => void
-	atomicReadFile: (content: {
-		header?: BACnetMessageHeader
-		payload: AtomicFilePayload
-	}) => void
-	subscribeCov: (content: {
-		header?: BACnetMessageHeader
-		payload: SubscribeCovPayload
-	}) => void
-	subscribeProperty: (content: {
-		header?: BACnetMessageHeader
-		payload: SubscribeCovPayload
-	}) => void
-	deviceCommunicationControl: (content: {
-		header?: BACnetMessageHeader
-		payload: DeviceCommunicationControlPayload
-	}) => void
-	reinitializeDevice: (content: {
-		header?: BACnetMessageHeader
-		payload: ReinitializeDevicePayload
-	}) => void
-	eventNotify: (content: {
-		header?: BACnetMessageHeader
-		payload: EventNotificationPayload
-	}) => void
-	readRange: (content: {
-		header?: BACnetMessageHeader
-		payload: ReadRangePayload
-	}) => void
-	createObject: (content: {
-		header?: BACnetMessageHeader
-		payload: ObjectOperationPayload
-	}) => void
-	deleteObject: (content: {
-		header?: BACnetMessageHeader
-		payload: ObjectOperationPayload
-	}) => void
-	alarmAcknowledge: (content: {
-		header?: BACnetMessageHeader
-		payload: SimpleAckPayload
-	}) => void
-	getAlarmSummary: (content: {
-		header?: BACnetMessageHeader
-		payload: BACNetAlarm[]
-	}) => void
-	getEnrollmentSummary: (content: {
-		header?: BACnetMessageHeader
-		payload: any
-	}) => void
-	getEventInformation: (content: {
-		header?: BACnetMessageHeader
-		payload: BACNetEventInformation[]
-	}) => void
-	lifeSafetyOperation: (content: {
-		header?: BACnetMessageHeader
-		payload: any
-	}) => void
-	addListElement: (content: {
-		header?: BACnetMessageHeader
-		payload: ListElementOperationPayload
-	}) => void
-	removeListElement: (content: {
-		header?: BACnetMessageHeader
-		payload: ListElementOperationPayload
-	}) => void
-	privateTransfer: (content: {
-		header?: BACnetMessageHeader
-		payload: PrivateTransferPayload
-	}) => void
-	registerForeignDevice: (content: {
-		header?: BACnetMessageHeader
-		payload: RegisterForeignDevicePayload
-	}) => void
-	iAm: (content: { header?: BACnetMessageHeader; payload: IAMResult }) => void
-	whoIs: (content: {
-		header?: BACnetMessageHeader
-		payload: WhoIsResult
-	}) => void
-	whoHas: (content: {
-		header?: BACnetMessageHeader
-		payload: WhoHasPayload
-	}) => void
-	covNotifyUnconfirmed: (content: {
-		header?: BACnetMessageHeader
-		payload: CovNotifyPayload
-	}) => void
-	timeSync: (content: {
-		header?: BACnetMessageHeader
-		payload: TimeSyncPayload
-	}) => void
-	timeSyncUTC: (content: {
-		header?: BACnetMessageHeader
-		payload: TimeSyncPayload
-	}) => void
-	iHave: (content: {
-		header?: BACnetMessageHeader
-		payload: IHavePayload
-	}) => void
+	unhandledEvent: (content: ServiceMessage) => void
+	readProperty: ServiceResponse<DecodeAcknowledgeSingleResult>
+	writeProperty: ServiceResponse<SimpleAckPayload>
+	readPropertyMultiple: ServiceResponse<DecodeAcknowledgeMultipleResult>
+	writePropertyMultiple: ServiceResponse<SimpleAckPayload>
+	covNotify: ServiceResponse<CovNotifyPayload>
+	atomicWriteFile: ServiceResponse<AtomicFilePayload>
+	atomicReadFile: ServiceResponse<AtomicFilePayload>
+	subscribeCov: ServiceResponse<SubscribeCovPayload>
+	subscribeProperty: ServiceResponse<SubscribeCovPayload>
+	deviceCommunicationControl: ServiceResponse<DeviceCommunicationControlPayload>
+	reinitializeDevice: ServiceResponse<ReinitializeDevicePayload>
+	eventNotify: ServiceResponse<EventNotificationPayload>
+	readRange: ServiceResponse<ReadRangePayload>
+	createObject: ServiceResponse<ObjectOperationPayload>
+	deleteObject: ServiceResponse<ObjectOperationPayload>
+	alarmAcknowledge: ServiceResponse<SimpleAckPayload>
+	getAlarmSummary: ServiceResponse<BACNetAlarm[]>
+	getEnrollmentSummary: ServiceResponse<any>
+	getEventInformation: ServiceResponse<BACNetEventInformation[]>
+	lifeSafetyOperation: ServiceResponse<any>
+	addListElement: ServiceResponse<ListElementOperationPayload>
+	removeListElement: ServiceResponse<ListElementOperationPayload>
+	privateTransfer: ServiceResponse<PrivateTransferPayload>
+	registerForeignDevice: ServiceResponse<RegisterForeignDevicePayload>
+	iAm: ServiceResponse<IAMResult>
+	whoIs: ServiceResponse<WhoIsResult>
+	whoHas: ServiceResponse<WhoHasPayload>
+	covNotifyUnconfirmed: ServiceResponse<CovNotifyPayload>
+	timeSync: ServiceResponse<TimeSyncPayload>
+	timeSyncUTC: ServiceResponse<TimeSyncPayload>
+	iHave: ServiceResponse<IHavePayload>
 }
 
 export type BACnetEventsMap = {

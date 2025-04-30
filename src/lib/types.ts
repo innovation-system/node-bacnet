@@ -551,3 +551,8 @@ export interface IHavePayload extends BasicServicePayload {
 export interface TimeSyncPayload extends BasicServicePayload {
 	dateTime: Date
 }
+
+export type ServiceResponse<T> = (content: {
+	header?: BACnetMessageHeader
+	payload: T
+}) => void

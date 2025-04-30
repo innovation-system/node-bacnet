@@ -536,11 +536,17 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		// Call the user code, if they've defined a callback.
 		if (this.listenerCount(name)) {
 			trace(`listener count by name emits ${name} with content`)
-			this.emit(name, content)
+			this.emit(name, {
+				header: content.header,
+				payload: content.payload,
+			})
 		} else {
 			if (this.listenerCount('unhandledEvent')) {
 				trace('unhandled event emiting with content')
-				this.emit('unhandledEvent', content)
+				this.emit(name, {
+					header: content.header,
+					payload: content.payload,
+				})
 			} else {
 				// No 'unhandled event' handler, so respond with an error ourselves.
 				// This is better than doing nothing, which can often make the other
