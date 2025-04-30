@@ -1,8 +1,9 @@
 # Node Bacnet
 
+[![CI](https://github.com/innovation-system/node-bacnet/actions/workflows/ci.yml/badge.svg)](https://github.com/innovation-system/node-bacnet/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@innovation-system/node-bacnet.svg)](https://www.npmjs.com/package/@innovation-system/node-bacnet)
 [![npm](https://img.shields.io/npm/dt/@innovation-system/node-bacnet.svg)](https://www.npmjs.com/package/@innovation-system/node-bacnet)
-![GitHub issues](https://img.shields.io/github/issues/innovation-system/node-bacnet.svg)
+[![Coverage Status](https://coveralls.io/repos/github/innovation-system/node-bacnet/badge.svg?branch=master)](https://coveralls.io/github/innovation-system/node-bacnet?branch=master)
 
 A BACnet® protocol stack written in pure TypeScript from contributors and maintained by [Innovation-System](https://www.innovation-system.it/).
 BACnet® is a protocol to interact with building automation devices defined by ASHRAE.
