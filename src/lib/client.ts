@@ -1,5 +1,6 @@
 // Util Modules
 import { EventEmitter } from 'events'
+import { BACnetClientEvents, TypedEventEmitter } from './EventTypes'
 import debugLib from 'debug'
 
 // Local Modules
@@ -121,7 +122,7 @@ const confirmedServiceMap = {
  *   apduTimeout: 6000                     // Wait twice as long for response
  * });
  */
-export default class Client extends EventEmitter {
+export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 	private _settings: ClientOptions
 
 	private _transport: Transport
