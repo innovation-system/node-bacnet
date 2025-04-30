@@ -101,7 +101,7 @@
     "@tsconfig/node20": "^20.1.5",
     "@types/debug": "^4.1.7",
     "@types/node": "^20.12.7",
-    "@typescript-eslint/eslint-plugin": "^8.31.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.0",
     "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.2",
