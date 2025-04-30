@@ -9,25 +9,71 @@ import {
 	DecodeAcknowledgeSingleResult,
 	DecodeAcknowledgeMultipleResult,
 	ServiceMessage,
+	SimpleAckPayload,
+	CovNotifyPayload,
+	AtomicFilePayload,
+	SubscribeCovPayload,
+	DeviceCommunicationControlPayload,
+	ReinitializeDevicePayload,
+	EventNotificationPayload,
+	ReadRangePayload,
+	ObjectOperationPayload,
+	ListElementOperationPayload,
+	PrivateTransferPayload,
+	RegisterForeignDevicePayload,
+	WhoHasPayload,
+	TimeSyncPayload,
+	IHavePayload,
 } from './types'
+
+export type Constructor<T = object> = new (...args: any[]) => T
+
+export function applyMixin(
+	target: Constructor,
+	mixin: Constructor,
+	includeConstructor = false,
+): void {
+	// Figure out the inheritance chain of the mixin
+	const inheritanceChain: Constructor[] = [mixin]
+
+	while (true) {
+		const current = inheritanceChain[0]
+		const base = Object.getPrototypeOf(current)
+		if (base?.prototype) {
+			inheritanceChain.unshift(base)
+		} else {
+			break
+		}
+	}
+	for (const ctor of inheritanceChain) {
+		for (const prop of Object.getOwnPropertyNames(ctor.prototype)) {
+			// Do not override the constructor
+			if (includeConstructor || prop !== 'constructor') {
+				Object.defineProperty(
+					target.prototype,
+					prop,
+					Object.getOwnPropertyDescriptor(ctor.prototype, prop) ??
+						Object.create(null),
+				)
+			}
+		}
+	}
+}
 
 /**
  * Event types for BACnet client
  */
 export interface BACnetClientEvents {
-	// Base events
 	error: (error: Error) => void
 	listening: () => void
 	unhandledEvent: (content: ServiceMessage | BACnetMessage) => void
-
-	// Confirmed service events
 	readProperty: (content: {
 		header?: BACnetMessageHeader
 		payload: DecodeAcknowledgeSingleResult
 	}) => void
 	writeProperty: (content: {
 		header?: BACnetMessageHeader
-		payload: null
+		payload: SimpleAckPayload
 	}) => void
 	readPropertyMultiple: (content: {
 		header?: BACnetMessageHeader
@@ -35,43 +81,117 @@ export interface BACnetClientEvents {
 	}) => void
 	writePropertyMultiple: (content: {
 		header?: BACnetMessageHeader
-		payload: null
+		payload: SimpleAckPayload
+	}) => void
+	covNotify: (content: {
+		header?: BACnetMessageHeader
+		payload: CovNotifyPayload
+	}) => void
+	atomicWriteFile: (content: {
+		header?: BACnetMessageHeader
+		payload: AtomicFilePayload
+	}) => void
+	atomicReadFile: (content: {
+		header?: BACnetMessageHeader
+		payload: AtomicFilePayload
+	}) => void
+	subscribeCov: (content: {
+		header?: BACnetMessageHeader
+		payload: SubscribeCovPayload
+	}) => void
+	subscribeProperty: (content: {
+		header?: BACnetMessageHeader
+		payload: SubscribeCovPayload
+	}) => void
+	deviceCommunicationControl: (content: {
+		header?: BACnetMessageHeader
+		payload: DeviceCommunicationControlPayload
+	}) => void
+	reinitializeDevice: (content: {
+		header?: BACnetMessageHeader
+		payload: ReinitializeDevicePayload
+	}) => void
+	eventNotify: (content: {
+		header?: BACnetMessageHeader
+		payload: EventNotificationPayload
+	}) => void
+	readRange: (content: {
+		header?: BACnetMessageHeader
+		payload: ReadRangePayload
+	}) => void
+	createObject: (content: {
+		header?: BACnetMessageHeader
+		payload: ObjectOperationPayload
+	}) => void
+	deleteObject: (content: {
+		header?: BACnetMessageHeader
+		payload: ObjectOperationPayload
+	}) => void
+	alarmAcknowledge: (content: {
+		header?: BACnetMessageHeader
+		payload: SimpleAckPayload
 	}) => void
 	getAlarmSummary: (content: {
 		header?: BACnetMessageHeader
 		payload: BACNetAlarm[]
 	}) => void
+	getEnrollmentSummary: (content: {
+		header?: BACnetMessageHeader
+		payload: any
+	}) => void
 	getEventInformation: (content: {
 		header?: BACnetMessageHeader
 		payload: BACNetEventInformation[]
 	}) => void
-
-	// Unconfirmed service events
+	lifeSafetyOperation: (content: {
+		header?: BACnetMessageHeader
+		payload: any
+	}) => void
+	addListElement: (content: {
+		header?: BACnetMessageHeader
+		payload: ListElementOperationPayload
+	}) => void
+	removeListElement: (content: {
+		header?: BACnetMessageHeader
+		payload: ListElementOperationPayload
+	}) => void
+	privateTransfer: (content: {
+		header?: BACnetMessageHeader
+		payload: PrivateTransferPayload
+	}) => void
+	registerForeignDevice: (content: {
+		header?: BACnetMessageHeader
+		payload: RegisterForeignDevicePayload
+	}) => void
 	iAm: (content: { header?: BACnetMessageHeader; payload: IAMResult }) => void
 	whoIs: (content: {
 		header?: BACnetMessageHeader
 		payload: WhoIsResult
 	}) => void
-	iHave: (content: { header?: BACnetMessageHeader; payload: any }) => void
+	whoHas: (content: {
+		header?: BACnetMessageHeader
+		payload: WhoHasPayload
+	}) => void
 	covNotifyUnconfirmed: (content: {
 		header?: BACnetMessageHeader
-		payload: any
+		payload: CovNotifyPayload
 	}) => void
-	timeSync: (content: { header?: BACnetMessageHeader; payload: any }) => void
+	timeSync: (content: {
+		header?: BACnetMessageHeader
+		payload: TimeSyncPayload
+	}) => void
 	timeSyncUTC: (content: {
 		header?: BACnetMessageHeader
-		payload: any
+		payload: TimeSyncPayload
 	}) => void
-	eventNotify: (content: {
+	iHave: (content: {
 		header?: BACnetMessageHeader
-		payload: any
+		payload: IHavePayload
 	}) => void
-	privateTransfer: (content: {
-		header?: BACnetMessageHeader
-		payload: any
-	}) => void
+}
 
-	[key: string]: (...args: any[]) => void
+export type BACnetEventsMap = {
+	[key: number]: keyof BACnetClientEvents
 }
 
 /**
@@ -82,86 +202,73 @@ export interface TransportEvents {
 	listening: (address: { address: string; port: number }) => void
 	error: (error: Error) => void
 	close: () => void
-
-	[key: string]: (...args: any[]) => void
 }
 
-/**
- * A type-safe wrapper around EventEmitter
- */
-export class TypedEventEmitter<
-	Events extends Record<string, (...args: any[]) => any>,
+export type EventHandler =
+	// Add more overloads as necessary
+	| ((arg1: any, arg2: any, arg3: any, arg4: any) => void)
+	| ((arg1: any, arg2: any, arg3: any) => void)
+	| ((arg1: any, arg2: any) => void)
+	| ((arg1: any) => void)
+	| ((...args: any[]) => void)
+
+export type THandler<TEvents> = Record<keyof TEvents, EventHandler>
+
+export interface TypedEventEmitter<
+	TEvents extends Record<keyof TEvents, EventHandler>,
 > {
-	private emitter = new EventEmitter()
+	on<TEvent extends keyof TEvents>(
+		event: TEvent,
+		callback: TEvents[TEvent],
+	): this
+	once<TEvent extends keyof TEvents>(
+		event: TEvent,
+		callback: TEvents[TEvent],
+	): this
+	prependListener<TEvent extends keyof TEvents>(
+		event: TEvent,
+		callback: TEvents[TEvent],
+	): this
+	prependOnceListener<TEvent extends keyof TEvents>(
+		event: TEvent,
+		callback: TEvents[TEvent],
+	): this
 
-	on<E extends keyof Events>(event: E, listener: Events[E]): this {
-		this.emitter.on(event as string, listener as (...args: any[]) => void)
-		return this
-	}
+	removeListener<TEvent extends keyof TEvents>(
+		event: TEvent,
+		callback: TEvents[TEvent],
+	): this
+	off<TEvent extends keyof TEvents>(
+		event: TEvent,
+		callback: TEvents[TEvent],
+	): this
 
-	once<E extends keyof Events>(event: E, listener: Events[E]): this {
-		this.emitter.once(event as string, listener as (...args: any[]) => void)
-		return this
-	}
+	removeAllListeners(event?: keyof TEvents): this
 
-	emit<E extends keyof Events>(
-		event: E,
-		...args: Parameters<Events[E]>
-	): boolean {
-		return this.emitter.emit(event as string, ...args)
-	}
+	emit<TEvent extends keyof TEvents>(
+		event: TEvent,
+		...args: Parameters<TEvents[TEvent]>
+	): boolean
 
-	off<E extends keyof Events>(event: E, listener: Events[E]): this {
-		this.emitter.off(event as string, listener as (...args: any[]) => void)
-		return this
-	}
+	setMaxListeners(n: number): this
+	getMaxListeners(): number
 
-	removeListener<E extends keyof Events>(
-		event: E,
-		listener: Events[E],
-	): this {
-		this.emitter.removeListener(
-			event as string,
-			listener as (...args: any[]) => void,
-		)
-		return this
-	}
+	listeners<TEvent extends keyof TEvents>(
+		eventName: TEvent,
+	): TEvents[TEvent][]
+	rawListeners<TEvent extends keyof TEvents>(
+		eventName: TEvent,
+	): TEvents[TEvent][]
+	listenerCount<TEvent extends keyof TEvents>(
+		event: TEvent,
+		listener?: TEvents[TEvent],
+	): number
 
-	addListener<E extends keyof Events>(event: E, listener: Events[E]): this {
-		this.emitter.addListener(
-			event as string,
-			listener as (...args: any[]) => void,
-		)
-		return this
-	}
-
-	removeAllListeners(event?: keyof Events): this {
-		this.emitter.removeAllListeners(event as string)
-		return this
-	}
-
-	setMaxListeners(n: number): this {
-		this.emitter.setMaxListeners(n)
-		return this
-	}
-
-	getMaxListeners(): number {
-		return this.emitter.getMaxListeners()
-	}
-
-	listeners<E extends keyof Events>(event: E): Array<Events[E]> {
-		return this.emitter.listeners(event as string) as Array<Events[E]>
-	}
-
-	rawListeners<E extends keyof Events>(event: E): Array<Events[E]> {
-		return this.emitter.rawListeners(event as string) as Array<Events[E]>
-	}
-
-	listenerCount<E extends keyof Events>(event: E): number {
-		return this.emitter.listenerCount(event as string)
-	}
-
-	eventNames(): (string | symbol)[] {
-		return this.emitter.eventNames()
-	}
+	eventNames(): Array<keyof TEvents>
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export class TypedEventEmitter<TEvents extends THandler<TEvents>> {}
+
+// Make TypedEventEmitter inherit from EventEmitter without actually extending
+applyMixin(TypedEventEmitter, EventEmitter)

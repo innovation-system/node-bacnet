@@ -440,3 +440,114 @@ export type BACnetMessage =
 	| SegmentAckMessage
 	| BACnetErrorMessage
 	| AbortMessage
+
+export interface BasicServicePayload {
+	header?: BACnetMessageHeader
+}
+
+export interface SimpleAckPayload extends BasicServicePayload {
+	success: boolean
+}
+
+export interface CovNotifyPayload extends BasicServicePayload {
+	subscriberProcessId: number
+	initiatingDeviceId: number
+	monitoredObjectId: BACNetObjectID
+	timeRemaining: number
+	values: Array<{
+		property: PropertyReference
+		value: BACNetAppData[]
+	}>
+}
+
+export interface AtomicFilePayload extends BasicServicePayload {
+	fileStartPosition: number
+	fileData?: Buffer | number[][]
+	endOfFile?: boolean
+	fileSize?: number
+}
+
+export interface SubscribeCovPayload extends BasicServicePayload {
+	subscriberProcessId: number
+	monitoredObjectId: BACNetObjectID
+	issueConfirmedNotifications: boolean
+	lifetime: number
+}
+
+export interface DeviceCommunicationControlPayload extends BasicServicePayload {
+	timeDuration: number
+	enable: boolean
+	password?: string
+}
+
+export interface ReinitializeDevicePayload extends BasicServicePayload {
+	reinitializedStateOfDevice: number
+	password?: string
+}
+
+export interface EventNotificationPayload extends BasicServicePayload {
+	processIdentifier: number
+	initiatingDeviceIdentifier: BACNetObjectID
+	eventObjectIdentifier: BACNetObjectID
+	timeStamp: BACNetTimestamp
+	notificationClass: number
+	priority: number
+	eventType: number
+	messageText?: string
+	notifyType: number
+	ackRequired: boolean
+	fromState: number
+	toState: number
+	eventValues: BACNetAppData[]
+}
+
+export interface ReadRangePayload extends BasicServicePayload {
+	objectId: BACNetObjectID
+	propertyId: number
+	position: number
+	count: number
+	values: BACNetAppData[]
+}
+
+export interface ObjectOperationPayload extends BasicServicePayload {
+	objectId: BACNetObjectID
+	propertyValues?: Array<{
+		property: PropertyReference
+		value: BACNetAppData[]
+		priority?: number
+	}>
+}
+
+export interface ListElementOperationPayload extends BasicServicePayload {
+	objectId: BACNetObjectID
+	propertyId: number
+	arrayIndex: number
+	listOfElements: BACNetAppData[]
+}
+
+export interface PrivateTransferPayload extends BasicServicePayload {
+	vendorId: number
+	serviceNumber: number
+	data: any
+}
+
+export interface RegisterForeignDevicePayload extends BasicServicePayload {
+	ttl: number
+}
+
+export interface WhoHasPayload extends BasicServicePayload {
+	lowLimit?: number
+	highLimit?: number
+	objectId?: BACNetObjectID
+	objectName?: string
+}
+
+export interface IHavePayload extends BasicServicePayload {
+	deviceId: BACNetObjectID
+	objectId: BACNetObjectID
+	objectName: string
+}
+
+export interface TimeSyncPayload extends BasicServicePayload {
+	dateTime: Date
+}

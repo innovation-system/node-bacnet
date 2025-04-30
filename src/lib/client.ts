@@ -1,6 +1,10 @@
 // Util Modules
 import { EventEmitter } from 'events'
-import { BACnetClientEvents, TypedEventEmitter } from './EventTypes'
+import {
+	BACnetClientEvents,
+	BACnetEventsMap,
+	TypedEventEmitter,
+} from './EventTypes'
 import debugLib from 'debug'
 
 // Local Modules
@@ -66,7 +70,7 @@ const BVLC_HEADER_LENGTH = 4
 const BVLC_FWD_HEADER_LENGTH = 10 // FORWARDED_NPDU
 
 const beU = baEnum.UnconfirmedServiceChoice
-const unconfirmedServiceMap = {
+const unconfirmedServiceMap: BACnetEventsMap = {
 	[beU.I_AM]: 'iAm',
 	[beU.WHO_IS]: 'whoIs',
 	[beU.WHO_HAS]: 'whoHas',
@@ -78,7 +82,7 @@ const unconfirmedServiceMap = {
 	[beU.UNCONFIRMED_PRIVATE_TRANSFER]: 'privateTransfer',
 }
 const beC = baEnum.ConfirmedServiceChoice
-const confirmedServiceMap = {
+const confirmedServiceMap: BACnetEventsMap = {
 	[beC.READ_PROPERTY]: 'readProperty',
 	[beC.WRITE_PROPERTY]: 'writeProperty',
 	[beC.READ_PROPERTY_MULTIPLE]: 'readPropertyMultiple',
@@ -476,7 +480,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 	 * @private
 	 */
 	private _processServiceRequest(
-		serviceMap: Record<number, string>,
+		serviceMap: Record<number, keyof BACnetClientEvents>,
 		content: ServiceMessage,
 		buffer: Buffer,
 		offset: number,
