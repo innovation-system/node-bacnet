@@ -33,6 +33,7 @@ jobs:
         if: ${{ inputs.docker }}
         run: |
           docker compose up -d
+          sleep 5 # wait for the containers to be up
 
       - name: Run test
         timeout-minutes: 2
