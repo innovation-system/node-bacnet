@@ -14,7 +14,7 @@ export const bacnetClient = Client
 
 // Test configuration values
 export const deviceUnderTest = 1234
-export const maxApdu = 1476
+export const maxApdu = 1482
 export const vendorId = 260
 export const index = 4294967295
 export const apduTimeout = 3000
