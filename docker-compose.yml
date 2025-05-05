@@ -1,15 +1,22 @@
 services:
   bacnet-device:
-    image: fh1ch/bacstack-compliance-docker
+    image: ${NODE_IMAGE:-node:20}
+    working_dir: /bacnet
+    volumes:
+      - .:/bacnet
     ports:
       - "47808:47808/udp"
+    network_mode: "host"
+    environment:
+      - DEBUG=bacstack*
+    command: |
+      bash -c "npx ts-node emulator/bacnet-device-emulator.ts"
 
   bacnet-client:
     image: ${NODE_IMAGE:-node:20}
     working_dir: /bacnet
-  #  user: node
+    network_mode: "host"
     volumes:
       - .:/bacnet
     command: |
       bash -c "tail -f /dev/null"
-
