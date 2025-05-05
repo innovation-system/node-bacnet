@@ -1,6 +1,8 @@
 import Client from '../src/lib/client'
 import * as baEnum from '../src/lib/enum'
 import debugLib from 'debug'
+import * as baNpdu from '../src/lib/npdu'
+import * as baApdu from '../src/lib/apdu'
 
 const debug = debugLib('bacstack-device')
 
@@ -11,8 +13,9 @@ interface DataStore {
 }
 
 const settings = {
-	deviceId: 443,
-	vendorId: 7,
+	deviceId: 1234,
+	vendorId: 260,
+	maxApdu: 1482,
 }
 
 const client = new Client()
@@ -20,20 +23,49 @@ const client = new Client()
 const dataStore: DataStore = {
 	'1:0': {
 		75: [{ value: { type: 1, instance: 0 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
-		77: [{ value: 'Analog Output 1', type: 7 }], // PROP_OBJECT_NAME
+		77: [{ value: 'Analog Output 0', type: 7 }], // PROP_OBJECT_NAME
 		79: [{ value: 1, type: 9 }], // PROP_OBJECT_TYPE
 		85: [{ value: 5, type: 4 }], // PROP_PRESENT_VALUE
 	},
-	'8:443': {
-		75: [{ value: { type: 8, instance: 443 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
-		76: [
-			{ value: { type: 8, instance: 443 }, type: 12 },
-			{ value: { type: 1, instance: 0 }, type: 12 },
-		], // PROP_OBJECT_LIST
-		77: [{ value: 'my-device-443', type: 7 }], // PROP_OBJECT_NAME
-		79: [{ value: 8, type: 9 }], // PROP_OBJECT_TYPE
-		28: [{ value: 'Test Device #443', type: 7 }], // PROP_DESCRIPTION
+	'1:2': {
+		75: [{ value: { type: 1, instance: 2 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
+		77: [{ value: 'ANALOG OUTPUT 2', type: 7 }], // PROP_OBJECT_NAME
+		79: [{ value: 1, type: 9 }], // PROP_OBJECT_TYPE
+		85: [{ value: 0, type: 9 }], // PROP_PRESENT_VALUE
 	},
+	'5:2': {
+		75: [{ value: { type: 5, instance: 2 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
+		77: [{ value: 'Binary Value 2', type: 7 }], // PROP_OBJECT_NAME
+		79: [{ value: 5, type: 9 }], // PROP_OBJECT_TYPE
+		85: [{ value: 0, type: 1 }], // PROP_PRESENT_VALUE
+	},
+	'8:1234': {
+		75: [{ value: { type: 8, instance: 1234 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
+		76: [
+			{ value: { type: 8, instance: 1234 }, type: 12 },
+			{ value: { type: 1, instance: 0 }, type: 12 },
+			{ value: { type: 1, instance: 2 }, type: 12 },
+			{ value: { type: 5, instance: 2 }, type: 12 },
+		], // PROP_OBJECT_LIST
+		77: [{ value: 'my-device-1234', type: 7 }], // PROP_OBJECT_NAME
+		79: [{ value: 8, type: 9 }], // PROP_OBJECT_TYPE
+		28: [{ value: 'Test Device #1234', type: 7 }], // PROP_DESCRIPTION
+		121: [{ value: 'Anthropic Claude', type: 7 }], // PROP_VENDOR_NAME
+	},
+}
+
+function normalizeSender(sender: any): any {
+	if (!sender) {
+		debug(`Received broadcast request, using default broadcast address`)
+		return { address: '255.255.255.255', forwardedFrom: null }
+	}
+
+	if (typeof sender === 'string') {
+		debug(`Preserving original string address: ${sender}`)
+		return { address: sender, forwardedFrom: null }
+	}
+
+	return sender
 }
 
 client.on('whoIs', (data: any) => {
@@ -44,12 +76,18 @@ client.on('whoIs', (data: any) => {
 		if (payload.lowLimit && payload.lowLimit > settings.deviceId) return
 		if (payload.highLimit && payload.highLimit < settings.deviceId) return
 
+		const sender = normalizeSender(data.header?.sender)
+		debug(
+			`Sending iAmResponse to ${sender.address || 'broadcast'} with maxApdu=${settings.maxApdu}`,
+		)
+
 		client.iAmResponse(
-			data.header?.sender || null,
+			sender,
 			settings.deviceId,
-			baEnum.Segmentation.SEGMENTED_BOTH,
+			baEnum.Segmentation.NO_SEGMENTATION,
 			settings.vendorId,
 		)
+		debug(`iAmResponse sent successfully`)
 	} catch (error) {
 		debug('Error handling whoIs request', error)
 	}
@@ -60,7 +98,19 @@ client.on('readProperty', (data: any) => {
 	try {
 		const payload = data.payload || {}
 		const sender = data.header?.sender
-		const invokeId = data.invokeId || payload.invokeId
+
+		let invokeId: number = 0
+		if (data.invokeId !== undefined) {
+			invokeId = data.invokeId
+			debug(`Using invokeId ${invokeId} from data.invokeId`)
+		} else if (payload.invokeId !== undefined) {
+			invokeId = payload.invokeId
+			debug(`Using invokeId ${invokeId} from payload.invokeId`)
+		} else if (data.header?.apduType === 0 || data.header?.apduType === 2) {
+			invokeId = payload.len - 3
+			debug(`Calculated invokeId ${invokeId} from payload length`)
+		}
+
 		const objectId = payload.objectId
 		const property = payload.property
 
@@ -78,29 +128,36 @@ client.on('readProperty', (data: any) => {
 		const object = dataStore[objectKey]
 
 		if (!object) {
-			debug('Object not found', objectKey)
-			return client.errorResponse(
+			debug(`Object not found ${objectKey}, sending error response`)
+			client.errorResponse(
 				sender,
 				baEnum.ConfirmedServiceChoice.READ_PROPERTY,
 				invokeId,
 				baEnum.ErrorClass.OBJECT,
 				baEnum.ErrorCode.UNKNOWN_OBJECT,
 			)
+			debug(`Error response sent for unknown object`)
+			return
 		}
 
 		const propertyValue = object[property.id]
 		if (!propertyValue) {
-			debug('Property not found', property.id)
-			return client.errorResponse(
+			debug(`Property not found ${property.id}, sending error response`)
+			client.errorResponse(
 				sender,
 				baEnum.ConfirmedServiceChoice.READ_PROPERTY,
 				invokeId,
 				baEnum.ErrorClass.PROPERTY,
 				baEnum.ErrorCode.UNKNOWN_PROPERTY,
 			)
+			debug(`Error response sent for unknown property`)
+			return
 		}
 
 		if (property.index === 0xffffffff) {
+			debug(
+				`Sending readPropertyResponse to ${typeof sender === 'string' ? sender : sender.address} for ${objectKey}:${property.id} with invokeId ${invokeId}`,
+			)
 			client.readPropertyResponse(
 				sender,
 				invokeId,
@@ -108,22 +165,31 @@ client.on('readProperty', (data: any) => {
 				property,
 				propertyValue,
 			)
+			debug(`readPropertyResponse sent successfully`)
 		} else {
 			const slot = propertyValue[property.index]
 			if (!slot) {
-				debug('Property index not found', property.index)
-				return client.errorResponse(
+				debug(
+					`Property index not found ${property.index}, sending error response`,
+				)
+				client.errorResponse(
 					sender,
 					baEnum.ConfirmedServiceChoice.READ_PROPERTY,
 					invokeId,
 					baEnum.ErrorClass.PROPERTY,
 					baEnum.ErrorCode.INVALID_ARRAY_INDEX,
 				)
+				debug(`Error response sent for invalid index`)
+				return
 			}
 
+			debug(
+				`Sending readPropertyResponse (with index) to ${typeof sender === 'string' ? sender : sender.address} for ${objectKey}:${property.id}[${property.index}] with invokeId ${invokeId}`,
+			)
 			client.readPropertyResponse(sender, invokeId, objectId, property, [
 				slot,
 			])
+			debug(`readPropertyResponse (with index) sent successfully`)
 		}
 	} catch (error) {
 		debug('Error handling readProperty request', error)
@@ -135,9 +201,21 @@ client.on('writeProperty', (data: any) => {
 	try {
 		const payload = data.payload || {}
 		const sender = data.header?.sender
-		const invokeId = data.invokeId || payload.invokeId
+
+		let invokeId: number = 0
+		if (data.invokeId !== undefined) {
+			invokeId = data.invokeId
+			debug(`Using invokeId ${invokeId} from data.invokeId`)
+		} else if (payload.invokeId !== undefined) {
+			invokeId = payload.invokeId
+			debug(`Using invokeId ${invokeId} from payload.invokeId`)
+		} else if (data.header?.apduType === 0) {
+			invokeId = payload.len - 3
+			debug(`Calculated invokeId ${invokeId} from payload length`)
+		}
+
 		const objectId = payload.objectId
-		const property = payload.property
+		const property = payload.property || payload.value?.property
 		const value = payload.value
 
 		if (
@@ -161,55 +239,74 @@ client.on('writeProperty', (data: any) => {
 		const object = dataStore[objectKey]
 
 		if (!object) {
-			debug('Object not found', objectKey)
-			return client.errorResponse(
+			debug(`Object not found ${objectKey}, sending error response`)
+			client.errorResponse(
 				sender,
 				baEnum.ConfirmedServiceChoice.WRITE_PROPERTY,
 				invokeId,
 				baEnum.ErrorClass.OBJECT,
 				baEnum.ErrorCode.UNKNOWN_OBJECT,
 			)
+			debug(`Error response sent for unknown object`)
+			return
 		}
 
-		const propertyValue = object[property.id]
+		const propertyId = property.id
+		const propertyValue = object[propertyId]
 		if (!propertyValue) {
-			debug('Property not found', property.id)
-			return client.errorResponse(
+			debug(`Property not found ${propertyId}, sending error response`)
+			client.errorResponse(
 				sender,
 				baEnum.ConfirmedServiceChoice.WRITE_PROPERTY,
 				invokeId,
 				baEnum.ErrorClass.PROPERTY,
 				baEnum.ErrorCode.UNKNOWN_PROPERTY,
 			)
+			debug(`Error response sent for unknown property`)
+			return
 		}
 
 		if (property.index === 0xffffffff) {
-			object[property.id] = value
+			object[propertyId] = Array.isArray(value.value)
+				? value.value
+				: [value.value]
+			debug(
+				`Sending simpleAckResponse to ${typeof sender === 'string' ? sender : sender.address} for ${objectKey}:${propertyId} with invokeId ${invokeId}`,
+			)
 			client.simpleAckResponse(
 				sender,
 				baEnum.ConfirmedServiceChoice.WRITE_PROPERTY,
 				invokeId,
 			)
+			debug(`simpleAckResponse sent successfully`)
 		} else {
 			if (!propertyValue[property.index]) {
-				debug('Property index not found', property.index)
-				return client.errorResponse(
+				debug(
+					`Property index not found ${property.index}, sending error response`,
+				)
+				client.errorResponse(
 					sender,
 					baEnum.ConfirmedServiceChoice.WRITE_PROPERTY,
 					invokeId,
 					baEnum.ErrorClass.PROPERTY,
 					baEnum.ErrorCode.INVALID_ARRAY_INDEX,
 				)
+				debug(`Error response sent for invalid index`)
+				return
 			}
 
 			propertyValue[property.index] = Array.isArray(value)
 				? value[0]
 				: value
+			debug(
+				`Sending simpleAckResponse (with index) to ${typeof sender === 'string' ? sender : sender.address} for ${objectKey}:${propertyId}[${property.index}] with invokeId ${invokeId}`,
+			)
 			client.simpleAckResponse(
 				sender,
 				baEnum.ConfirmedServiceChoice.WRITE_PROPERTY,
 				invokeId,
 			)
+			debug(`simpleAckResponse (with index) sent successfully`)
 		}
 	} catch (error) {
 		debug('Error handling writeProperty request', error)
@@ -234,6 +331,7 @@ client.on('whoHas', (data: any) => {
 				return
 			}
 
+			debug(`Sending iHaveResponse to ${sender?.address || 'broadcast'}`)
 			client.iHaveResponse(
 				sender || null,
 				{ type: 8, instance: settings.deviceId },
@@ -243,16 +341,21 @@ client.on('whoHas', (data: any) => {
 				},
 				object[77][0].value,
 			)
+			debug(`iHaveResponse sent successfully`)
 		}
 
 		if (payload.objectName) {
 			// TODO: Implement search by object name
+			debug(
+				`Sending iHaveResponse for object name to ${sender?.address || 'broadcast'}`,
+			)
 			client.iHaveResponse(
 				sender || null,
 				{ type: 8, instance: settings.deviceId },
 				{ type: 1, instance: 1 },
 				'test',
 			)
+			debug(`iHaveResponse for object name sent successfully`)
 		}
 	} catch (error) {
 		debug('Error handling whoHas request', error)
@@ -274,7 +377,19 @@ client.on('readPropertyMultiple', (data: any) => {
 	try {
 		const payload = data.payload || {}
 		const sender = data.header?.sender
-		const invokeId = data.invokeId || payload.invokeId
+
+		let invokeId: number = 0
+		if (data.invokeId !== undefined) {
+			invokeId = data.invokeId
+			debug(`Using invokeId ${invokeId} from data.invokeId`)
+		} else if (payload.invokeId !== undefined) {
+			invokeId = payload.invokeId
+			debug(`Using invokeId ${invokeId} from payload.invokeId`)
+		} else if (data.header?.apduType === 0 || data.header?.apduType === 2) {
+			invokeId = payload.len - 3
+			debug(`Calculated invokeId ${invokeId} from payload length`)
+		}
+
 		const properties = payload.properties
 
 		if (!sender || invokeId === undefined || !Array.isArray(properties)) {
@@ -361,31 +476,220 @@ client.on('readPropertyMultiple', (data: any) => {
 				})
 			}
 
-			responseList.push({
-				objectId: {
-					type: property.objectId.type,
-					instance: property.objectId.instance,
-				},
-				values: propList,
-			})
+			if (propList.length > 0) {
+				responseList.push({
+					objectId: {
+						type: property.objectId.type,
+						instance: property.objectId.instance,
+					},
+					values: propList,
+				})
+			}
 		}
 
-		client.readPropertyMultipleResponse(
-			sender.address,
-			invokeId,
-			responseList,
+		if (responseList.length === 0) {
+			debug(
+				`No objects found in readPropertyMultiple, sending error response`,
+			)
+			client.errorResponse(
+				sender,
+				baEnum.ConfirmedServiceChoice.READ_PROPERTY_MULTIPLE,
+				invokeId,
+				baEnum.ErrorClass.OBJECT,
+				baEnum.ErrorCode.UNKNOWN_OBJECT,
+			)
+			debug(`Error response sent for no objects found`)
+			return
+		}
+
+		debug(
+			`Sending readPropertyMultipleResponse to ${typeof sender === 'string' ? sender : sender.address} with invokeId ${invokeId} and ${responseList.length} objects`,
 		)
+		client.readPropertyMultipleResponse(sender, invokeId, responseList)
+		debug(`readPropertyMultipleResponse sent successfully`)
 	} catch (error) {
 		debug('Error handling readPropertyMultiple request', error)
 	}
 })
 
+client.on('writePropertyMultiple', (data: any) => {
+	debug('writePropertyMultiple request', data)
+	try {
+		const payload = data.payload || {}
+		const sender = data.header?.sender
+
+		let invokeId: number = 0
+		if (data.invokeId !== undefined) {
+			invokeId = data.invokeId
+			debug(`Using invokeId ${invokeId} from data.invokeId`)
+		} else if (payload.invokeId !== undefined) {
+			invokeId = payload.invokeId
+			debug(`Using invokeId ${invokeId} from payload.invokeId`)
+		} else if (data.header?.apduType === 0) {
+			invokeId = payload.len - 3
+			debug(`Calculated invokeId ${invokeId} from payload length`)
+		}
+
+		const objectId = payload.objectId
+		const values = payload.values
+
+		if (!sender || invokeId === undefined || !objectId || !values) {
+			debug('Missing required properties', {
+				sender,
+				invokeId,
+				objectId,
+				values,
+			})
+			return
+		}
+
+		const objectKey = `${objectId.type}:${objectId.instance}`
+		const object = dataStore[objectKey]
+
+		if (!object) {
+			debug(`Object not found ${objectKey}, sending error response`)
+			client.errorResponse(
+				sender,
+				baEnum.ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
+				invokeId,
+				baEnum.ErrorClass.OBJECT,
+				baEnum.ErrorCode.UNKNOWN_OBJECT,
+			)
+			debug(`Error response sent for unknown object`)
+			return
+		}
+
+		for (const item of values) {
+			if (!item.property || item.property.id === undefined) {
+				continue
+			}
+
+			const propertyId = item.property.id
+			const propertyValue = object[propertyId]
+
+			if (!propertyValue) {
+				debug(
+					`Property not found ${propertyId}, sending error response`,
+				)
+				client.errorResponse(
+					sender,
+					baEnum.ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
+					invokeId,
+					baEnum.ErrorClass.PROPERTY,
+					baEnum.ErrorCode.UNKNOWN_PROPERTY,
+				)
+				debug(`Error response sent for unknown property`)
+				return
+			}
+
+			if (item.property.index === 0xffffffff) {
+				object[propertyId] = item.value
+			} else {
+				if (!propertyValue[item.property.index]) {
+					debug(
+						`Property index not found ${item.property.index}, sending error response`,
+					)
+					client.errorResponse(
+						sender,
+						baEnum.ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
+						invokeId,
+						baEnum.ErrorClass.PROPERTY,
+						baEnum.ErrorCode.INVALID_ARRAY_INDEX,
+					)
+					debug(`Error response sent for invalid index`)
+					return
+				}
+
+				propertyValue[item.property.index] = Array.isArray(item.value)
+					? item.value[0]
+					: item.value
+			}
+		}
+
+		debug(
+			`Sending simpleAckResponse to ${typeof sender === 'string' ? sender : sender.address} for writePropertyMultiple with invokeId ${invokeId}`,
+		)
+		client.simpleAckResponse(
+			sender,
+			baEnum.ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
+			invokeId,
+		)
+		debug(`simpleAckResponse sent successfully`)
+	} catch (error) {
+		debug('Error handling writePropertyMultiple request', error)
+	}
+})
+
+client.on('subscribeProperty', (data: any) => {
+	debug('subscribeProperty request', data)
+	try {
+		const payload = data.payload || {}
+		const sender = data.header?.sender
+
+		let invokeId = 0
+		if (data.invokeId !== undefined) {
+			invokeId = data.invokeId
+		} else if (payload.invokeId !== undefined) {
+			invokeId = payload.invokeId
+		} else if (data.header?.apduType === 0) {
+			invokeId = payload.len - 3
+		}
+
+		if (sender) {
+			client.errorResponse(
+				sender,
+				baEnum.ConfirmedServiceChoice.SUBSCRIBE_COV_PROPERTY,
+				invokeId,
+				baEnum.ErrorClass.SERVICES,
+				baEnum.ErrorCode.ABORT_BUFFER_OVERFLOW,
+			)
+		}
+	} catch (error) {
+		debug('Error handling subscribeProperty request', error)
+	}
+})
+
+client.on('subscribeCov', (data: any) => {
+	debug('subscribeCOV request', data)
+	try {
+		const payload = data.payload || {}
+		const sender = data.header?.sender
+
+		let invokeId: number = 0
+		if (data.invokeId !== undefined) {
+			invokeId = data.invokeId
+			debug(`Using invokeId ${invokeId} from data.invokeId`)
+		} else if (payload.invokeId !== undefined) {
+			invokeId = payload.invokeId
+			debug(`Using invokeId ${invokeId} from payload.invokeId`)
+		} else if (data.header?.apduType === 0) {
+			invokeId = payload.len - 3
+			debug(`Calculated invokeId ${invokeId} from payload length`)
+		}
+
+		if (sender) {
+			debug(
+				`Sending abort response to ${typeof sender === 'string' ? sender : sender.address} for invokeId ${invokeId}`,
+			)
+			client.errorResponse(
+				sender,
+				baEnum.ConfirmedServiceChoice.SUBSCRIBE_COV,
+				invokeId,
+				baEnum.ErrorClass.SERVICES,
+				baEnum.ErrorCode.REJECT_UNRECOGNIZED_SERVICE,
+			)
+			debug(
+				`Sent abort response to ${typeof sender === 'string' ? sender : sender.address} for invokeId ${invokeId}`,
+			)
+		}
+	} catch (error) {
+		debug('Error handling subscribeCOV request', error)
+	}
+})
+
 const otherServices = [
-	'writePropertyMultiple',
 	'atomicWriteFile',
 	'atomicReadFile',
-	'subscribeCOV',
-	'subscribeProperty',
 	'deviceCommunicationControl',
 	'reinitializeDevice',
 	'readRange',
