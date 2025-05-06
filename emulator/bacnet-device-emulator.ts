@@ -31,7 +31,7 @@ const dataStore: DataStore = {
 		75: [{ value: { type: 1, instance: 2 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
 		77: [{ value: 'ANALOG OUTPUT 2', type: 7 }], // PROP_OBJECT_NAME
 		79: [{ value: 1, type: 9 }], // PROP_OBJECT_TYPE
-		85: [{ value: 0.0, type: 4 }], // PROP_PRESENT_VALUE
+		85: [{ value: 5, type: 4 }], // PROP_PRESENT_VALUE
 	},
 	'5:2': {
 		75: [{ value: { type: 5, instance: 2 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
@@ -52,6 +52,14 @@ const dataStore: DataStore = {
 		28: [{ value: 'Test Device #1234', type: 7 }], // PROP_DESCRIPTION
 		121: [{ value: 'Anthropic Claude', type: 7 }], // PROP_VENDOR_NAME
 	},
+}
+
+let nextInvokeId = 0
+
+function getNextInvokeId(): number {
+	const id = nextInvokeId++
+	if (nextInvokeId > 255) nextInvokeId = 0
+	return id
 }
 
 function normalizeSender(sender: any): any {
@@ -100,7 +108,7 @@ client.on('readProperty', (data: any) => {
 	}
 	const address = data.address || data.header?.sender?.address
 
-	const invokeId = data.invokeId
+	const invokeId = getNextInvokeId()
 
 	debug(
 		`Processing readProperty for object ${request.objectId?.type}:${request.objectId?.instance}, property ${request.property?.id}, invokeId ${invokeId}`,
