@@ -18,6 +18,16 @@ const settings = {
 	maxApdu: 1482,
 }
 
+// Add a global counter for incrementing invokeIds
+let nextInvokeId = 0
+
+// Function to get the next invokeId
+function getNextInvokeId(): number {
+	const id = nextInvokeId++
+	if (nextInvokeId > 255) nextInvokeId = 0 // BACnet limits invokeIds to 8 bits
+	return id
+}
+
 const client = new Client()
 
 const dataStore: DataStore = {
@@ -52,14 +62,6 @@ const dataStore: DataStore = {
 		28: [{ value: 'Test Device #1234', type: 7 }], // PROP_DESCRIPTION
 		121: [{ value: 'Anthropic Claude', type: 7 }], // PROP_VENDOR_NAME
 	},
-}
-
-let nextInvokeId = 0
-
-function getNextInvokeId(): number {
-	const id = nextInvokeId++
-	if (nextInvokeId > 255) nextInvokeId = 0
-	return id
 }
 
 function normalizeSender(sender: any): any {
@@ -102,85 +104,94 @@ client.on('whoIs', (data: any) => {
 })
 
 client.on('readProperty', (data: any) => {
-	const request = {
-		objectId: data.payload?.objectId,
-		property: data.payload?.property,
-	}
-	const address = data.address || data.header?.sender?.address
+	try {
+		const request = {
+			objectId: data.payload?.objectId,
+			property: data.payload?.property,
+		}
+		const address =
+			data.address ||
+			(typeof data.header?.sender === 'string'
+				? data.header.sender
+				: data.header?.sender?.address)
 
-	const invokeId = getNextInvokeId()
+		// Use incremental invokeId instead of the one from the request
+		const invokeId = getNextInvokeId()
 
-	debug(
-		`Processing readProperty for object ${request.objectId?.type}:${request.objectId?.instance}, property ${request.property?.id}, invokeId ${invokeId}`,
-	)
-
-	const objectKey = `${request.objectId?.type}:${request.objectId?.instance}`
-	const object = dataStore[objectKey]
-
-	if (!object) {
-		debug(`Object not found: ${objectKey}, sending error response`)
-		return client.errorResponse(
-			address,
-			baEnum.ConfirmedServiceChoice.READ_PROPERTY,
-			invokeId,
-			baEnum.ErrorClass.OBJECT,
-			baEnum.ErrorCode.UNKNOWN_OBJECT,
-		)
-	}
-
-	const propertyValue = object[request.property?.id]
-	if (!propertyValue) {
 		debug(
-			`Property not found: ${request.property?.id}, sending error response`,
+			`Processing readProperty for object ${request.objectId?.type}:${request.objectId?.instance}, property ${request.property?.id}, using invokeId ${invokeId}`,
 		)
-		return client.errorResponse(
-			address,
-			baEnum.ConfirmedServiceChoice.READ_PROPERTY,
-			invokeId,
-			baEnum.ErrorClass.PROPERTY,
-			baEnum.ErrorCode.UNKNOWN_PROPERTY,
-		)
-	}
 
-	if (request.property?.index === 0xffffffff) {
-		debug(
-			`Sending readPropertyResponse to ${address} for ${objectKey}:${request.property?.id} with invokeId ${invokeId}`,
-		)
-		client.readPropertyResponse(
-			address,
-			invokeId,
-			request.objectId,
-			request.property,
-			propertyValue,
-		)
-	} else {
-		const slot = propertyValue[request.property?.index]
-		if (!slot) {
+		const objectKey = `${request.objectId?.type}:${request.objectId?.instance}`
+		const object = dataStore[objectKey]
+
+		if (!object) {
+			debug(`Object not found: ${objectKey}, sending error response`)
+			return client.errorResponse(
+				address,
+				baEnum.ConfirmedServiceChoice.READ_PROPERTY,
+				invokeId,
+				baEnum.ErrorClass.OBJECT,
+				baEnum.ErrorCode.UNKNOWN_OBJECT,
+			)
+		}
+
+		const propertyValue = object[request.property?.id]
+		if (!propertyValue) {
 			debug(
-				`Property index not found: ${request.property?.index}, sending error response`,
+				`Property not found: ${request.property?.id}, sending error response`,
 			)
 			return client.errorResponse(
 				address,
 				baEnum.ConfirmedServiceChoice.READ_PROPERTY,
 				invokeId,
 				baEnum.ErrorClass.PROPERTY,
-				baEnum.ErrorCode.INVALID_ARRAY_INDEX,
+				baEnum.ErrorCode.UNKNOWN_PROPERTY,
 			)
 		}
 
-		debug(
-			`Sending readPropertyResponse (with index) to ${address} for ${objectKey}:${request.property?.id}[${request.property?.index}] with invokeId ${invokeId}`,
-		)
-		client.readPropertyResponse(
-			address,
-			invokeId,
-			request.objectId,
-			request.property,
-			[slot],
-		)
-	}
+		if (request.property?.index === 0xffffffff) {
+			debug(
+				`Sending readPropertyResponse to ${address} for ${objectKey}:${request.property?.id} with invokeId ${invokeId}`,
+			)
+			client.readPropertyResponse(
+				address,
+				invokeId,
+				request.objectId,
+				request.property,
+				propertyValue,
+			)
+		} else {
+			const slot = propertyValue[request.property?.index]
+			if (!slot) {
+				debug(
+					`Property index not found: ${request.property?.index}, sending error response`,
+				)
+				return client.errorResponse(
+					address,
+					baEnum.ConfirmedServiceChoice.READ_PROPERTY,
+					invokeId,
+					baEnum.ErrorClass.PROPERTY,
+					baEnum.ErrorCode.INVALID_ARRAY_INDEX,
+				)
+			}
 
-	debug(`readPropertyResponse sent successfully`)
+			debug(
+				`Sending readPropertyResponse (with index) to ${address} for ${objectKey}:${request.property?.id}[${request.property?.index}] with invokeId ${invokeId}`,
+			)
+			client.readPropertyResponse(
+				address,
+				invokeId,
+				request.objectId,
+				request.property,
+				[slot],
+			)
+		}
+
+		debug(`readPropertyResponse sent successfully`)
+	} catch (error) {
+		debug('Error handling readProperty request', error)
+	}
 })
 
 client.on('writeProperty', (data: any) => {
@@ -189,29 +200,15 @@ client.on('writeProperty', (data: any) => {
 		const payload = data.payload || {}
 		const sender = data.header?.sender
 
-		let invokeId: number = 0
-		if (data.invokeId !== undefined) {
-			invokeId = data.invokeId
-			debug(`Using invokeId ${invokeId} from data.invokeId`)
-		} else if (payload.invokeId !== undefined) {
-			invokeId = payload.invokeId
-			debug(`Using invokeId ${invokeId} from payload.invokeId`)
-		} else if (data.header?.apduType === 0) {
-			invokeId = payload.len - 3
-			debug(`Calculated invokeId ${invokeId} from payload length`)
-		}
+		// Use incremental invokeId
+		const invokeId = getNextInvokeId()
+		debug(`Using new invokeId ${invokeId} for writeProperty response`)
 
 		const objectId = payload.objectId
 		const property = payload.property || payload.value?.property
 		const value = payload.value
 
-		if (
-			!sender ||
-			invokeId === undefined ||
-			!objectId ||
-			!property ||
-			value === undefined
-		) {
+		if (!sender || !objectId || !property || value === undefined) {
 			debug('Missing required properties', {
 				sender,
 				invokeId,
@@ -365,21 +362,15 @@ client.on('readPropertyMultiple', (data: any) => {
 		const payload = data.payload || {}
 		const sender = data.header?.sender
 
-		let invokeId: number = 0
-		if (data.invokeId !== undefined) {
-			invokeId = data.invokeId
-			debug(`Using invokeId ${invokeId} from data.invokeId`)
-		} else if (payload.invokeId !== undefined) {
-			invokeId = payload.invokeId
-			debug(`Using invokeId ${invokeId} from payload.invokeId`)
-		} else if (data.header?.apduType === 0 || data.header?.apduType === 2) {
-			invokeId = payload.len - 3
-			debug(`Calculated invokeId ${invokeId} from payload length`)
-		}
+		// Use incremental invokeId
+		const invokeId = getNextInvokeId()
+		debug(
+			`Using new invokeId ${invokeId} for readPropertyMultiple response`,
+		)
 
 		const properties = payload.properties
 
-		if (!sender || invokeId === undefined || !Array.isArray(properties)) {
+		if (!sender || !Array.isArray(properties)) {
 			debug('Missing required properties', {
 				sender,
 				invokeId,
@@ -505,22 +496,16 @@ client.on('writePropertyMultiple', (data: any) => {
 		const payload = data.payload || {}
 		const sender = data.header?.sender
 
-		let invokeId: number = 0
-		if (data.invokeId !== undefined) {
-			invokeId = data.invokeId
-			debug(`Using invokeId ${invokeId} from data.invokeId`)
-		} else if (payload.invokeId !== undefined) {
-			invokeId = payload.invokeId
-			debug(`Using invokeId ${invokeId} from payload.invokeId`)
-		} else if (data.header?.apduType === 0) {
-			invokeId = payload.len - 3
-			debug(`Calculated invokeId ${invokeId} from payload length`)
-		}
+		// Use incremental invokeId
+		const invokeId = getNextInvokeId()
+		debug(
+			`Using new invokeId ${invokeId} for writePropertyMultiple response`,
+		)
 
 		const objectId = payload.objectId
 		const values = payload.values
 
-		if (!sender || invokeId === undefined || !objectId || !values) {
+		if (!sender || !objectId || !values) {
 			debug('Missing required properties', {
 				sender,
 				invokeId,
@@ -613,14 +598,9 @@ client.on('subscribeProperty', (data: any) => {
 		const payload = data.payload || {}
 		const sender = data.header?.sender
 
-		let invokeId = 0
-		if (data.invokeId !== undefined) {
-			invokeId = data.invokeId
-		} else if (payload.invokeId !== undefined) {
-			invokeId = payload.invokeId
-		} else if (data.header?.apduType === 0) {
-			invokeId = payload.len - 3
-		}
+		// Use incremental invokeId
+		const invokeId = getNextInvokeId()
+		debug(`Using new invokeId ${invokeId} for subscribeProperty response`)
 
 		if (sender) {
 			client.errorResponse(
@@ -642,17 +622,9 @@ client.on('subscribeCov', (data: any) => {
 		const payload = data.payload || {}
 		const sender = data.header?.sender
 
-		let invokeId: number = 0
-		if (data.invokeId !== undefined) {
-			invokeId = data.invokeId
-			debug(`Using invokeId ${invokeId} from data.invokeId`)
-		} else if (payload.invokeId !== undefined) {
-			invokeId = payload.invokeId
-			debug(`Using invokeId ${invokeId} from payload.invokeId`)
-		} else if (data.header?.apduType === 0) {
-			invokeId = payload.len - 3
-			debug(`Calculated invokeId ${invokeId} from payload length`)
-		}
+		// Use incremental invokeId
+		const invokeId = getNextInvokeId()
+		debug(`Using new invokeId ${invokeId} for subscribeCov response`)
 
 		if (sender) {
 			debug(
