@@ -31,7 +31,7 @@ const dataStore: DataStore = {
 		75: [{ value: { type: 1, instance: 2 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
 		77: [{ value: 'ANALOG OUTPUT 2', type: 7 }], // PROP_OBJECT_NAME
 		79: [{ value: 1, type: 9 }], // PROP_OBJECT_TYPE
-		85: [{ value: 0, type: 9 }], // PROP_PRESENT_VALUE
+		85: [{ value: 0.0, type: 4 }], // PROP_PRESENT_VALUE
 	},
 	'5:2': {
 		75: [{ value: { type: 5, instance: 2 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
@@ -94,106 +94,85 @@ client.on('whoIs', (data: any) => {
 })
 
 client.on('readProperty', (data: any) => {
-	debug('readProperty request', data)
-	try {
-		const payload = data.payload || {}
-		const sender = data.header?.sender
+	const request = {
+		objectId: data.payload?.objectId,
+		property: data.payload?.property,
+	}
+	const address = data.address || data.header?.sender?.address
 
-		let invokeId: number = 0
-		if (data.invokeId !== undefined) {
-			invokeId = data.invokeId
-			debug(`Using invokeId ${invokeId} from data.invokeId`)
-		} else if (payload.invokeId !== undefined) {
-			invokeId = payload.invokeId
-			debug(`Using invokeId ${invokeId} from payload.invokeId`)
-		} else if (data.header?.apduType === 0 || data.header?.apduType === 2) {
-			invokeId = payload.len - 3
-			debug(`Calculated invokeId ${invokeId} from payload length`)
-		}
+	const invokeId = data.invokeId
 
-		const objectId = payload.objectId
-		const property = payload.property
+	debug(
+		`Processing readProperty for object ${request.objectId?.type}:${request.objectId?.instance}, property ${request.property?.id}, invokeId ${invokeId}`,
+	)
 
-		if (!sender || invokeId === undefined || !objectId || !property) {
-			debug('Missing required properties', {
-				sender,
-				invokeId,
-				objectId,
-				property,
-			})
-			return
-		}
+	const objectKey = `${request.objectId?.type}:${request.objectId?.instance}`
+	const object = dataStore[objectKey]
 
-		const objectKey = `${objectId.type}:${objectId.instance}`
-		const object = dataStore[objectKey]
+	if (!object) {
+		debug(`Object not found: ${objectKey}, sending error response`)
+		return client.errorResponse(
+			address,
+			baEnum.ConfirmedServiceChoice.READ_PROPERTY,
+			invokeId,
+			baEnum.ErrorClass.OBJECT,
+			baEnum.ErrorCode.UNKNOWN_OBJECT,
+		)
+	}
 
-		if (!object) {
-			debug(`Object not found ${objectKey}, sending error response`)
-			client.errorResponse(
-				sender,
-				baEnum.ConfirmedServiceChoice.READ_PROPERTY,
-				invokeId,
-				baEnum.ErrorClass.OBJECT,
-				baEnum.ErrorCode.UNKNOWN_OBJECT,
+	const propertyValue = object[request.property?.id]
+	if (!propertyValue) {
+		debug(
+			`Property not found: ${request.property?.id}, sending error response`,
+		)
+		return client.errorResponse(
+			address,
+			baEnum.ConfirmedServiceChoice.READ_PROPERTY,
+			invokeId,
+			baEnum.ErrorClass.PROPERTY,
+			baEnum.ErrorCode.UNKNOWN_PROPERTY,
+		)
+	}
+
+	if (request.property?.index === 0xffffffff) {
+		debug(
+			`Sending readPropertyResponse to ${address} for ${objectKey}:${request.property?.id} with invokeId ${invokeId}`,
+		)
+		client.readPropertyResponse(
+			address,
+			invokeId,
+			request.objectId,
+			request.property,
+			propertyValue,
+		)
+	} else {
+		const slot = propertyValue[request.property?.index]
+		if (!slot) {
+			debug(
+				`Property index not found: ${request.property?.index}, sending error response`,
 			)
-			debug(`Error response sent for unknown object`)
-			return
-		}
-
-		const propertyValue = object[property.id]
-		if (!propertyValue) {
-			debug(`Property not found ${property.id}, sending error response`)
-			client.errorResponse(
-				sender,
+			return client.errorResponse(
+				address,
 				baEnum.ConfirmedServiceChoice.READ_PROPERTY,
 				invokeId,
 				baEnum.ErrorClass.PROPERTY,
-				baEnum.ErrorCode.UNKNOWN_PROPERTY,
+				baEnum.ErrorCode.INVALID_ARRAY_INDEX,
 			)
-			debug(`Error response sent for unknown property`)
-			return
 		}
 
-		if (property.index === 0xffffffff) {
-			debug(
-				`Sending readPropertyResponse to ${typeof sender === 'string' ? sender : sender.address} for ${objectKey}:${property.id} with invokeId ${invokeId}`,
-			)
-			client.readPropertyResponse(
-				sender,
-				invokeId,
-				objectId,
-				property,
-				propertyValue,
-			)
-			debug(`readPropertyResponse sent successfully`)
-		} else {
-			const slot = propertyValue[property.index]
-			if (!slot) {
-				debug(
-					`Property index not found ${property.index}, sending error response`,
-				)
-				client.errorResponse(
-					sender,
-					baEnum.ConfirmedServiceChoice.READ_PROPERTY,
-					invokeId,
-					baEnum.ErrorClass.PROPERTY,
-					baEnum.ErrorCode.INVALID_ARRAY_INDEX,
-				)
-				debug(`Error response sent for invalid index`)
-				return
-			}
-
-			debug(
-				`Sending readPropertyResponse (with index) to ${typeof sender === 'string' ? sender : sender.address} for ${objectKey}:${property.id}[${property.index}] with invokeId ${invokeId}`,
-			)
-			client.readPropertyResponse(sender, invokeId, objectId, property, [
-				slot,
-			])
-			debug(`readPropertyResponse (with index) sent successfully`)
-		}
-	} catch (error) {
-		debug('Error handling readProperty request', error)
+		debug(
+			`Sending readPropertyResponse (with index) to ${address} for ${objectKey}:${request.property?.id}[${request.property?.index}] with invokeId ${invokeId}`,
+		)
+		client.readPropertyResponse(
+			address,
+			invokeId,
+			request.objectId,
+			request.property,
+			[slot],
+		)
 	}
+
+	debug(`readPropertyResponse sent successfully`)
 })
 
 client.on('writeProperty', (data: any) => {
