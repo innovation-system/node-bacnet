@@ -6,17 +6,23 @@ services:
       - .:/bacnet
     ports:
       - "47808:47808/udp"
-    network_mode: "host"
     environment:
       - DEBUG=bacstack*
     command: |
       bash -c "npx ts-node emulator/bacnet-device-emulator.ts"
+    networks:
+      - bacnet-network
 
   bacnet-client:
     image: ${NODE_IMAGE:-node:20}
     working_dir: /bacnet
-    network_mode: "host"
     volumes:
       - .:/bacnet
     command: |
       bash -c "tail -f /dev/null"
+    networks:
+      - bacnet-network
+
+networks:
+  bacnet-network:
+    driver: bridge
