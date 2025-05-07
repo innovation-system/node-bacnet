@@ -24,7 +24,9 @@ import {
 	WhoHasPayload,
 	TimeSyncPayload,
 	IHavePayload,
-	ServiceResponse,
+	BACNetObjectID,
+	BACNetPropertyID,
+	BACNetAppData,
 } from './types'
 
 export type Constructor<T = object> = new (...args: any[]) => T
@@ -61,6 +63,50 @@ export function applyMixin(
 	}
 }
 
+// Base event content interface with common properties
+export interface BaseEventContent {
+	header?: BACnetMessageHeader
+	payload: any
+	service?: number
+	invokeId?: number
+}
+
+// These more specific interfaces help TypeScript provide better IntelliSense
+export interface ReadPropertyContent extends BaseEventContent {
+	payload: {
+		objectId: BACNetObjectID
+		property: BACNetPropertyID
+	}
+	address?: string
+}
+
+export interface WritePropertyContent extends BaseEventContent {
+	payload: {
+		objectId: BACNetObjectID
+		property?: BACNetPropertyID
+		value?: {
+			property?: BACNetPropertyID
+			value?: BACNetAppData | BACNetAppData[]
+		}
+	}
+}
+
+export interface ReadPropertyMultipleContent extends BaseEventContent {
+	payload: {
+		properties: Array<{
+			objectId: BACNetObjectID
+			properties: Array<{
+				id: number
+				index: number
+			}>
+		}>
+	}
+}
+
+export interface SubscribeCovContent extends BaseEventContent {
+	payload: SubscribeCovPayload
+}
+
 /**
  * Event types for BACnet client
  */
@@ -69,37 +115,85 @@ export interface BACnetClientEvents {
 	error: (error: Error) => void
 	listening: () => void
 	unhandledEvent: (content: ServiceMessage) => void
-	readProperty: ServiceResponse<DecodeAcknowledgeSingleResult>
-	writeProperty: ServiceResponse<SimpleAckPayload>
-	readPropertyMultiple: ServiceResponse<DecodeAcknowledgeMultipleResult>
-	writePropertyMultiple: ServiceResponse<SimpleAckPayload>
-	covNotify: ServiceResponse<CovNotifyPayload>
-	atomicWriteFile: ServiceResponse<AtomicFilePayload>
-	atomicReadFile: ServiceResponse<AtomicFilePayload>
-	subscribeCov: ServiceResponse<SubscribeCovPayload>
-	subscribeProperty: ServiceResponse<SubscribeCovPayload>
-	deviceCommunicationControl: ServiceResponse<DeviceCommunicationControlPayload>
-	reinitializeDevice: ServiceResponse<ReinitializeDevicePayload>
-	eventNotify: ServiceResponse<EventNotificationPayload>
-	readRange: ServiceResponse<ReadRangePayload>
-	createObject: ServiceResponse<ObjectOperationPayload>
-	deleteObject: ServiceResponse<ObjectOperationPayload>
-	alarmAcknowledge: ServiceResponse<SimpleAckPayload>
-	getAlarmSummary: ServiceResponse<BACNetAlarm[]>
-	getEnrollmentSummary: ServiceResponse<any>
-	getEventInformation: ServiceResponse<BACNetEventInformation[]>
-	lifeSafetyOperation: ServiceResponse<any>
-	addListElement: ServiceResponse<ListElementOperationPayload>
-	removeListElement: ServiceResponse<ListElementOperationPayload>
-	privateTransfer: ServiceResponse<PrivateTransferPayload>
-	registerForeignDevice: ServiceResponse<RegisterForeignDevicePayload>
-	iAm: ServiceResponse<IAMResult>
-	whoIs: ServiceResponse<WhoIsResult>
-	whoHas: ServiceResponse<WhoHasPayload>
-	covNotifyUnconfirmed: ServiceResponse<CovNotifyPayload>
-	timeSync: ServiceResponse<TimeSyncPayload>
-	timeSyncUTC: ServiceResponse<TimeSyncPayload>
-	iHave: ServiceResponse<IHavePayload>
+
+	// Updated event definitions with extended interfaces for better type checking
+	readProperty: (content: ReadPropertyContent) => void
+	writeProperty: (content: WritePropertyContent) => void
+	readPropertyMultiple: (content: ReadPropertyMultipleContent) => void
+	writePropertyMultiple: (
+		content: BaseEventContent & {
+			payload: { objectId: BACNetObjectID; values: any[] }
+		},
+	) => void
+
+	// Keep original definitions for events that don't need modification
+	covNotify: (
+		content: BaseEventContent & { payload: CovNotifyPayload },
+	) => void
+	atomicWriteFile: (
+		content: BaseEventContent & { payload: AtomicFilePayload },
+	) => void
+	atomicReadFile: (
+		content: BaseEventContent & { payload: AtomicFilePayload },
+	) => void
+	subscribeCov: (content: SubscribeCovContent) => void
+	subscribeProperty: (
+		content: BaseEventContent & { payload: SubscribeCovPayload },
+	) => void
+	deviceCommunicationControl: (
+		content: BaseEventContent & {
+			payload: DeviceCommunicationControlPayload
+		},
+	) => void
+	reinitializeDevice: (
+		content: BaseEventContent & { payload: ReinitializeDevicePayload },
+	) => void
+	eventNotify: (
+		content: BaseEventContent & { payload: EventNotificationPayload },
+	) => void
+	readRange: (
+		content: BaseEventContent & { payload: ReadRangePayload },
+	) => void
+	createObject: (
+		content: BaseEventContent & { payload: ObjectOperationPayload },
+	) => void
+	deleteObject: (
+		content: BaseEventContent & { payload: ObjectOperationPayload },
+	) => void
+	alarmAcknowledge: (
+		content: BaseEventContent & { payload: SimpleAckPayload },
+	) => void
+	getAlarmSummary: (
+		content: BaseEventContent & { payload: BACNetAlarm[] },
+	) => void
+	getEnrollmentSummary: (content: BaseEventContent & { payload: any }) => void
+	getEventInformation: (
+		content: BaseEventContent & { payload: BACNetEventInformation[] },
+	) => void
+	lifeSafetyOperation: (content: BaseEventContent & { payload: any }) => void
+	addListElement: (
+		content: BaseEventContent & { payload: ListElementOperationPayload },
+	) => void
+	removeListElement: (
+		content: BaseEventContent & { payload: ListElementOperationPayload },
+	) => void
+	privateTransfer: (
+		content: BaseEventContent & { payload: PrivateTransferPayload },
+	) => void
+	registerForeignDevice: (
+		content: BaseEventContent & { payload: RegisterForeignDevicePayload },
+	) => void
+	iAm: (content: BaseEventContent & { payload: IAMResult }) => void
+	whoIs: (content: BaseEventContent & { payload: WhoIsResult }) => void
+	whoHas: (content: BaseEventContent & { payload: WhoHasPayload }) => void
+	covNotifyUnconfirmed: (
+		content: BaseEventContent & { payload: CovNotifyPayload },
+	) => void
+	timeSync: (content: BaseEventContent & { payload: TimeSyncPayload }) => void
+	timeSyncUTC: (
+		content: BaseEventContent & { payload: TimeSyncPayload },
+	) => void
+	iHave: (content: BaseEventContent & { payload: IHavePayload }) => void
 }
 
 export type BACnetEventsMap = {
