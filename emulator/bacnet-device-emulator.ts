@@ -18,9 +18,6 @@ const settings = {
 	maxApdu: 1482,
 }
 
-// Add a global counter for incrementing invokeIds
-const nextInvokeId = 0
-
 const client = new Client()
 
 const dataStore: DataStore = {
@@ -57,7 +54,7 @@ const dataStore: DataStore = {
 	},
 }
 
-function normalizeSender(sender: any): any {
+function normalizeSender(sender): any {
 	if (!sender) {
 		debug(`Received broadcast request, using default broadcast address`)
 		return { address: '255.255.255.255', forwardedFrom: null }
@@ -96,7 +93,7 @@ client.on('whoIs', (data) => {
 	}
 })
 
-client.on('readProperty', (data: any) => {
+client.on('readProperty', (data) => {
 	try {
 		const request = {
 			objectId: data.payload?.objectId,
@@ -187,7 +184,7 @@ client.on('readProperty', (data: any) => {
 	}
 })
 
-client.on('writeProperty', (data: any) => {
+client.on('writeProperty', (data) => {
 	debug('writeProperty request', data)
 	try {
 		const payload = data.payload || {}
@@ -197,9 +194,9 @@ client.on('writeProperty', (data: any) => {
 		const invokeId = data.invokeId
 		debug(`Using invokeId ${invokeId} for writeProperty response`)
 
-		const objectId = payload.objectId
-		const property = payload.property || payload.value?.property
-		const value = payload.value
+		const objectId = data.payload.objectId
+		const property = data.payload.property || data.payload.value?.property
+		const value = data.payload.value
 
 		if (!sender || !objectId || !property || value === undefined) {
 			debug('Missing required properties', {
@@ -290,7 +287,7 @@ client.on('writeProperty', (data: any) => {
 	}
 })
 
-client.on('whoHas', (data: any) => {
+client.on('whoHas', (data) => {
 	debug('whoHas request', data)
 	try {
 		const payload = data.payload || {}
@@ -339,17 +336,17 @@ client.on('whoHas', (data: any) => {
 	}
 })
 
-client.on('timeSync', (data: any) => {
+client.on('timeSync', (data) => {
 	debug('timeSync request', data)
 	// TODO: Implement time synchronization
 })
 
-client.on('timeSyncUTC', (data: any) => {
+client.on('timeSyncUTC', (data) => {
 	debug('timeSyncUTC request', data)
 	// TODO: Implement UTC time synchronization
 })
 
-client.on('readPropertyMultiple', (data: any) => {
+client.on('readPropertyMultiple', (data) => {
 	debug('readPropertyMultiple request', data)
 	try {
 		const payload = data.payload || {}
@@ -359,7 +356,7 @@ client.on('readPropertyMultiple', (data: any) => {
 		const invokeId = data.invokeId
 		debug(`Using invokeId ${invokeId} for readPropertyMultiple response`)
 
-		const properties = payload.properties
+		const properties = data.payload.properties
 
 		if (!sender || !Array.isArray(properties)) {
 			debug('Missing required properties', {
@@ -481,7 +478,7 @@ client.on('readPropertyMultiple', (data: any) => {
 	}
 })
 
-client.on('writePropertyMultiple', (data: any) => {
+client.on('writePropertyMultiple', (data) => {
 	debug('writePropertyMultiple request', data)
 	try {
 		const payload = data.payload || {}
@@ -581,7 +578,7 @@ client.on('writePropertyMultiple', (data: any) => {
 	}
 })
 
-client.on('subscribeProperty', (data: any) => {
+client.on('subscribeProperty', (data) => {
 	debug('subscribeProperty request', data)
 	try {
 		const payload = data.payload || {}
@@ -605,7 +602,7 @@ client.on('subscribeProperty', (data: any) => {
 	}
 })
 
-client.on('subscribeCov', (data: any) => {
+client.on('subscribeCov', (data) => {
 	debug('subscribeCOV request', data)
 	try {
 		const payload = data.payload || {}
@@ -647,7 +644,7 @@ const otherServices = [
 
 // Register stub handlers for other services
 otherServices.forEach((service) => {
-	client.on(service as any, (data: any) => {
+	client.on(service as any, (data) => {
 		debug(`${service} request`, data)
 	})
 })
