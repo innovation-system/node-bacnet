@@ -19,14 +19,7 @@ const settings = {
 }
 
 // Add a global counter for incrementing invokeIds
-let nextInvokeId = 0
-
-// Function to get the next invokeId
-function getNextInvokeId(): number {
-	const id = nextInvokeId++
-	if (nextInvokeId > 255) nextInvokeId = 0 // BACnet limits invokeIds to 8 bits
-	return id
-}
+const nextInvokeId = 0
 
 const client = new Client()
 
@@ -116,7 +109,7 @@ client.on('readProperty', (data: any) => {
 				: data.header?.sender?.address)
 
 		// Use incremental invokeId instead of the one from the request
-		const invokeId = data.invokeId ?? getNextInvokeId()
+		const invokeId = data.invokeId
 
 		debug(
 			`Processing readProperty for object ${request.objectId?.type}:${request.objectId?.instance}, property ${request.property?.id}, using invokeId ${invokeId}`,
@@ -201,7 +194,7 @@ client.on('writeProperty', (data: any) => {
 		const sender = data.header?.sender
 
 		// Use incremental invokeId
-		const invokeId = data.invokeId ?? getNextInvokeId()
+		const invokeId = data.invokeId
 		debug(`Using invokeId ${invokeId} for writeProperty response`)
 
 		const objectId = payload.objectId
@@ -363,7 +356,7 @@ client.on('readPropertyMultiple', (data: any) => {
 		const sender = data.header?.sender
 
 		// Use incremental invokeId
-		const invokeId = data.invokeId ?? getNextInvokeId()
+		const invokeId = data.invokeId
 		debug(`Using invokeId ${invokeId} for readPropertyMultiple response`)
 
 		const properties = payload.properties
@@ -495,7 +488,7 @@ client.on('writePropertyMultiple', (data: any) => {
 		const sender = data.header?.sender
 
 		// Use incremental invokeId
-		const invokeId = data.invokeId ?? getNextInvokeId()
+		const invokeId = data.invokeId
 		debug(`Using invokeId ${invokeId} for writePropertyMultiple response`)
 
 		const objectId = payload.objectId
@@ -595,7 +588,7 @@ client.on('subscribeProperty', (data: any) => {
 		const sender = data.header?.sender
 
 		// Use incremental invokeId
-		const invokeId = data.invokeId ?? getNextInvokeId()
+		const invokeId = data.invokeId
 		debug(`Using invokeId ${invokeId} for subscribeProperty response`)
 
 		if (sender) {
@@ -619,7 +612,7 @@ client.on('subscribeCov', (data: any) => {
 		const sender = data.header?.sender
 
 		// Use incremental invokeId
-		const invokeId = data.invokeId ?? getNextInvokeId()
+		const invokeId = data.invokeId
 		debug(`Using invokeId ${invokeId} for subscribeCov response`)
 
 		if (sender) {
