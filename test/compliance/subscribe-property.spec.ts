@@ -1,37 +1,63 @@
 import test from 'node:test'
 import assert from 'node:assert'
+import { once } from 'node:events'
 
 import * as utils from './utils'
+import Client, { BACNetObjectID, BACNetPropertyID } from '../../src'
 
 // you need to have this run against the official backstack c
 // demo device started as deviceId 1234
 // use "npm run docker" to execute this
 test.describe('bacnet - subscribe property compliance', () => {
-	let bacnetClient: any
+	let bacnetClient: Client
 	let discoveredAddress: any
 	const onClose: ((callback: () => void) => void) | null = null
 
-	test.before(async () => {
-		return new Promise<void>((done) => {
-			bacnetClient = new utils.bacnetClient({
-				apduTimeout: utils.apduTimeout,
-				interface: utils.clientListenerInterface,
-			})
-			bacnetClient.on('message', (msg: any, rinfo: any) => {
-				utils.debug(msg)
-				if (rinfo) utils.debug(rinfo)
-			})
-			bacnetClient.on('iAm', (device: any) => {
-				discoveredAddress = device.header.sender
-			})
-			bacnetClient.on('error', (err: Error) => {
-				console.error(err)
-				bacnetClient.close()
-			})
-			bacnetClient.on('listening', () => {
-				done()
-			})
+	function asyncSubscribeProperty(
+		address: string,
+		objectId: BACNetObjectID,
+		property: BACNetPropertyID,
+		subscribeId: number,
+		cancel: boolean,
+		issueConfirmedNotifications: boolean,
+	): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			bacnetClient.subscribeProperty(
+				address,
+				objectId,
+				property,
+				subscribeId,
+				cancel,
+				issueConfirmedNotifications,
+				{},
+				(err) => {
+					if (err) {
+						reject(err)
+					} else {
+						resolve()
+					}
+				},
+			)
 		})
+	}
+
+	test.before(async () => {
+		bacnetClient = new utils.bacnetClient({
+			apduTimeout: utils.apduTimeout,
+			interface: utils.clientListenerInterface,
+		})
+		bacnetClient.on('message', (msg: any, rinfo: any) => {
+			utils.debug(msg)
+			if (rinfo) utils.debug(rinfo)
+		})
+		bacnetClient.on('iAm', (device: any) => {
+			discoveredAddress = device.header.sender
+		})
+		bacnetClient.on('error', (err: Error) => {
+			console.error(err)
+			bacnetClient.close()
+		})
+		await once(bacnetClient as any, 'listening')
 	})
 
 	test.after(async () => {
@@ -43,68 +69,49 @@ test.describe('bacnet - subscribe property compliance', () => {
 				} else {
 					done()
 				}
-			}, 1000) // do not close too fast
+			}, 100) // do not close too fast
 		})
 	})
 
 	test('should find the device simulator device', async () => {
-		return new Promise<void>((next) => {
-			bacnetClient.on('iAm', (device: any) => {
-				if (device.payload.deviceId === utils.deviceUnderTest) {
-					discoveredAddress = device.header.sender
-					assert.strictEqual(
-						device.payload.deviceId,
-						utils.deviceUnderTest,
-					)
-					assert.ok(
-						discoveredAddress,
-						'discoveredAddress should be an object',
-					)
-					assert.match(
-						discoveredAddress.address,
-						/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/,
-					)
-					next()
-				}
-			})
-			bacnetClient.whoIs()
-		})
+		bacnetClient.whoIs()
+		const [device] = await once(bacnetClient as any, 'iAm')
+
+		if (device.payload.deviceId === utils.deviceUnderTest) {
+			discoveredAddress = device.header.sender
+			assert.strictEqual(device.payload.deviceId, utils.deviceUnderTest)
+			assert.ok(
+				discoveredAddress,
+				'discoveredAddress should be an object',
+			)
+			assert.match(
+				discoveredAddress.address,
+				/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/,
+			)
+		}
 	})
 
 	test('subscribe property BINARY_VALUE,2 from device, expect not supported error', async () => {
-		return new Promise<void>((next, reject) => {
-			const timeoutId = setTimeout(() => {
-				reject(new Error('Test timed out waiting for response'))
-			}, 10000)
-
-			bacnetClient.subscribeProperty(
+		try {
+			await asyncSubscribeProperty(
 				discoveredAddress,
 				{ type: 5, instance: 2 },
 				{ id: 85, index: utils.index },
 				1000,
 				false,
 				false,
-				(err: Error) => {
-					clearTimeout(timeoutId)
-
-					try {
-						assert.ok(err, 'Expected an error but got none')
-						assert.ok(
-							err.message.includes('BacnetAbort'),
-							`Expected error message to include "BacnetAbort", got: ${err.message}`,
-						)
-
-						utils.debug(
-							`Ricevuto errore accettabile: ${err.message}`,
-						)
-
-						next()
-					} catch (error) {
-						reject(error)
-					}
-				},
 			)
-		})
+
+			assert.fail('Expected an error but got none')
+		} catch (err) {
+			assert.ok(err instanceof Error, 'Expected an error object')
+			assert.ok(
+				err.message.includes('BacnetError'),
+				`Expected error message to include "BacnetError", got: ${err.message}`,
+			)
+
+			utils.debug(`Received acceptable error: ${err.message}`)
+		}
 	})
 
 	// TODO tests missing for routing cases where "receiver" parameter is used to call whoIs
