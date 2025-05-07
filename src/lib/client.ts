@@ -58,8 +58,9 @@ import {
 	PropertyReference,
 	TypedValue,
 } from './types'
+import { format } from 'util'
 
-const debug = debugLib('bacnet')
+const debug = debugLib('bacnet:client:debug')
 const trace = debugLib('bacnet:client:trace')
 
 const ALL_INTERFACES = '0.0.0.0'
@@ -195,24 +196,40 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 	private _invokeCallback(id: number, err: Error | null, result?: any) {
 		const callback = this._invokeStore[id]
 		if (callback) {
+			trace(`InvokeId ${id} found -> call callback`)
 			return void callback(err, result)
 		}
 		debug('InvokeId', id, 'not found -> drop package')
+		trace(`Stored invokeId: ${Object.keys(this._invokeStore)}`)
 	}
 
 	private _addCallback(
 		id: number,
 		callback: (err: Error | null, data?: any) => void,
 	): void {
-		const timeout = setTimeout(() => {
+		const toCall: (err: Error | null, data?: any) => void = (err, data) => {
 			delete this._invokeStore[id]
-			callback(new Error('ERR_TIMEOUT'))
-		}, this._settings.apduTimeout)
-		this._invokeStore[id] = (err: Error | null, data: any) => {
 			clearTimeout(timeout)
-			delete this._invokeStore[id]
+
+			if (err) {
+				debug(`InvokeId ${id} callback called with error:`, err)
+			} else {
+				trace(`InvokeId ${id} callback called with data:`, data)
+			}
+
 			callback(err, data)
 		}
+
+		const timeout = setTimeout(
+			toCall.bind(this, new Error('ERR_TIMEOUT')),
+			this._settings.apduTimeout,
+		)
+
+		this._invokeStore[id] = toCall
+
+		trace(
+			`InvokeId ${id} callback added -> timeout set to ${this._settings.apduTimeout}.`, // Stack: ${new Error().stack}`,
+		)
 	}
 
 	/**
@@ -504,7 +521,9 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		// Use type assertion to access potential invokeId property
 		const confirmedMsg = content as Partial<ConfirmedServiceRequest> &
 			BACnetMessageBase
-		const id = confirmedMsg.invokeId ? `@${confirmedMsg.invokeId}` : ''
+		const id = confirmedMsg.invokeId
+			? `with invokeId ${confirmedMsg.invokeId}`
+			: ''
 		trace(`Received service request${id}:`, name)
 
 		// Find a function to decode the packet.
@@ -535,24 +554,20 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 		// Call the user code, if they've defined a callback.
 		if (this.listenerCount(name)) {
-			trace(`listener count by name emits ${name} with content`)
-			this.emit(name, {
-				header: content.header,
-				payload: content.payload,
-			})
+			trace(
+				`listener count by name emits ${name} with content. ${format('%o', content)}`,
+			)
+			this.emit(name, content)
 		} else {
 			if (this.listenerCount('unhandledEvent')) {
-				trace('unhandled event emiting with content')
-				this.emit(name, {
-					header: content.header,
-					payload: content.payload,
-				})
+				trace('unhandled event emitting with content')
+				this.emit(name, content)
 			} else {
 				// No 'unhandled event' handler, so respond with an error ourselves.
 				// This is better than doing nothing, which can often make the other
 				// device think we have gone offline.
 				trace(
-					`no unhandled event handler with header: ${JSON.stringify(
+					`no unhandled event "${name}" handler with header: ${JSON.stringify(
 						content.header,
 					)}`,
 				)
@@ -673,12 +688,12 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			case baEnum.PduType.ERROR:
 				msg = baApdu.decodeError(buffer, offset) as BACnetError &
 					BACnetMessageBase
-				this._invokeCallback((msg as HasInvokeId).invokeId, null, {
-					msg,
+				this._processError(
+					(msg as HasInvokeId).invokeId,
 					buffer,
-					offset: offset + msg.len,
-					length: length - msg.len,
-				})
+					offset + msg.len,
+					length - msg.len,
+				)
 				break
 
 			case baEnum.PduType.REJECT:
@@ -1250,6 +1265,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			if (err) {
 				return void next(err)
 			}
+
 			const result = baServices.readPropertyMultiple.decodeAcknowledge(
 				data.buffer,
 				data.offset,
