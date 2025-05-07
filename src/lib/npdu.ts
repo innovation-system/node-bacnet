@@ -1,9 +1,5 @@
 import * as baEnum from './enum'
-import debugLib from 'debug'
 import { EncodeBuffer, BACNetAddress, TargetResult } from './types'
-
-const debug = debugLib('bacnet')
-const trace = debugLib('bacnet:client:trace')
 
 const BACNET_PROTOCOL_VERSION = 1
 const BACNET_ADDRESS_TYPES = {
