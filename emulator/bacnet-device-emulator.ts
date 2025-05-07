@@ -4,7 +4,7 @@ import debugLib from 'debug'
 import * as baNpdu from '../src/lib/npdu'
 import * as baApdu from '../src/lib/apdu'
 
-const debug = debugLib('bacstack-device')
+const debug = debugLib('bacnet:device:debug')
 
 interface DataStore {
 	[key: string]: {
@@ -50,6 +50,7 @@ const dataStore: DataStore = {
 		85: [{ value: 0, type: 1 }], // PROP_PRESENT_VALUE
 	},
 	'8:1234': {
+		28: [{ value: 'Test Device #1234', type: 7 }], // PROP_DESCRIPTION
 		75: [{ value: { type: 8, instance: 1234 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
 		76: [
 			{ value: { type: 8, instance: 1234 }, type: 12 },
@@ -59,8 +60,7 @@ const dataStore: DataStore = {
 		], // PROP_OBJECT_LIST
 		77: [{ value: 'my-device-1234', type: 7 }], // PROP_OBJECT_NAME
 		79: [{ value: 8, type: 9 }], // PROP_OBJECT_TYPE
-		28: [{ value: 'Test Device #1234', type: 7 }], // PROP_DESCRIPTION
-		121: [{ value: 'Anthropic Claude', type: 7 }], // PROP_VENDOR_NAME
+		121: [{ value: 'Test vendor', type: 7 }], // PROP_VENDOR_NAME
 	},
 }
 
@@ -78,10 +78,10 @@ function normalizeSender(sender: any): any {
 	return sender
 }
 
-client.on('whoIs', (data: any) => {
+client.on('whoIs', (data) => {
 	debug('whoIs request', data)
 	try {
-		const payload = data.payload || {}
+		const payload = data.payload
 
 		if (payload.lowLimit && payload.lowLimit > settings.deviceId) return
 		if (payload.highLimit && payload.highLimit < settings.deviceId) return
@@ -116,7 +116,7 @@ client.on('readProperty', (data: any) => {
 				: data.header?.sender?.address)
 
 		// Use incremental invokeId instead of the one from the request
-		const invokeId = getNextInvokeId()
+		const invokeId = data.invokeId ?? getNextInvokeId()
 
 		debug(
 			`Processing readProperty for object ${request.objectId?.type}:${request.objectId?.instance}, property ${request.property?.id}, using invokeId ${invokeId}`,
@@ -201,8 +201,8 @@ client.on('writeProperty', (data: any) => {
 		const sender = data.header?.sender
 
 		// Use incremental invokeId
-		const invokeId = getNextInvokeId()
-		debug(`Using new invokeId ${invokeId} for writeProperty response`)
+		const invokeId = data.invokeId ?? getNextInvokeId()
+		debug(`Using invokeId ${invokeId} for writeProperty response`)
 
 		const objectId = payload.objectId
 		const property = payload.property || payload.value?.property
@@ -363,10 +363,8 @@ client.on('readPropertyMultiple', (data: any) => {
 		const sender = data.header?.sender
 
 		// Use incremental invokeId
-		const invokeId = getNextInvokeId()
-		debug(
-			`Using new invokeId ${invokeId} for readPropertyMultiple response`,
-		)
+		const invokeId = data.invokeId ?? getNextInvokeId()
+		debug(`Using invokeId ${invokeId} for readPropertyMultiple response`)
 
 		const properties = payload.properties
 
@@ -497,10 +495,8 @@ client.on('writePropertyMultiple', (data: any) => {
 		const sender = data.header?.sender
 
 		// Use incremental invokeId
-		const invokeId = getNextInvokeId()
-		debug(
-			`Using new invokeId ${invokeId} for writePropertyMultiple response`,
-		)
+		const invokeId = data.invokeId ?? getNextInvokeId()
+		debug(`Using invokeId ${invokeId} for writePropertyMultiple response`)
 
 		const objectId = payload.objectId
 		const values = payload.values
@@ -599,8 +595,8 @@ client.on('subscribeProperty', (data: any) => {
 		const sender = data.header?.sender
 
 		// Use incremental invokeId
-		const invokeId = getNextInvokeId()
-		debug(`Using new invokeId ${invokeId} for subscribeProperty response`)
+		const invokeId = data.invokeId ?? getNextInvokeId()
+		debug(`Using invokeId ${invokeId} for subscribeProperty response`)
 
 		if (sender) {
 			client.errorResponse(
@@ -623,8 +619,8 @@ client.on('subscribeCov', (data: any) => {
 		const sender = data.header?.sender
 
 		// Use incremental invokeId
-		const invokeId = getNextInvokeId()
-		debug(`Using new invokeId ${invokeId} for subscribeCov response`)
+		const invokeId = data.invokeId ?? getNextInvokeId()
+		debug(`Using invokeId ${invokeId} for subscribeCov response`)
 
 		if (sender) {
 			debug(
