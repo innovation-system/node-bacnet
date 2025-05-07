@@ -65,6 +65,7 @@ export function applyMixin(
  * Event types for BACnet client
  */
 export interface BACnetClientEvents {
+	message: (message: BACnetMessage, rinfo: string) => void
 	error: (error: Error) => void
 	listening: () => void
 	unhandledEvent: (content: ServiceMessage) => void
