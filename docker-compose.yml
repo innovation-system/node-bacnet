@@ -6,10 +6,10 @@ services:
       - .:/bacnet
     ports:
       - "47808:47808/udp"
-    environment:
-      - DEBUG=bacnet*
+    # environment:
+    #   - DEBUG=bacnet*
     command: |
-      bash -c "npx ts-node emulator/bacnet-device-emulator.ts"
+      bash -c "npm run emulator:start"
     networks:
       - bacnet-network
 
@@ -18,8 +18,8 @@ services:
     working_dir: /bacnet
     volumes:
       - .:/bacnet
-    environment:
-      - DEBUG=bacnet*
+    # environment:
+    #   - DEBUG=bacnet*
     ports:
       - "9990:9990" # nodejs debugger
     command: |
