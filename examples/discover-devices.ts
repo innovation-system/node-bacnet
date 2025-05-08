@@ -15,7 +15,7 @@ bacnetClient.on('error', (err: Error) => {
   bacnetClient.close();
 });
 
-// emmitted when Bacnet server listens for incoming UDP packages
+// emitted when Bacnet server listens for incoming UDP packages
 bacnetClient.on('listening', () => {
   console.log('discovering devices for 30 seconds ...');
   // discover devices once we are listening
