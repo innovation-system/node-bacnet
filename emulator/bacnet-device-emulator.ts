@@ -17,10 +17,10 @@ import {
 const debug = debugLib('bacnet:device:debug')
 
 type DataStoreEntry = {
-	[propertyId in ValueOf<typeof baEnum.PropertyIdentifier>]?: BACNetAppData[]
+	[propertyId in ValueOf<typeof PropertyIdentifier>]?: BACNetAppData[]
 }
 
-type DataStoreKey = `${ValueOf<typeof baEnum.ObjectType>}:${number}` // <objectType>:<objectInstance>
+type DataStoreKey = `${ValueOf<typeof ObjectType>}:${number}` // <objectType>:<objectInstance>
 
 type DataStore = Record<DataStoreKey, DataStoreEntry>
 
@@ -433,7 +433,7 @@ client.on('readPropertyMultiple', (data) => {
 					for (const key in object) {
 						if (Object.prototype.hasOwnProperty.call(object, key)) {
 							const propId = parseInt(key) as ValueOf<
-								typeof baEnum.PropertyIdentifier
+								typeof PropertyIdentifier
 							>
 							propList.push({
 								property: {
