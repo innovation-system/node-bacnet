@@ -14,9 +14,6 @@
 	  "esModuleInterop": true,
 	  "resolveJsonModule": true,
 	  "strictNullChecks": false,
-	  "noImplicitAny": false,
-	  "strictBindCallApply": false,
-	  "forceConsistentCasingInFileNames": false,
 	  "noFallthroughCasesInSwitch": false,
 	  "module": "commonjs",
 	  "moduleResolution": "node"

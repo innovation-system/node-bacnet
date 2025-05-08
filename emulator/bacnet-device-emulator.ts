@@ -8,15 +8,21 @@ import {
 	ErrorCode,
 	ObjectType,
 	PropertyIdentifier,
+	BACNetAppData,
+	BACnetMessageHeader,
+	BACNetObjectID,
+	ValueOf,
 } from '../src'
 
 const debug = debugLib('bacnet:device:debug')
 
-interface DataStore {
-	[key: string]: {
-		[propertyId: number]: any[]
-	}
+type DataStoreEntry = {
+	[propertyId in ValueOf<typeof baEnum.PropertyIdentifier>]?: BACNetAppData[]
 }
+
+type DataStoreKey = `${ValueOf<typeof baEnum.ObjectType>}:${number}` // <objectType>:<objectInstance>
+
+type DataStore = Record<DataStoreKey, DataStoreEntry>
 
 const settings = {
 	deviceId: 1234,
@@ -28,7 +34,12 @@ const client = new Client()
 
 const dataStore: DataStore = {
 	'1:0': {
-		75: [{ value: { type: 1, instance: 0 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
+		75: [
+			{
+				value: { type: 1, instance: 0 },
+				type: 12,
+			},
+		], // PROP_OBJECT_IDENTIFIER
 		77: [{ value: 'Analog Output 0', type: 7 }], // PROP_OBJECT_NAME
 		79: [{ value: 1, type: 9 }], // PROP_OBJECT_TYPE
 		85: [{ value: 5, type: 4 }], // PROP_PRESENT_VALUE
@@ -60,7 +71,11 @@ const dataStore: DataStore = {
 	},
 }
 
-function normalizeSender(sender): any {
+function getKey(objectId: BACNetObjectID): DataStoreKey {
+	return `${objectId.type}:${objectId.instance}` as DataStoreKey
+}
+
+function normalizeSender(sender?: BACnetMessageHeader['sender']) {
 	if (!sender) {
 		debug(`Received broadcast request, using default broadcast address`)
 		return { address: '255.255.255.255', forwardedFrom: null }
@@ -118,7 +133,7 @@ client.on('readProperty', (data) => {
 			`Processing readProperty for object ${request.objectId?.type}:${request.objectId?.instance}, property ${request.property?.id}, using invokeId ${invokeId}`,
 		)
 
-		const objectKey = `${request.objectId?.type}:${request.objectId?.instance}`
+		const objectKey = getKey(request.objectId)
 		const object = dataStore[objectKey]
 
 		if (!object) {
@@ -132,7 +147,9 @@ client.on('readProperty', (data) => {
 			)
 		}
 
-		const propertyValue = object[request.property?.id]
+		const propertyValue =
+			object[request.property?.id as keyof DataStoreEntry]
+
 		if (!propertyValue) {
 			debug(
 				`Property not found: ${request.property?.id}, sending error response`,
@@ -215,7 +232,7 @@ client.on('writeProperty', (data) => {
 			return
 		}
 
-		const objectKey = `${objectId.type}:${objectId.instance}`
+		const objectKey = getKey(objectId)
 		const object = dataStore[objectKey]
 
 		if (!object) {
@@ -231,7 +248,7 @@ client.on('writeProperty', (data) => {
 			return
 		}
 
-		const propertyId = property.id
+		const propertyId = property.id as keyof DataStoreEntry
 		const propertyValue = object[propertyId]
 		if (!propertyValue) {
 			debug(`Property not found ${propertyId}, sending error response`)
@@ -303,7 +320,7 @@ client.on('whoHas', (data) => {
 		if (payload.highLimit && payload.highLimit < settings.deviceId) return
 
 		if (payload.objectId) {
-			const objectKey = `${payload.objectId.type}:${payload.objectId.instance}`
+			const objectKey = getKey(payload.objectId)
 			const object = dataStore[objectKey]
 
 			if (!object) {
@@ -388,7 +405,7 @@ client.on('readPropertyMultiple', (data) => {
 				property.objectId.instance = settings.deviceId
 			}
 
-			const objectKey = `${property.objectId.type}:${property.objectId.instance}`
+			const objectKey = getKey(property.objectId)
 			const object = dataStore[objectKey]
 
 			if (!object) {
@@ -401,7 +418,10 @@ client.on('readPropertyMultiple', (data) => {
 				continue
 			}
 
-			const propList = []
+			const propList: Array<{
+				property: { id: number; index: number }
+				value: BACNetAppData[]
+			}> = []
 
 			for (const item of property.properties) {
 				if (!item || item.id === undefined) {
@@ -412,19 +432,22 @@ client.on('readPropertyMultiple', (data) => {
 				if (item.id === PropertyIdentifier.ALL) {
 					for (const key in object) {
 						if (Object.prototype.hasOwnProperty.call(object, key)) {
+							const propId = parseInt(key) as ValueOf<
+								typeof baEnum.PropertyIdentifier
+							>
 							propList.push({
 								property: {
-									id: parseInt(key),
+									id: propId,
 									index: 0xffffffff,
 								},
-								value: object[key],
+								value: object[propId],
 							})
 						}
 					}
 					continue
 				}
 
-				const prop = object[item.id]
+				const prop = object[item.id as keyof DataStoreEntry]
 				if (!prop) {
 					debug('Property not found', item.id)
 					continue
@@ -507,7 +530,7 @@ client.on('writePropertyMultiple', (data) => {
 			return
 		}
 
-		const objectKey = `${objectId.type}:${objectId.instance}`
+		const objectKey = getKey(objectId)
 		const object = dataStore[objectKey]
 
 		if (!object) {
@@ -528,7 +551,7 @@ client.on('writePropertyMultiple', (data) => {
 				continue
 			}
 
-			const propertyId = item.property.id
+			const propertyId = item.property.id as keyof DataStoreEntry
 			const propertyValue = object[propertyId]
 
 			if (!propertyValue) {
@@ -650,7 +673,7 @@ const otherServices: (keyof BACnetClientEvents)[] = [
 
 // Register stub handlers for other services
 otherServices.forEach((service) => {
-	client.on(service as any, (data) => {
+	client.on(service as any, (data: any) => {
 		debug(`${service} request`, data)
 	})
 })

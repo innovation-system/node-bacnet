@@ -556,3 +556,8 @@ export type ServiceResponse<T> = (content: {
 	header?: BACnetMessageHeader
 	payload: T
 }) => void
+
+export interface BacnetService {
+	encode: (buffer: EncodeBuffer, ...args: any[]) => void
+	decode: (buffer: Buffer, offset: number, apduLen: number) => Decode<any>
+}
