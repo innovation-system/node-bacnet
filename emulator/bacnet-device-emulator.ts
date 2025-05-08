@@ -9,7 +9,7 @@ const debug = debugLib('bacnet:device:debug')
 type DataStore = Record<
 	`${ValueOf<typeof baEnum.ObjectType>}:${number}`, // <objectType>:<objectInstance>
 	{
-		[propertyId: ValueOf<typeof baEnum.PropertyIdentifier>]: {
+		[propertyId in ValueOf<typeof baEnum.PropertyIdentifier>]?: {
 			value:
 				| string
 				| number
