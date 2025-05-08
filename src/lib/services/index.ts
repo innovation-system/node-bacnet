@@ -1,4 +1,4 @@
-export * as addListElement from './add-list-element'
+export * as addListElement from './Add-list-element'
 export * as alarmAcknowledge from './alarm-acknowledge'
 export * as alarmSummary from './alarm-summary'
 export * as atomicReadFile from './atomic-read-file'
