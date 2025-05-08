@@ -82,7 +82,8 @@ export const decode = (
 	if (funct & baEnum.NpduControlBit.DESTINATION_SPECIFIED) {
 		hopCount = buffer[offset++]
 	}
-	let networkMsgType = baEnum.NetworkLayerMessageType.WHO_IS_ROUTER_TO_NETWORK
+	let networkMsgType: number =
+		baEnum.NetworkLayerMessageType.WHO_IS_ROUTER_TO_NETWORK
 	let vendorId = 0
 	if (funct & baEnum.NpduControlBit.NETWORK_LAYER_MESSAGE) {
 		networkMsgType = buffer[offset++]
