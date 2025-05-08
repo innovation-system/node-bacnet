@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { ApplicationTag } from '../enum'
+
 import { EncodeBuffer, BACNetEvent } from '../types'
 
 export const encode = (
@@ -79,7 +80,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 		value.eventTimeStamps = []
 
 		for (let i = 0; i < 3; i++) {
-			if (result.tagNumber !== baEnum.ApplicationTag.NULL) {
+			if (result.tagNumber !== ApplicationTag.NULL) {
 				decodedValue = baAsn1.decodeApplicationDate(
 					buffer,
 					offset + len,

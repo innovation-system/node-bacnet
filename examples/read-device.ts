@@ -6,56 +6,68 @@
  */
 
 import Bacnet, {
+	ApplicationTag,
 	BACNetObjectID,
 	BACNetPropertyID,
 	BACNetReadAccessSpecification,
-	DecodeAcknowledgeSingleResult,
-} from '../src/index'
-import * as baEnum from '../src/lib/enum'
+	BinaryLightingPV,
+	BinaryPV,
+	DeviceStatus,
+	EngineeringUnits,
+	ErrorClass,
+	ErrorCode,
+	EventState,
+	EventTransitionBits,
+	FileAccessMethod,
+	getEnumName,
+	LifeSafetyMode,
+	LifeSafetyOperation,
+	LifeSafetyState,
+	LimitEnable,
+	LoggingType,
+	NodeType,
+	NotifyType,
+	ObjectType,
+	ObjectTypesSupported,
+	Polarity,
+	PropertyIdentifier,
+	Reliability,
+	Segmentation,
+	ServicesSupported,
+	ShedState,
+	StatusFlags,
+} from '../src'
 import * as process from 'process'
 
 // Map the Property types to their enums/bitstrings
 const PropertyIdentifierToEnumMap: Record<number, any> = {}
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.OBJECT_TYPE] =
-	baEnum.ObjectType
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.SEGMENTATION_SUPPORTED] =
-	baEnum.Segmentation
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.EVENT_STATE] =
-	baEnum.EventState
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.UNITS] =
-	baEnum.EngineeringUnits
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.RELIABILITY] =
-	baEnum.Reliability
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.NOTIFY_TYPE] =
-	baEnum.NotifyType
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.POLARITY] =
-	baEnum.Polarity
+PropertyIdentifierToEnumMap[PropertyIdentifier.OBJECT_TYPE] = ObjectType
+PropertyIdentifierToEnumMap[PropertyIdentifier.SEGMENTATION_SUPPORTED] =
+	Segmentation
+PropertyIdentifierToEnumMap[PropertyIdentifier.EVENT_STATE] = EventState
+PropertyIdentifierToEnumMap[PropertyIdentifier.UNITS] = EngineeringUnits
+PropertyIdentifierToEnumMap[PropertyIdentifier.RELIABILITY] = Reliability
+PropertyIdentifierToEnumMap[PropertyIdentifier.NOTIFY_TYPE] = NotifyType
+PropertyIdentifierToEnumMap[PropertyIdentifier.POLARITY] = Polarity
+PropertyIdentifierToEnumMap[PropertyIdentifier.PROTOCOL_SERVICES_SUPPORTED] =
+	ServicesSupported
 PropertyIdentifierToEnumMap[
-	baEnum.PropertyIdentifier.PROTOCOL_SERVICES_SUPPORTED
-] = baEnum.ServicesSupported
-PropertyIdentifierToEnumMap[
-	baEnum.PropertyIdentifier.PROTOCOL_OBJECT_TYPES_SUPPORTED
-] = baEnum.ObjectTypesSupported
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.STATUS_FLAGS] =
-	baEnum.StatusFlags
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.LIMIT_ENABLE] =
-	baEnum.LimitEnable
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.EVENT_ENABLE] =
-	baEnum.EventTransitionBits
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.ACKED_TRANSITIONS] =
-	baEnum.EventTransitionBits
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.SYSTEM_STATUS] =
-	baEnum.DeviceStatus
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.SYSTEM_STATUS] =
-	baEnum.DeviceStatus
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.ACK_REQUIRED] =
-	baEnum.EventTransitionBits
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.LOGGING_TYPE] =
-	baEnum.LoggingType
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.FILE_ACCESS_METHOD] =
-	baEnum.FileAccessMethod
-PropertyIdentifierToEnumMap[baEnum.PropertyIdentifier.NODE_TYPE] =
-	baEnum.NodeType
+	PropertyIdentifier.PROTOCOL_OBJECT_TYPES_SUPPORTED
+] = ObjectTypesSupported
+PropertyIdentifierToEnumMap[PropertyIdentifier.STATUS_FLAGS] = StatusFlags
+PropertyIdentifierToEnumMap[PropertyIdentifier.LIMIT_ENABLE] = LimitEnable
+PropertyIdentifierToEnumMap[PropertyIdentifier.EVENT_ENABLE] =
+	EventTransitionBits
+PropertyIdentifierToEnumMap[PropertyIdentifier.ACKED_TRANSITIONS] =
+	EventTransitionBits
+PropertyIdentifierToEnumMap[PropertyIdentifier.SYSTEM_STATUS] = DeviceStatus
+PropertyIdentifierToEnumMap[PropertyIdentifier.SYSTEM_STATUS] = DeviceStatus
+PropertyIdentifierToEnumMap[PropertyIdentifier.ACK_REQUIRED] =
+	EventTransitionBits
+PropertyIdentifierToEnumMap[PropertyIdentifier.LOGGING_TYPE] = LoggingType
+PropertyIdentifierToEnumMap[PropertyIdentifier.FILE_ACCESS_METHOD] =
+	FileAccessMethod
+PropertyIdentifierToEnumMap[PropertyIdentifier.NODE_TYPE] = NodeType
 
 // Sometimes the Map needs to be more specific
 const ObjectTypeSpecificPropertyIdentifierToEnumMap: Record<
@@ -63,139 +75,127 @@ const ObjectTypeSpecificPropertyIdentifierToEnumMap: Record<
 	Record<number, any>
 > = {}
 
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.BINARY_INPUT] =
-	{}
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.BINARY_INPUT][
-	baEnum.PropertyIdentifier.PRESENT_VALUE
-] = baEnum.BinaryPV
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.BINARY_INPUT][
-	baEnum.PropertyIdentifier.MODE
-] = baEnum.BinaryPV
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.BINARY_INPUT] = {}
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.BINARY_INPUT][
+	PropertyIdentifier.PRESENT_VALUE
+] = BinaryPV
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.BINARY_INPUT][
+	PropertyIdentifier.MODE
+] = BinaryPV
 
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.ANALOG_INPUT] =
-	{}
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.ANALOG_INPUT][
-	baEnum.PropertyIdentifier.PRESENT_VALUE
-] = baEnum.BinaryPV //????
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.ANALOG_INPUT] = {}
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.ANALOG_INPUT][
+	PropertyIdentifier.PRESENT_VALUE
+] = BinaryPV //????
 
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.ANALOG_OUTPUT] =
-	{}
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.ANALOG_OUTPUT][
-	baEnum.PropertyIdentifier.PRESENT_VALUE
-] = baEnum.BinaryPV //????
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.ANALOG_OUTPUT] = {}
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.ANALOG_OUTPUT][
+	PropertyIdentifier.PRESENT_VALUE
+] = BinaryPV //????
 
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.BINARY_OUTPUT] =
-	{}
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.BINARY_OUTPUT][
-	baEnum.PropertyIdentifier.PRESENT_VALUE
-] = baEnum.BinaryPV
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.BINARY_OUTPUT][
-	baEnum.PropertyIdentifier.RELINQUISH_DEFAULT
-] = baEnum.BinaryPV
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.BINARY_OUTPUT] = {}
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.BINARY_OUTPUT][
+	PropertyIdentifier.PRESENT_VALUE
+] = BinaryPV
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.BINARY_OUTPUT][
+	PropertyIdentifier.RELINQUISH_DEFAULT
+] = BinaryPV
 
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.BINARY_VALUE] =
-	{}
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.BINARY_VALUE][
-	baEnum.PropertyIdentifier.PRESENT_VALUE
-] = baEnum.BinaryPV
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.BINARY_VALUE][
-	baEnum.PropertyIdentifier.RELINQUISH_DEFAULT
-] = baEnum.BinaryPV
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.BINARY_VALUE] = {}
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.BINARY_VALUE][
+	PropertyIdentifier.PRESENT_VALUE
+] = BinaryPV
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.BINARY_VALUE][
+	PropertyIdentifier.RELINQUISH_DEFAULT
+] = BinaryPV
 
 ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.BINARY_LIGHTING_OUTPUT
+	ObjectType.BINARY_LIGHTING_OUTPUT
 ] = {}
 ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.BINARY_LIGHTING_OUTPUT
-][baEnum.PropertyIdentifier.PRESENT_VALUE] = baEnum.BinaryLightingPV
+	ObjectType.BINARY_LIGHTING_OUTPUT
+][PropertyIdentifier.PRESENT_VALUE] = BinaryLightingPV
 
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.BITSTRING_VALUE
-] = {}
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.BITSTRING_VALUE
-][baEnum.PropertyIdentifier.PRESENT_VALUE] = baEnum.BinaryPV // ???
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.BITSTRING_VALUE] = {}
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.BITSTRING_VALUE][
+	PropertyIdentifier.PRESENT_VALUE
+] = BinaryPV // ???
 
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.LIFE_SAFETY_POINT
-] = {}
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.LIFE_SAFETY_POINT
-][baEnum.PropertyIdentifier.PRESENT_VALUE] = baEnum.LifeSafetyState
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.LIFE_SAFETY_POINT
-][baEnum.PropertyIdentifier.TRACKING_VALUE] = baEnum.LifeSafetyState
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.LIFE_SAFETY_POINT
-][baEnum.PropertyIdentifier.MODE] = baEnum.LifeSafetyMode
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.LIFE_SAFETY_POINT
-][baEnum.PropertyIdentifier.ACCEPTED_MODES] = baEnum.LifeSafetyMode
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.LIFE_SAFETY_POINT
-][baEnum.PropertyIdentifier.SILENCED] = baEnum.LifeSafetyState
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.LIFE_SAFETY_POINT
-][baEnum.PropertyIdentifier.OPERATION_EXPECTED] = baEnum.LifeSafetyOperation
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LIFE_SAFETY_POINT] = {}
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LIFE_SAFETY_POINT][
+	PropertyIdentifier.PRESENT_VALUE
+] = LifeSafetyState
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LIFE_SAFETY_POINT][
+	PropertyIdentifier.TRACKING_VALUE
+] = LifeSafetyState
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LIFE_SAFETY_POINT][
+	PropertyIdentifier.MODE
+] = LifeSafetyMode
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LIFE_SAFETY_POINT][
+	PropertyIdentifier.ACCEPTED_MODES
+] = LifeSafetyMode
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LIFE_SAFETY_POINT][
+	PropertyIdentifier.SILENCED
+] = LifeSafetyState
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LIFE_SAFETY_POINT][
+	PropertyIdentifier.OPERATION_EXPECTED
+] = LifeSafetyOperation
 
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.LIFE_SAFETY_ZONE
-] = {}
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.LIFE_SAFETY_ZONE
-][baEnum.PropertyIdentifier.PRESENT_VALUE] = baEnum.LifeSafetyState
-ObjectTypeSpecificPropertyIdentifierToEnumMap[
-	baEnum.ObjectType.LIFE_SAFETY_ZONE
-][baEnum.PropertyIdentifier.MODE] = baEnum.LifeSafetyMode
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LIFE_SAFETY_ZONE] = {}
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LIFE_SAFETY_ZONE][
+	PropertyIdentifier.PRESENT_VALUE
+] = LifeSafetyState
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LIFE_SAFETY_ZONE][
+	PropertyIdentifier.MODE
+] = LifeSafetyMode
 
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.LOAD_CONTROL] =
-	{}
-ObjectTypeSpecificPropertyIdentifierToEnumMap[baEnum.ObjectType.LOAD_CONTROL][
-	baEnum.PropertyIdentifier.PRESENT_VALUE
-] = baEnum.ShedState
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LOAD_CONTROL] = {}
+ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LOAD_CONTROL][
+	PropertyIdentifier.PRESENT_VALUE
+] = ShedState
 
 // For Objects we read out All properties if cli parameter --all is provided
 const propSubSet = process.argv.includes('--all')
-	? Object.values(baEnum.PropertyIdentifier)
+	? Object.values(PropertyIdentifier)
 	: [
 			/* normally supported from all devices */
-			baEnum.PropertyIdentifier.OBJECT_IDENTIFIER,
-			baEnum.PropertyIdentifier.OBJECT_NAME,
-			baEnum.PropertyIdentifier.OBJECT_TYPE,
-			baEnum.PropertyIdentifier.PRESENT_VALUE,
-			baEnum.PropertyIdentifier.STATUS_FLAGS,
-			baEnum.PropertyIdentifier.EVENT_STATE,
-			baEnum.PropertyIdentifier.RELIABILITY,
-			baEnum.PropertyIdentifier.OUT_OF_SERVICE,
-			baEnum.PropertyIdentifier.UNITS,
+			PropertyIdentifier.OBJECT_IDENTIFIER,
+			PropertyIdentifier.OBJECT_NAME,
+			PropertyIdentifier.OBJECT_TYPE,
+			PropertyIdentifier.PRESENT_VALUE,
+			PropertyIdentifier.STATUS_FLAGS,
+			PropertyIdentifier.EVENT_STATE,
+			PropertyIdentifier.RELIABILITY,
+			PropertyIdentifier.OUT_OF_SERVICE,
+			PropertyIdentifier.UNITS,
 			/* other properties */
-			baEnum.PropertyIdentifier.DESCRIPTION,
-			baEnum.PropertyIdentifier.SYSTEM_STATUS,
-			baEnum.PropertyIdentifier.VENDOR_NAME,
-			baEnum.PropertyIdentifier.VENDOR_IDENTIFIER,
-			baEnum.PropertyIdentifier.MODEL_NAME,
-			baEnum.PropertyIdentifier.FIRMWARE_REVISION,
-			baEnum.PropertyIdentifier.APPLICATION_SOFTWARE_VERSION,
-			baEnum.PropertyIdentifier.LOCATION,
-			baEnum.PropertyIdentifier.LOCAL_DATE,
-			baEnum.PropertyIdentifier.LOCAL_TIME,
-			baEnum.PropertyIdentifier.UTC_OFFSET,
-			baEnum.PropertyIdentifier.DAYLIGHT_SAVINGS_STATUS,
-			baEnum.PropertyIdentifier.PROTOCOL_VERSION,
-			baEnum.PropertyIdentifier.PROTOCOL_REVISION,
-			baEnum.PropertyIdentifier.PROTOCOL_SERVICES_SUPPORTED,
-			baEnum.PropertyIdentifier.PROTOCOL_OBJECT_TYPES_SUPPORTED,
-			baEnum.PropertyIdentifier.OBJECT_LIST,
-			baEnum.PropertyIdentifier.MAX_APDU_LENGTH_ACCEPTED,
-			baEnum.PropertyIdentifier.SEGMENTATION_SUPPORTED,
-			baEnum.PropertyIdentifier.APDU_TIMEOUT,
-			baEnum.PropertyIdentifier.NUMBER_OF_APDU_RETRIES,
-			baEnum.PropertyIdentifier.DEVICE_ADDRESS_BINDING,
-			baEnum.PropertyIdentifier.DATABASE_REVISION,
-			baEnum.PropertyIdentifier.MAX_INFO_FRAMES,
-			baEnum.PropertyIdentifier.MAX_MASTER,
-			baEnum.PropertyIdentifier.ACTIVE_COV_SUBSCRIPTIONS,
-			baEnum.PropertyIdentifier.ACTIVE_COV_MULTIPLE_SUBSCRIPTIONS,
+			PropertyIdentifier.DESCRIPTION,
+			PropertyIdentifier.SYSTEM_STATUS,
+			PropertyIdentifier.VENDOR_NAME,
+			PropertyIdentifier.VENDOR_IDENTIFIER,
+			PropertyIdentifier.MODEL_NAME,
+			PropertyIdentifier.FIRMWARE_REVISION,
+			PropertyIdentifier.APPLICATION_SOFTWARE_VERSION,
+			PropertyIdentifier.LOCATION,
+			PropertyIdentifier.LOCAL_DATE,
+			PropertyIdentifier.LOCAL_TIME,
+			PropertyIdentifier.UTC_OFFSET,
+			PropertyIdentifier.DAYLIGHT_SAVINGS_STATUS,
+			PropertyIdentifier.PROTOCOL_VERSION,
+			PropertyIdentifier.PROTOCOL_REVISION,
+			PropertyIdentifier.PROTOCOL_SERVICES_SUPPORTED,
+			PropertyIdentifier.PROTOCOL_OBJECT_TYPES_SUPPORTED,
+			PropertyIdentifier.OBJECT_LIST,
+			PropertyIdentifier.MAX_APDU_LENGTH_ACCEPTED,
+			PropertyIdentifier.SEGMENTATION_SUPPORTED,
+			PropertyIdentifier.APDU_TIMEOUT,
+			PropertyIdentifier.NUMBER_OF_APDU_RETRIES,
+			PropertyIdentifier.DEVICE_ADDRESS_BINDING,
+			PropertyIdentifier.DATABASE_REVISION,
+			PropertyIdentifier.MAX_INFO_FRAMES,
+			PropertyIdentifier.MAX_MASTER,
+			PropertyIdentifier.ACTIVE_COV_SUBSCRIPTIONS,
+			PropertyIdentifier.ACTIVE_COV_MULTIPLE_SUBSCRIPTIONS,
 		]
 
 const debug = process.argv.includes('--debug')
@@ -261,7 +261,7 @@ function getAllPropertiesManually(
 				objRes.value = value.values
 				result.push(objRes)
 			} else {
-				// console.log('Device do not contain object ' + baEnum.getEnumName(baEnum.PropertyIdentifier, prop));
+				// console.log('Device do not contain object ' + getEnumName(PropertyIdentifier, prop));
 			}
 			getAllPropertiesManually(
 				address,
@@ -323,7 +323,7 @@ function handleBitString(
 		if (readBit(buffer, bufferIndex, i % 8)) {
 			if (usedEnum) {
 				try {
-					const enumName = baEnum.getEnumName(usedEnum, i)
+					const enumName = getEnumName(usedEnum, i)
 					if (enumName) {
 						res.push(enumName)
 					} else {
@@ -365,30 +365,30 @@ function parseValue(
 		value.value !== undefined
 	) {
 		switch (value.type) {
-			case baEnum.ApplicationTag.NULL:
+			case ApplicationTag.NULL:
 				// should be null already, but set again
 				resValue = null
 				break
-			case baEnum.ApplicationTag.BOOLEAN:
+			case ApplicationTag.BOOLEAN:
 				// convert number to a real boolean
 				resValue = !!value.value
 				break
-			case baEnum.ApplicationTag.UNSIGNED_INTEGER:
-			case baEnum.ApplicationTag.SIGNED_INTEGER:
-			case baEnum.ApplicationTag.REAL:
-			case baEnum.ApplicationTag.DOUBLE:
-			case baEnum.ApplicationTag.CHARACTER_STRING:
+			case ApplicationTag.UNSIGNED_INTEGER:
+			case ApplicationTag.SIGNED_INTEGER:
+			case ApplicationTag.REAL:
+			case ApplicationTag.DOUBLE:
+			case ApplicationTag.CHARACTER_STRING:
 				// datatype should be correct already
 				resValue = value.value
 				break
-			case baEnum.ApplicationTag.DATE:
-			case baEnum.ApplicationTag.TIME:
-			case baEnum.ApplicationTag.TIMESTAMP:
+			case ApplicationTag.DATE:
+			case ApplicationTag.TIME:
+			case ApplicationTag.TIMESTAMP:
 				// datatype should be Date too
 				// Javascript do not have date/timestamp only
 				resValue = value.value
 				break
-			case baEnum.ApplicationTag.BIT_STRING:
+			case ApplicationTag.BIT_STRING:
 				// handle bitstrings specific and more generic
 				if (
 					ObjectTypeSpecificPropertyIdentifierToEnumMap[parentType] &&
@@ -410,15 +410,15 @@ function parseValue(
 						PropertyIdentifierToEnumMap[objId],
 					)
 				} else {
-					if (parentType !== baEnum.ObjectType.BITSTRING_VALUE) {
+					if (parentType !== ObjectType.BITSTRING_VALUE) {
 						console.log(
-							`Unknown value for BIT_STRING type for objId ${baEnum.getEnumName(baEnum.PropertyIdentifier, objId)} and parent type ${baEnum.getEnumName(baEnum.ObjectType, parentType)}`,
+							`Unknown value for BIT_STRING type for objId ${getEnumName(PropertyIdentifier, objId)} and parent type ${getEnumName(ObjectType, parentType)}`,
 						)
 					}
 					resValue = value.value
 				}
 				break
-			case baEnum.ApplicationTag.ENUMERATED:
+			case ApplicationTag.ENUMERATED:
 				// handle enumerations specific and more generic
 				if (
 					ObjectTypeSpecificPropertyIdentifierToEnumMap[parentType] &&
@@ -426,32 +426,31 @@ function parseValue(
 						objId
 					]
 				) {
-					resValue = baEnum.getEnumName(
+					resValue = getEnumName(
 						ObjectTypeSpecificPropertyIdentifierToEnumMap[
 							parentType
 						][objId],
 						value.value,
 					)
 				} else if (PropertyIdentifierToEnumMap[objId]) {
-					resValue = baEnum.getEnumName(
+					resValue = getEnumName(
 						PropertyIdentifierToEnumMap[objId],
 						value.value,
 					)
 				} else {
 					console.log(
-						`Unknown value for ENUMERATED type for objId ${baEnum.getEnumName(baEnum.PropertyIdentifier, objId)} and parent type ${baEnum.getEnumName(baEnum.ObjectType, parentType)}`,
+						`Unknown value for ENUMERATED type for objId ${getEnumName(PropertyIdentifier, objId)} and parent type ${getEnumName(ObjectType, parentType)}`,
 					)
 					resValue = value.value
 				}
 				break
-			case baEnum.ApplicationTag.OBJECTIDENTIFIER:
+			case ApplicationTag.OBJECTIDENTIFIER:
 				// Look up object identifiers
 				// Some object identifiers should not be looked up because we end in loops else
 				if (
-					objId === baEnum.PropertyIdentifier.OBJECT_IDENTIFIER ||
-					objId ===
-						baEnum.PropertyIdentifier.STRUCTURED_OBJECT_LIST ||
-					objId === baEnum.PropertyIdentifier.SUBORDINATE_LIST
+					objId === PropertyIdentifier.OBJECT_IDENTIFIER ||
+					objId === PropertyIdentifier.STRUCTURED_OBJECT_LIST ||
+					objId === PropertyIdentifier.SUBORDINATE_LIST
 				) {
 					resValue = value.value
 				} else if (supportsMultiple) {
@@ -489,30 +488,24 @@ function parseValue(
 					return
 				}
 				break
-			case baEnum.ApplicationTag.OCTET_STRING:
+			case ApplicationTag.OCTET_STRING:
 				// It is kind of binary data??
 				resValue = value.value
 				break
-			case baEnum.ApplicationTag.ERROR:
+			case ApplicationTag.ERROR:
 				// lookup error class and code
 				resValue = {
-					errorClass: baEnum.getEnumName(
-						baEnum.ErrorClass,
-						value.value.errorClass,
-					),
-					errorCode: baEnum.getEnumName(
-						baEnum.ErrorCode,
-						value.value.errorCode,
-					),
+					errorClass: getEnumName(ErrorClass, value.value.errorClass),
+					errorCode: getEnumName(ErrorCode, value.value.errorCode),
 				}
 				break
-			case baEnum.ApplicationTag.OBJECT_PROPERTY_REFERENCE:
-			case baEnum.ApplicationTag.DEVICE_OBJECT_PROPERTY_REFERENCE:
-			case baEnum.ApplicationTag.DEVICE_OBJECT_REFERENCE:
-			case baEnum.ApplicationTag.READ_ACCESS_SPECIFICATION: //???
+			case ApplicationTag.OBJECT_PROPERTY_REFERENCE:
+			case ApplicationTag.DEVICE_OBJECT_PROPERTY_REFERENCE:
+			case ApplicationTag.DEVICE_OBJECT_REFERENCE:
+			case ApplicationTag.READ_ACCESS_SPECIFICATION: //???
 				resValue = value.value
 				break
-			case baEnum.ApplicationTag.CONTEXT_SPECIFIC_DECODED:
+			case ApplicationTag.CONTEXT_SPECIFIC_DECODED:
 				parseValue(
 					address,
 					objId,
@@ -522,7 +515,7 @@ function parseValue(
 					callback,
 				)
 				return
-			case baEnum.ApplicationTag.READ_ACCESS_RESULT: // ????
+			case ApplicationTag.READ_ACCESS_RESULT: // ????
 				resValue = value.value
 				break
 			default:
@@ -640,7 +633,7 @@ function parseDeviceObject(
 				return
 			}
 
-			let objId = baEnum.getEnumName(baEnum.PropertyIdentifier, devObj.id)
+			let objId = getEnumName(PropertyIdentifier, devObj.id)
 			if (objId && devObj.index !== 4294967295) {
 				objId += `-${devObj.index}`
 			}

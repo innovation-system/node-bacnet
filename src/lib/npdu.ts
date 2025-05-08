@@ -1,4 +1,4 @@
-import * as baEnum from './enum'
+import { NpduControlBit, NetworkLayerMessageType } from './enum'
 import { EncodeBuffer, BACNetAddress, TargetResult } from './types'
 
 const BACNET_PROTOCOL_VERSION = 1
@@ -67,30 +67,29 @@ export const decode = (
 	offset++
 	const funct = buffer[offset++]
 	let destination: BACNetAddress | undefined
-	if (funct & baEnum.NpduControlBit.DESTINATION_SPECIFIED) {
+	if (funct & NpduControlBit.DESTINATION_SPECIFIED) {
 		const tmpDestination = decodeTarget(buffer, offset)
 		offset += tmpDestination.len
 		destination = tmpDestination.target
 	}
 	let source: BACNetAddress | undefined
-	if (funct & baEnum.NpduControlBit.SOURCE_SPECIFIED) {
+	if (funct & NpduControlBit.SOURCE_SPECIFIED) {
 		const tmpSource = decodeTarget(buffer, offset)
 		offset += tmpSource.len
 		source = tmpSource.target
 	}
 	let hopCount = 0
-	if (funct & baEnum.NpduControlBit.DESTINATION_SPECIFIED) {
+	if (funct & NpduControlBit.DESTINATION_SPECIFIED) {
 		hopCount = buffer[offset++]
 	}
-	let networkMsgType = baEnum.NetworkLayerMessageType.WHO_IS_ROUTER_TO_NETWORK
+	let networkMsgType = NetworkLayerMessageType.WHO_IS_ROUTER_TO_NETWORK
 	let vendorId = 0
-	if (funct & baEnum.NpduControlBit.NETWORK_LAYER_MESSAGE) {
+	if (funct & NpduControlBit.NETWORK_LAYER_MESSAGE) {
 		networkMsgType = buffer[offset++]
 		if (networkMsgType >= 0x80) {
 			vendorId = (buffer[offset++] << 8) | (buffer[offset++] << 0)
 		} else if (
-			networkMsgType ===
-			baEnum.NetworkLayerMessageType.WHO_IS_ROUTER_TO_NETWORK
+			networkMsgType === NetworkLayerMessageType.WHO_IS_ROUTER_TO_NETWORK
 		) {
 			offset += 2
 		}
@@ -124,8 +123,8 @@ export const encode = (
 	buffer.buffer[buffer.offset++] = BACNET_PROTOCOL_VERSION
 	buffer.buffer[buffer.offset++] =
 		funct |
-		(hasDestination ? baEnum.NpduControlBit.DESTINATION_SPECIFIED : 0) |
-		(hasSource ? baEnum.NpduControlBit.SOURCE_SPECIFIED : 0)
+		(hasDestination ? NpduControlBit.DESTINATION_SPECIFIED : 0) |
+		(hasSource ? NpduControlBit.SOURCE_SPECIFIED : 0)
 
 	if (hasDestination) {
 		encodeTarget(buffer, destination as BACNetAddress)
@@ -139,7 +138,7 @@ export const encode = (
 		buffer.buffer[buffer.offset++] = hopCount || 0
 	}
 
-	if ((funct & baEnum.NpduControlBit.NETWORK_LAYER_MESSAGE) > 0) {
+	if ((funct & NpduControlBit.NETWORK_LAYER_MESSAGE) > 0) {
 		buffer.buffer[buffer.offset++] = networkMsgType || 0
 		if ((networkMsgType || 0) >= 0x80) {
 			buffer.buffer[buffer.offset++] = ((vendorId || 0) & 0xff00) >> 8

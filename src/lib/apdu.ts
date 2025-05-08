@@ -1,5 +1,5 @@
 import * as baAsn1 from './asn1'
-import * as baEnum from './enum'
+import { PDU_TYPE_MASK, PduConReqBit, PduType } from './enum'
 import {
 	EncodeBuffer,
 	ConfirmedServiceRequest,
@@ -28,14 +28,14 @@ export const getDecodedInvokeId = (
 	offset: number,
 ): number | undefined => {
 	const type = getDecodedType(buffer, offset)
-	switch (type & baEnum.PDU_TYPE_MASK) {
-		case baEnum.PduType.SIMPLE_ACK:
-		case baEnum.PduType.COMPLEX_ACK:
-		case baEnum.PduType.ERROR:
-		case baEnum.PduType.REJECT:
-		case baEnum.PduType.ABORT:
+	switch (type & PDU_TYPE_MASK) {
+		case PduType.SIMPLE_ACK:
+		case PduType.COMPLEX_ACK:
+		case PduType.ERROR:
+		case PduType.REJECT:
+		case PduType.ABORT:
 			return buffer[offset + 1]
-		case baEnum.PduType.CONFIRMED_REQUEST:
+		case PduType.CONFIRMED_REQUEST:
 			return buffer[offset + 2]
 		default:
 			return undefined
@@ -55,7 +55,7 @@ export const encodeConfirmedServiceRequest = (
 	buffer.buffer[buffer.offset++] = type
 	buffer.buffer[buffer.offset++] = maxSegments | maxApdu
 	buffer.buffer[buffer.offset++] = invokeId
-	if ((type & baEnum.PduConReqBit.SEGMENTED_MESSAGE) > 0) {
+	if ((type & PduConReqBit.SEGMENTED_MESSAGE) > 0) {
 		if (sequencenumber === undefined) {
 			throw new Error('sequencenumber is undefined')
 		}
@@ -79,7 +79,7 @@ export const decodeConfirmedServiceRequest = (
 	const invokeId = buffer[offset++]
 	let sequencenumber = 0
 	let proposedWindowNumber = 0
-	if ((type & baEnum.PduConReqBit.SEGMENTED_MESSAGE) > 0) {
+	if ((type & PduConReqBit.SEGMENTED_MESSAGE) > 0) {
 		sequencenumber = buffer[offset++]
 		proposedWindowNumber = buffer[offset++]
 	}
@@ -154,7 +154,7 @@ export const encodeComplexAck = (
 	let len = 3
 	buffer.buffer[buffer.offset++] = type
 	buffer.buffer[buffer.offset++] = invokeId
-	if ((type & baEnum.PduConReqBit.SEGMENTED_MESSAGE) > 0) {
+	if ((type & PduConReqBit.SEGMENTED_MESSAGE) > 0) {
 		if (sequencenumber === undefined) {
 			throw new Error('sequencenumber is undefined')
 		}
@@ -178,7 +178,7 @@ export const decodeComplexAck = (
 	const invokeId = buffer[offset++]
 	let sequencenumber = 0
 	let proposedWindowNumber = 0
-	if ((type & baEnum.PduConReqBit.SEGMENTED_MESSAGE) > 0) {
+	if ((type & PduConReqBit.SEGMENTED_MESSAGE) > 0) {
 		sequencenumber = buffer[offset++]
 		proposedWindowNumber = buffer[offset++]
 	}

@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { ApplicationTag } from '../enum'
+
 import { BACNetObjectID, EncodeBuffer } from '../types'
 
 export const encode = (
@@ -47,8 +48,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.OBJECTIDENTIFIER)
-		return undefined
+	if (result.tagNumber !== ApplicationTag.OBJECTIDENTIFIER) return undefined
 
 	decodedValue = baAsn1.decodeObjectId(buffer, offset + len)
 	len += decodedValue.len
@@ -63,8 +63,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 		len += result.len
-		if (result.tagNumber !== baEnum.ApplicationTag.SIGNED_INTEGER)
-			return undefined
+		if (result.tagNumber !== ApplicationTag.SIGNED_INTEGER) return undefined
 
 		decodedValue = baAsn1.decodeSigned(buffer, offset + len, result.value)
 		len += decodedValue.len
@@ -72,8 +71,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 		len += result.len
-		if (result.tagNumber !== baEnum.ApplicationTag.OCTET_STRING)
-			return undefined
+		if (result.tagNumber !== ApplicationTag.OCTET_STRING) return undefined
 
 		decodedValue = baAsn1.decodeOctetString(
 			buffer,
@@ -94,8 +92,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 		len += result.len
-		if (result.tagNumber !== baEnum.ApplicationTag.SIGNED_INTEGER)
-			return undefined
+		if (result.tagNumber !== ApplicationTag.SIGNED_INTEGER) return undefined
 
 		decodedValue = baAsn1.decodeSigned(buffer, offset + len, result.value)
 		len += decodedValue.len
@@ -103,7 +100,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 		len += result.len
-		if (result.tagNumber !== baEnum.ApplicationTag.UNSIGNED_INTEGER)
+		if (result.tagNumber !== ApplicationTag.UNSIGNED_INTEGER)
 			return undefined
 
 		decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
@@ -113,7 +110,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 		for (let i = 0; i < blockCount; i++) {
 			result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 			len += result.len
-			if (result.tagNumber !== baEnum.ApplicationTag.OCTET_STRING)
+			if (result.tagNumber !== ApplicationTag.OCTET_STRING)
 				return undefined
 
 			decodedValue = baAsn1.decodeOctetString(

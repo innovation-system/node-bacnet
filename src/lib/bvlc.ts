@@ -1,4 +1,8 @@
-import * as baEnum from './enum'
+import {
+	BVLL_TYPE_BACNET_IP,
+	BvlcResultPurpose,
+	BVLC_HEADER_LENGTH,
+} from './enum'
 import { BvlcPacket } from './types'
 
 const DEFAULT_BACNET_PORT = 47808
@@ -9,13 +13,13 @@ export const encode = (
 	msgLength: number,
 	originatingIP?: string,
 ): number => {
-	buffer[0] = baEnum.BVLL_TYPE_BACNET_IP
+	buffer[0] = BVLL_TYPE_BACNET_IP
 	buffer[1] = func
 	buffer[2] = (msgLength & 0xff00) >> 8
 	buffer[3] = (msgLength & 0x00ff) >> 0
 	if (originatingIP) {
 		// This is always a FORWARDED_NPDU regardless of the 'func' parameter.
-		if (func !== baEnum.BvlcResultPurpose.FORWARDED_NPDU) {
+		if (func !== BvlcResultPurpose.FORWARDED_NPDU) {
 			throw new Error(
 				'Cannot specify originatingIP unless ' +
 					'BvlcResultPurpose.FORWARDED_NPDU is used.',
@@ -31,15 +35,15 @@ export const encode = (
 		buffer[7] = parseInt(ip[3], 10)
 		buffer[8] = (port & 0xff00) >> 8
 		buffer[9] = (port & 0x00ff) >> 0
-		return 6 + baEnum.BVLC_HEADER_LENGTH
+		return 6 + BVLC_HEADER_LENGTH
 	} else {
-		if (func === baEnum.BvlcResultPurpose.FORWARDED_NPDU) {
+		if (func === BvlcResultPurpose.FORWARDED_NPDU) {
 			throw new Error(
 				'Must specify originatingIP if BvlcResultPurpose.FORWARDED_NPDU is used.',
 			)
 		}
 	}
-	return baEnum.BVLC_HEADER_LENGTH
+	return BVLC_HEADER_LENGTH
 }
 
 export const decode = (
@@ -49,24 +53,24 @@ export const decode = (
 	let len: number
 	const func = buffer[1]
 	const msgLength = (buffer[2] << 8) | (buffer[3] << 0)
-	if (buffer[0] !== baEnum.BVLL_TYPE_BACNET_IP || buffer.length !== msgLength)
+	if (buffer[0] !== BVLL_TYPE_BACNET_IP || buffer.length !== msgLength)
 		return undefined
 	let originatingIP = null
 	switch (func) {
-		case baEnum.BvlcResultPurpose.BVLC_RESULT:
-		case baEnum.BvlcResultPurpose.ORIGINAL_UNICAST_NPDU:
-		case baEnum.BvlcResultPurpose.ORIGINAL_BROADCAST_NPDU:
-		case baEnum.BvlcResultPurpose.DISTRIBUTE_BROADCAST_TO_NETWORK:
-		case baEnum.BvlcResultPurpose.REGISTER_FOREIGN_DEVICE:
-		case baEnum.BvlcResultPurpose.READ_FOREIGN_DEVICE_TABLE:
-		case baEnum.BvlcResultPurpose.DELETE_FOREIGN_DEVICE_TABLE_ENTRY:
-		case baEnum.BvlcResultPurpose.READ_BROADCAST_DISTRIBUTION_TABLE:
-		case baEnum.BvlcResultPurpose.WRITE_BROADCAST_DISTRIBUTION_TABLE:
-		case baEnum.BvlcResultPurpose.READ_BROADCAST_DISTRIBUTION_TABLE_ACK:
-		case baEnum.BvlcResultPurpose.READ_FOREIGN_DEVICE_TABLE_ACK:
+		case BvlcResultPurpose.BVLC_RESULT:
+		case BvlcResultPurpose.ORIGINAL_UNICAST_NPDU:
+		case BvlcResultPurpose.ORIGINAL_BROADCAST_NPDU:
+		case BvlcResultPurpose.DISTRIBUTE_BROADCAST_TO_NETWORK:
+		case BvlcResultPurpose.REGISTER_FOREIGN_DEVICE:
+		case BvlcResultPurpose.READ_FOREIGN_DEVICE_TABLE:
+		case BvlcResultPurpose.DELETE_FOREIGN_DEVICE_TABLE_ENTRY:
+		case BvlcResultPurpose.READ_BROADCAST_DISTRIBUTION_TABLE:
+		case BvlcResultPurpose.WRITE_BROADCAST_DISTRIBUTION_TABLE:
+		case BvlcResultPurpose.READ_BROADCAST_DISTRIBUTION_TABLE_ACK:
+		case BvlcResultPurpose.READ_FOREIGN_DEVICE_TABLE_ACK:
 			len = 4
 			break
-		case baEnum.BvlcResultPurpose.FORWARDED_NPDU:
+		case BvlcResultPurpose.FORWARDED_NPDU:
 			// Work out where the packet originally came from before the BBMD
 			// forwarded it to us, so we can tell the BBMD where to send any reply to.
 			const port = (buffer[8] << 8) | buffer[9]
@@ -79,7 +83,7 @@ export const decode = (
 
 			len = 10
 			break
-		case baEnum.BvlcResultPurpose.SECURE_BVLL:
+		case BvlcResultPurpose.SECURE_BVLL:
 			return undefined
 		default:
 			return undefined

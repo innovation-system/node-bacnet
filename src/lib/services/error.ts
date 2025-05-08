@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { ErrorClassName, ErrorCodeName } from '../enum'
+
 import { EncodeBuffer } from '../types'
 
 export const encode = (
@@ -37,8 +38,8 @@ export const buildMessage = (result: {
 	code: number
 }): string => {
 	return (
-		`BacnetError Class: ${baEnum.ErrorClassName[result.class]} ` +
+		`BacnetError Class: ${ErrorClassName[result.class]} ` +
 		`(${result.class}) ` +
-		`Code: ${baEnum.ErrorCodeName[result.code]} (${result.code})`
+		`Code: ${ErrorCodeName[result.code]} (${result.code})`
 	)
 }

@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { ASN1_ARRAY_ALL } from '../enum'
+
 import { EncodeBuffer, BACNetObjectID, BACNetAppData } from '../types'
 
 export const encode = (
@@ -11,7 +12,7 @@ export const encode = (
 ): void => {
 	baAsn1.encodeContextObjectId(buffer, 0, objectId.type, objectId.instance)
 	baAsn1.encodeContextEnumerated(buffer, 1, propertyId)
-	if (arrayIndex !== baEnum.ASN1_ARRAY_ALL) {
+	if (arrayIndex !== ASN1_ARRAY_ALL) {
 		baAsn1.encodeContextUnsigned(buffer, 2, arrayIndex)
 	}
 	baAsn1.encodeOpeningTag(buffer, 3)
@@ -39,7 +40,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 		objectId: { type: 0, instance: 0 },
 		property: {
 			id: 0,
-			index: baEnum.ASN1_ARRAY_ALL,
+			index: ASN1_ARRAY_ALL,
 		},
 		values: [],
 	}

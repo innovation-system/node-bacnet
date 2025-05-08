@@ -1,5 +1,4 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
 
 interface DecodeResult {
 	len: number

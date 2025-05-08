@@ -4,7 +4,8 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
-    "source.fixAll.markdownlint": "explicit"
+    "source.fixAll.markdownlint": "explicit",
+    "source.addMissingImports.ts": "explicit"
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

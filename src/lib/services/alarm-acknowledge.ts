@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { TimeStamp } from '../enum'
+
 import { EncodeBuffer, BACNetObjectID } from '../types'
 
 export const encode = (
@@ -73,15 +74,15 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
 
-	if (result.tagNumber === baEnum.TimeStamp.TIME) {
+	if (result.tagNumber === TimeStamp.TIME) {
 		decodedValue = baAsn1.decodeBacnetTime(buffer, offset + len)
 		len += decodedValue.len
 		value.eventTimeStamp = decodedValue.value
-	} else if (result.tagNumber === baEnum.TimeStamp.SEQUENCE_NUMBER) {
+	} else if (result.tagNumber === TimeStamp.SEQUENCE_NUMBER) {
 		decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
 		len += decodedValue.len
 		value.eventTimeStamp = decodedValue.value
-	} else if (result.tagNumber === baEnum.TimeStamp.DATETIME) {
+	} else if (result.tagNumber === TimeStamp.DATETIME) {
 		const dateRaw = baAsn1.decodeApplicationDate(buffer, offset + len)
 		len += dateRaw.len
 		const date = dateRaw.value
@@ -117,15 +118,15 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
 
-	if (result.tagNumber === baEnum.TimeStamp.TIME) {
+	if (result.tagNumber === TimeStamp.TIME) {
 		decodedValue = baAsn1.decodeBacnetTime(buffer, offset + len)
 		len += decodedValue.len
 		value.acknowledgeTimeStamp = decodedValue.value
-	} else if (result.tagNumber === baEnum.TimeStamp.SEQUENCE_NUMBER) {
+	} else if (result.tagNumber === TimeStamp.SEQUENCE_NUMBER) {
 		decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
 		len += decodedValue.len
 		value.acknowledgeTimeStamp = decodedValue.value
-	} else if (result.tagNumber === baEnum.TimeStamp.DATETIME) {
+	} else if (result.tagNumber === TimeStamp.DATETIME) {
 		const dateRaw = baAsn1.decodeApplicationDate(buffer, offset + len)
 		len += dateRaw.len
 		const date = dateRaw.value

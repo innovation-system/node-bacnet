@@ -3,7 +3,7 @@ import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
-import * as baEnum from '../../src/lib/enum'
+import { CovType } from '../../src'
 
 test.describe('bacnet - Services layer EventNotifyData unit', () => {
 	test('should successfully encode and decode a change of bitstring event', (t) => {
@@ -105,7 +105,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 			eventType: 2,
 			messageText: 'Test1234$',
 			notifyType: 1,
-			changeOfValueTag: baEnum.CovType.REAL,
+			changeOfValueTag: CovType.REAL,
 			changeOfValueChangeValue: 90,
 			changeOfValueStatusFlags: {
 				bitsUsed: 24,

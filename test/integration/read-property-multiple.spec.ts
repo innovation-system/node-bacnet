@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert'
 
-import * as baEnum from '../../src/lib/enum'
 import * as utils from './utils'
+import { ASN1_ARRAY_ALL } from '../../src'
 
 test.describe('bacnet - readPropertyMultiple integration', () => {
 	test('should return a timeout error if no device is available', (t) => {
@@ -11,7 +11,7 @@ test.describe('bacnet - readPropertyMultiple integration', () => {
 			const requestArray = [
 				{
 					objectId: { type: 8, instance: 4194303 },
-					properties: [{ id: 8, index: baEnum.ASN1_ARRAY_ALL }],
+					properties: [{ id: 8, index: ASN1_ARRAY_ALL }],
 				},
 			]
 			client.readPropertyMultiple(
@@ -39,7 +39,7 @@ test.describe('bacnet - readPropertyMultiple integration', () => {
 			const requestArray = [
 				{
 					objectId: { type: 8, instance: 4194303 },
-					properties: [{ id: 8, index: baEnum.ASN1_ARRAY_ALL }],
+					properties: [{ id: 8, index: ASN1_ARRAY_ALL }],
 				},
 			]
 			client.readPropertyMultiple(
@@ -142,7 +142,7 @@ test.describe('bacnet - readPropertyMultiple integration', () => {
 			const requestArray = [
 				{
 					objectId: { type: 8, instance: 4194303 },
-					properties: [{ id: 8, index: baEnum.ASN1_ARRAY_ALL }],
+					properties: [{ id: 8, index: ASN1_ARRAY_ALL }],
 				},
 			]
 			client.readPropertyMultiple(

@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { NotifyType, EventType, CovType } from '../enum'
+
 import { EncodeBuffer } from '../types'
 
 export const encode = (buffer: EncodeBuffer, data: any): void => {
@@ -28,8 +29,8 @@ export const encode = (buffer: EncodeBuffer, data: any): void => {
 	baAsn1.encodeContextEnumerated(buffer, 8, data.notifyType)
 
 	switch (data.notifyType) {
-		case baEnum.NotifyType.ALARM:
-		case baEnum.NotifyType.EVENT:
+		case NotifyType.ALARM:
+		case NotifyType.EVENT:
 			baAsn1.encodeContextBoolean(buffer, 9, data.ackRequired)
 			baAsn1.encodeContextEnumerated(buffer, 10, data.fromState)
 			break
@@ -40,12 +41,12 @@ export const encode = (buffer: EncodeBuffer, data: any): void => {
 	baAsn1.encodeContextEnumerated(buffer, 11, data.toState)
 
 	switch (data.notifyType) {
-		case baEnum.NotifyType.ALARM:
-		case baEnum.NotifyType.EVENT:
+		case NotifyType.ALARM:
+		case NotifyType.EVENT:
 			baAsn1.encodeOpeningTag(buffer, 12)
 
 			switch (data.eventType) {
-				case baEnum.EventType.CHANGE_OF_BITSTRING:
+				case EventType.CHANGE_OF_BITSTRING:
 					baAsn1.encodeOpeningTag(buffer, 0)
 					baAsn1.encodeContextBitstring(
 						buffer,
@@ -60,7 +61,7 @@ export const encode = (buffer: EncodeBuffer, data: any): void => {
 					baAsn1.encodeClosingTag(buffer, 0)
 					break
 
-				case baEnum.EventType.CHANGE_OF_STATE:
+				case EventType.CHANGE_OF_STATE:
 					baAsn1.encodeOpeningTag(buffer, 1)
 					baAsn1.encodeOpeningTag(buffer, 0)
 					baAsn1.bacappEncodePropertyState(
@@ -76,19 +77,19 @@ export const encode = (buffer: EncodeBuffer, data: any): void => {
 					baAsn1.encodeClosingTag(buffer, 1)
 					break
 
-				case baEnum.EventType.CHANGE_OF_VALUE:
+				case EventType.CHANGE_OF_VALUE:
 					baAsn1.encodeOpeningTag(buffer, 2)
 					baAsn1.encodeOpeningTag(buffer, 0)
 
 					switch (data.changeOfValueTag) {
-						case baEnum.CovType.REAL:
+						case CovType.REAL:
 							baAsn1.encodeContextReal(
 								buffer,
 								1,
 								data.changeOfValueChangeValue,
 							)
 							break
-						case baEnum.CovType.BIT_STRING:
+						case CovType.BIT_STRING:
 							baAsn1.encodeContextBitstring(
 								buffer,
 								0,
@@ -108,7 +109,7 @@ export const encode = (buffer: EncodeBuffer, data: any): void => {
 					baAsn1.encodeClosingTag(buffer, 2)
 					break
 
-				case baEnum.EventType.FLOATING_LIMIT:
+				case EventType.FLOATING_LIMIT:
 					baAsn1.encodeOpeningTag(buffer, 4)
 					baAsn1.encodeContextReal(
 						buffer,
@@ -133,7 +134,7 @@ export const encode = (buffer: EncodeBuffer, data: any): void => {
 					baAsn1.encodeClosingTag(buffer, 4)
 					break
 
-				case baEnum.EventType.OUT_OF_RANGE:
+				case EventType.OUT_OF_RANGE:
 					baAsn1.encodeOpeningTag(buffer, 5)
 					baAsn1.encodeContextReal(
 						buffer,
@@ -154,7 +155,7 @@ export const encode = (buffer: EncodeBuffer, data: any): void => {
 					baAsn1.encodeClosingTag(buffer, 5)
 					break
 
-				case baEnum.EventType.CHANGE_OF_LIFE_SAFETY:
+				case EventType.CHANGE_OF_LIFE_SAFETY:
 					baAsn1.encodeOpeningTag(buffer, 8)
 					baAsn1.encodeContextEnumerated(
 						buffer,
@@ -179,7 +180,7 @@ export const encode = (buffer: EncodeBuffer, data: any): void => {
 					baAsn1.encodeClosingTag(buffer, 8)
 					break
 
-				case baEnum.EventType.BUFFER_READY:
+				case EventType.BUFFER_READY:
 					baAsn1.encodeOpeningTag(buffer, 10)
 					baAsn1.bacappEncodeContextDeviceObjPropertyRef(
 						buffer,
@@ -199,7 +200,7 @@ export const encode = (buffer: EncodeBuffer, data: any): void => {
 					baAsn1.encodeClosingTag(buffer, 10)
 					break
 
-				case baEnum.EventType.UNSIGNED_RANGE:
+				case EventType.UNSIGNED_RANGE:
 					baAsn1.encodeOpeningTag(buffer, 11)
 					baAsn1.encodeContextUnsigned(
 						buffer,
@@ -219,8 +220,8 @@ export const encode = (buffer: EncodeBuffer, data: any): void => {
 					baAsn1.encodeClosingTag(buffer, 11)
 					break
 
-				case baEnum.EventType.EXTENDED:
-				case baEnum.EventType.COMMAND_FAILURE:
+				case EventType.EXTENDED:
+				case EventType.COMMAND_FAILURE:
 					throw new Error('NotImplemented')
 
 				default:
@@ -230,7 +231,7 @@ export const encode = (buffer: EncodeBuffer, data: any): void => {
 			baAsn1.encodeClosingTag(buffer, 12)
 			break
 
-		case baEnum.NotifyType.ACK_NOTIFICATION:
+		case NotifyType.ACK_NOTIFICATION:
 			throw new Error('NotImplemented')
 
 		default:
@@ -332,8 +333,8 @@ export const decode = (buffer: Buffer, offset: number) => {
 	eventData.notifyType = decodedValue.value
 
 	switch (eventData.notifyType) {
-		case baEnum.NotifyType.ALARM:
-		case baEnum.NotifyType.EVENT:
+		case NotifyType.ALARM:
+		case NotifyType.EVENT:
 			result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 			len += result.len
 			decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, 1)

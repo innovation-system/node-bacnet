@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { ObjectType, ASN1_ARRAY_ALL, ASN1_NO_PRIORITY } from '../enum'
+
 import { EncodeBuffer, BACNetObjectID } from '../types'
 
 export const encode = (
@@ -14,7 +15,7 @@ export const encode = (
 	baAsn1.encodeContextObjectId(
 		buffer,
 		1,
-		baEnum.ObjectType.DEVICE,
+		ObjectType.DEVICE,
 		initiatingDeviceId,
 	)
 	baAsn1.encodeContextObjectId(
@@ -27,7 +28,7 @@ export const encode = (
 	baAsn1.encodeOpeningTag(buffer, 4)
 	values.forEach((value) => {
 		baAsn1.encodeContextEnumerated(buffer, 0, value.property.id)
-		if (value.property.index === baEnum.ASN1_ARRAY_ALL) {
+		if (value.property.index === ASN1_ARRAY_ALL) {
 			baAsn1.encodeContextUnsigned(buffer, 1, value.property.index)
 		}
 		baAsn1.encodeOpeningTag(buffer, 2)
@@ -35,7 +36,7 @@ export const encode = (
 			baAsn1.bacappEncodeApplicationData(buffer, v),
 		)
 		baAsn1.encodeClosingTag(buffer, 2)
-		if (value.priority === baEnum.ASN1_NO_PRIORITY) {
+		if (value.priority === ASN1_NO_PRIORITY) {
 			baAsn1.encodeContextUnsigned(buffer, 3, value.priority)
 		}
 		// TODO: Handle to too large telegrams -> APDU limit
@@ -117,7 +118,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 			len += decodedValue.len
 			newEntry.property.index = decodedValue.value
 		} else {
-			newEntry.property.index = baEnum.ASN1_ARRAY_ALL
+			newEntry.property.index = ASN1_ARRAY_ALL
 		}
 
 		if (!baAsn1.decodeIsOpeningTagNumber(buffer, offset + len, 2))
@@ -156,7 +157,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 			len += decodedValue.len
 			newEntry.priority = decodedValue.value
 		} else {
-			newEntry.priority = baEnum.ASN1_NO_PRIORITY
+			newEntry.priority = ASN1_NO_PRIORITY
 		}
 
 		values.push(newEntry)

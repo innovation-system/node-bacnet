@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { ASN1_ARRAY_ALL, ReadRangeType } from '../enum'
+
 import { EncodeBuffer, BACNetObjectID, BACNetBitString } from '../types'
 
 export const encode = (
@@ -14,23 +15,23 @@ export const encode = (
 ) => {
 	baAsn1.encodeContextObjectId(buffer, 0, objectId.type, objectId.instance)
 	baAsn1.encodeContextEnumerated(buffer, 1, propertyId)
-	if (arrayIndex !== baEnum.ASN1_ARRAY_ALL) {
+	if (arrayIndex !== ASN1_ARRAY_ALL) {
 		baAsn1.encodeContextUnsigned(buffer, 2, arrayIndex)
 	}
 	switch (requestType) {
-		case baEnum.ReadRangeType.BY_POSITION:
+		case ReadRangeType.BY_POSITION:
 			baAsn1.encodeOpeningTag(buffer, 3)
 			baAsn1.encodeApplicationUnsigned(buffer, position)
 			baAsn1.encodeApplicationSigned(buffer, count)
 			baAsn1.encodeClosingTag(buffer, 3)
 			break
-		case baEnum.ReadRangeType.BY_SEQUENCE_NUMBER:
+		case ReadRangeType.BY_SEQUENCE_NUMBER:
 			baAsn1.encodeOpeningTag(buffer, 6)
 			baAsn1.encodeApplicationUnsigned(buffer, position)
 			baAsn1.encodeApplicationSigned(buffer, count)
 			baAsn1.encodeClosingTag(buffer, 6)
 			break
-		case baEnum.ReadRangeType.BY_TIME_REFERENCE_TIME_COUNT:
+		case ReadRangeType.BY_TIME_REFERENCE_TIME_COUNT:
 			baAsn1.encodeOpeningTag(buffer, 7)
 			baAsn1.encodeApplicationDate(buffer, time)
 			baAsn1.encodeApplicationTime(buffer, time)
@@ -72,14 +73,14 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 		len += decodedValue.len
 		property.index = decodedValue.value
 	} else {
-		property.index = baEnum.ASN1_ARRAY_ALL
+		property.index = ASN1_ARRAY_ALL
 	}
 	if (len < apduLen) {
 		result = baAsn1.decodeTagNumber(buffer, offset + len)
 		len += result.len
 		switch (result.tagNumber) {
 			case 3: {
-				requestType = baEnum.ReadRangeType.BY_POSITION
+				requestType = ReadRangeType.BY_POSITION
 				result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 				len += result.len
 				decodedValue = baAsn1.decodeUnsigned(
@@ -101,7 +102,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 				break
 			}
 			case 6: {
-				requestType = baEnum.ReadRangeType.BY_SEQUENCE_NUMBER
+				requestType = ReadRangeType.BY_SEQUENCE_NUMBER
 				result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 				len += result.len
 				decodedValue = baAsn1.decodeUnsigned(
@@ -123,7 +124,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 				break
 			}
 			case 7: {
-				requestType = baEnum.ReadRangeType.BY_TIME_REFERENCE_TIME_COUNT
+				requestType = ReadRangeType.BY_TIME_REFERENCE_TIME_COUNT
 				decodedValue = baAsn1.decodeApplicationDate(
 					buffer,
 					offset + len,
@@ -186,7 +187,7 @@ export const encodeAcknowledge = (
 ) => {
 	baAsn1.encodeContextObjectId(buffer, 0, objectId.type, objectId.instance)
 	baAsn1.encodeContextEnumerated(buffer, 1, propertyId)
-	if (arrayIndex !== baEnum.ASN1_ARRAY_ALL) {
+	if (arrayIndex !== ASN1_ARRAY_ALL) {
 		baAsn1.encodeContextUnsigned(buffer, 2, arrayIndex)
 	}
 	baAsn1.encodeContextBitstring(buffer, 3, resultFlags)
@@ -205,7 +206,7 @@ export const encodeAcknowledge = (
 	if (
 		itemCount !== 0 &&
 		requestType &&
-		requestType !== baEnum.ReadRangeType.BY_POSITION
+		requestType !== ReadRangeType.BY_POSITION
 	) {
 		baAsn1.encodeContextUnsigned(buffer, 6, firstSequence)
 	}
@@ -227,7 +228,7 @@ export const decodeAcknowledge = (
 		type: decodedValue.objectType,
 		instance: decodedValue.instance,
 	}
-	const property: any = { index: baEnum.ASN1_ARRAY_ALL }
+	const property: any = { index: ASN1_ARRAY_ALL }
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
 	if (result.tagNumber !== 1) return undefined

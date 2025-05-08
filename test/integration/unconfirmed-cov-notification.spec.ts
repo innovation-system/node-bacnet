@@ -2,8 +2,9 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import Client from '../../src/lib/client'
-import * as baEnum from '../../src/lib/enum'
+
 import { BACNetObjectID } from '../../src/lib/types'
+import { ApplicationTag } from '../../src'
 
 test.describe('bacnet - unconfirmedCOVNotification integration', () => {
 	test('should correctly send a telegram', () => {
@@ -23,13 +24,13 @@ test.describe('bacnet - unconfirmedCOVNotification integration', () => {
 			[
 				{
 					property: { id: 85, index: 0 },
-					value: [{ type: baEnum.ApplicationTag.REAL, value: 12.3 }],
+					value: [{ type: ApplicationTag.REAL, value: 12.3 }],
 				},
 				{
 					property: { id: 111, index: 0 },
 					value: [
 						{
-							type: baEnum.ApplicationTag.BIT_STRING,
+							type: ApplicationTag.BIT_STRING,
 							value: 0xffff,
 						},
 					],

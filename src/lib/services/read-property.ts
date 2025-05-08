@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { ASN1_MAX_OBJECT, ASN1_MAX_PROPERTY_ID, ASN1_ARRAY_ALL } from '../enum'
+
 import {
 	EncodeBuffer,
 	BACNetObjectID,
@@ -16,17 +17,17 @@ export const encode = (
 	propertyId: number,
 	arrayIndex: number,
 ) => {
-	if (objectType <= baEnum.ASN1_MAX_OBJECT) {
+	if (objectType <= ASN1_MAX_OBJECT) {
 		baAsn1.encodeContextObjectId(buffer, 0, objectType, objectInstance)
 	}
-	if (propertyId <= baEnum.ASN1_MAX_PROPERTY_ID) {
+	if (propertyId <= ASN1_MAX_PROPERTY_ID) {
 		baAsn1.encodeContextEnumerated(buffer, 1, propertyId)
 	}
-	if (arrayIndex !== baEnum.ASN1_ARRAY_ALL) {
+	if (arrayIndex !== ASN1_ARRAY_ALL) {
 		baAsn1.encodeContextUnsigned(
 			buffer,
 			2,
-			arrayIndex || arrayIndex === 0 ? arrayIndex : baEnum.ASN1_ARRAY_ALL,
+			arrayIndex || arrayIndex === 0 ? arrayIndex : ASN1_ARRAY_ALL,
 		)
 	}
 }
@@ -52,7 +53,7 @@ export const decode = (
 
 	const property: BACNetPropertyID = {
 		id: 0,
-		index: baEnum.ASN1_ARRAY_ALL,
+		index: ASN1_ARRAY_ALL,
 	}
 
 	const result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
@@ -103,7 +104,7 @@ export const encodeAcknowledge = (
 ) => {
 	baAsn1.encodeContextObjectId(buffer, 0, objectId.type, objectId.instance)
 	baAsn1.encodeContextEnumerated(buffer, 1, propertyId)
-	if (arrayIndex !== baEnum.ASN1_ARRAY_ALL) {
+	if (arrayIndex !== ASN1_ARRAY_ALL) {
 		baAsn1.encodeContextUnsigned(buffer, 2, arrayIndex)
 	}
 	baAsn1.encodeOpeningTag(buffer, 3)
@@ -117,7 +118,7 @@ export const decodeAcknowledge = (
 	apduLen: number,
 ): DecodeAcknowledgeSingleResult | undefined => {
 	const objectId: BACNetObjectID = { type: 0, instance: 0 }
-	const property: BACNetPropertyID = { id: 0, index: baEnum.ASN1_ARRAY_ALL }
+	const property: BACNetPropertyID = { id: 0, index: ASN1_ARRAY_ALL }
 
 	if (!baAsn1.decodeIsContextTag(buffer, offset, 0)) return undefined
 	let len = 1
@@ -150,7 +151,7 @@ export const decodeAcknowledge = (
 		len += unsignedResult.len
 		property.index = unsignedResult.value
 	} else {
-		property.index = baEnum.ASN1_ARRAY_ALL
+		property.index = ASN1_ARRAY_ALL
 	}
 	const values: ApplicationData[] = []
 	if (!baAsn1.decodeIsOpeningTagNumber(buffer, offset + len, 3)) return

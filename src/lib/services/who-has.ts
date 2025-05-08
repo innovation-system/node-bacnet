@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { ASN1_MAX_INSTANCE } from '../enum'
+
 import { BACNetObjectID, EncodeBuffer } from '../types'
 
 export const encode = (
@@ -11,9 +12,9 @@ export const encode = (
 ) => {
 	if (
 		lowLimit >= 0 &&
-		lowLimit <= baEnum.ASN1_MAX_INSTANCE &&
+		lowLimit <= ASN1_MAX_INSTANCE &&
 		highLimit >= 0 &&
-		highLimit <= baEnum.ASN1_MAX_INSTANCE
+		highLimit <= ASN1_MAX_INSTANCE
 	) {
 		baAsn1.encodeContextUnsigned(buffer, 0, lowLimit)
 		baAsn1.encodeContextUnsigned(buffer, 1, highLimit)
@@ -39,7 +40,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 	if (result.tagNumber === 0) {
 		decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
 		len += decodedValue.len
-		if (decodedValue.value <= baEnum.ASN1_MAX_INSTANCE) {
+		if (decodedValue.value <= ASN1_MAX_INSTANCE) {
 			value.lowLimit = decodedValue.value
 		}
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
@@ -48,7 +49,7 @@ export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
 	if (result.tagNumber === 1) {
 		decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
 		len += decodedValue.len
-		if (decodedValue.value <= baEnum.ASN1_MAX_INSTANCE) {
+		if (decodedValue.value <= ASN1_MAX_INSTANCE) {
 			value.highLimit = decodedValue.value
 		}
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)

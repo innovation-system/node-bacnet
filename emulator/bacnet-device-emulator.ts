@@ -1,7 +1,14 @@
 import debugLib from 'debug'
 import Client from '../src/lib/client'
-import * as baEnum from '../src/lib/enum'
 import { BACnetClientEvents } from '../src/lib/EventTypes'
+import {
+	Segmentation,
+	ConfirmedServiceChoice,
+	ErrorClass,
+	ErrorCode,
+	ObjectType,
+	PropertyIdentifier,
+} from '../src'
 
 const debug = debugLib('bacnet:device:debug')
 
@@ -83,7 +90,7 @@ client.on('whoIs', (data) => {
 		client.iAmResponse(
 			sender,
 			settings.deviceId,
-			baEnum.Segmentation.NO_SEGMENTATION,
+			Segmentation.NO_SEGMENTATION,
 			settings.vendorId,
 		)
 		debug(`iAmResponse sent successfully`)
@@ -118,10 +125,10 @@ client.on('readProperty', (data) => {
 			debug(`Object not found: ${objectKey}, sending error response`)
 			return client.errorResponse(
 				address,
-				baEnum.ConfirmedServiceChoice.READ_PROPERTY,
+				ConfirmedServiceChoice.READ_PROPERTY,
 				invokeId,
-				baEnum.ErrorClass.OBJECT,
-				baEnum.ErrorCode.UNKNOWN_OBJECT,
+				ErrorClass.OBJECT,
+				ErrorCode.UNKNOWN_OBJECT,
 			)
 		}
 
@@ -132,10 +139,10 @@ client.on('readProperty', (data) => {
 			)
 			return client.errorResponse(
 				address,
-				baEnum.ConfirmedServiceChoice.READ_PROPERTY,
+				ConfirmedServiceChoice.READ_PROPERTY,
 				invokeId,
-				baEnum.ErrorClass.PROPERTY,
-				baEnum.ErrorCode.UNKNOWN_PROPERTY,
+				ErrorClass.PROPERTY,
+				ErrorCode.UNKNOWN_PROPERTY,
 			)
 		}
 
@@ -158,10 +165,10 @@ client.on('readProperty', (data) => {
 				)
 				return client.errorResponse(
 					address,
-					baEnum.ConfirmedServiceChoice.READ_PROPERTY,
+					ConfirmedServiceChoice.READ_PROPERTY,
 					invokeId,
-					baEnum.ErrorClass.PROPERTY,
-					baEnum.ErrorCode.INVALID_ARRAY_INDEX,
+					ErrorClass.PROPERTY,
+					ErrorCode.INVALID_ARRAY_INDEX,
 				)
 			}
 
@@ -215,10 +222,10 @@ client.on('writeProperty', (data) => {
 			debug(`Object not found ${objectKey}, sending error response`)
 			client.errorResponse(
 				sender,
-				baEnum.ConfirmedServiceChoice.WRITE_PROPERTY,
+				ConfirmedServiceChoice.WRITE_PROPERTY,
 				invokeId,
-				baEnum.ErrorClass.OBJECT,
-				baEnum.ErrorCode.UNKNOWN_OBJECT,
+				ErrorClass.OBJECT,
+				ErrorCode.UNKNOWN_OBJECT,
 			)
 			debug(`Error response sent for unknown object`)
 			return
@@ -230,10 +237,10 @@ client.on('writeProperty', (data) => {
 			debug(`Property not found ${propertyId}, sending error response`)
 			client.errorResponse(
 				sender,
-				baEnum.ConfirmedServiceChoice.WRITE_PROPERTY,
+				ConfirmedServiceChoice.WRITE_PROPERTY,
 				invokeId,
-				baEnum.ErrorClass.PROPERTY,
-				baEnum.ErrorCode.UNKNOWN_PROPERTY,
+				ErrorClass.PROPERTY,
+				ErrorCode.UNKNOWN_PROPERTY,
 			)
 			debug(`Error response sent for unknown property`)
 			return
@@ -248,7 +255,7 @@ client.on('writeProperty', (data) => {
 			)
 			client.simpleAckResponse(
 				sender,
-				baEnum.ConfirmedServiceChoice.WRITE_PROPERTY,
+				ConfirmedServiceChoice.WRITE_PROPERTY,
 				invokeId,
 			)
 			debug(`simpleAckResponse sent successfully`)
@@ -259,10 +266,10 @@ client.on('writeProperty', (data) => {
 				)
 				client.errorResponse(
 					sender,
-					baEnum.ConfirmedServiceChoice.WRITE_PROPERTY,
+					ConfirmedServiceChoice.WRITE_PROPERTY,
 					invokeId,
-					baEnum.ErrorClass.PROPERTY,
-					baEnum.ErrorCode.INVALID_ARRAY_INDEX,
+					ErrorClass.PROPERTY,
+					ErrorCode.INVALID_ARRAY_INDEX,
 				)
 				debug(`Error response sent for invalid index`)
 				return
@@ -276,7 +283,7 @@ client.on('writeProperty', (data) => {
 			)
 			client.simpleAckResponse(
 				sender,
-				baEnum.ConfirmedServiceChoice.WRITE_PROPERTY,
+				ConfirmedServiceChoice.WRITE_PROPERTY,
 				invokeId,
 			)
 			debug(`simpleAckResponse (with index) sent successfully`)
@@ -375,7 +382,7 @@ client.on('readPropertyMultiple', (data) => {
 			}
 
 			if (
-				property.objectId.type === baEnum.ObjectType.DEVICE &&
+				property.objectId.type === ObjectType.DEVICE &&
 				property.objectId.instance === 4194303
 			) {
 				property.objectId.instance = settings.deviceId
@@ -402,7 +409,7 @@ client.on('readPropertyMultiple', (data) => {
 					continue
 				}
 
-				if (item.id === baEnum.PropertyIdentifier.ALL) {
+				if (item.id === PropertyIdentifier.ALL) {
 					for (const key in object) {
 						if (Object.prototype.hasOwnProperty.call(object, key)) {
 							propList.push({
@@ -458,10 +465,10 @@ client.on('readPropertyMultiple', (data) => {
 			)
 			client.errorResponse(
 				sender,
-				baEnum.ConfirmedServiceChoice.READ_PROPERTY_MULTIPLE,
+				ConfirmedServiceChoice.READ_PROPERTY_MULTIPLE,
 				invokeId,
-				baEnum.ErrorClass.OBJECT,
-				baEnum.ErrorCode.UNKNOWN_OBJECT,
+				ErrorClass.OBJECT,
+				ErrorCode.UNKNOWN_OBJECT,
 			)
 			debug(`Error response sent for no objects found`)
 			return
@@ -507,10 +514,10 @@ client.on('writePropertyMultiple', (data) => {
 			debug(`Object not found ${objectKey}, sending error response`)
 			client.errorResponse(
 				sender,
-				baEnum.ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
+				ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
 				invokeId,
-				baEnum.ErrorClass.OBJECT,
-				baEnum.ErrorCode.UNKNOWN_OBJECT,
+				ErrorClass.OBJECT,
+				ErrorCode.UNKNOWN_OBJECT,
 			)
 			debug(`Error response sent for unknown object`)
 			return
@@ -530,10 +537,10 @@ client.on('writePropertyMultiple', (data) => {
 				)
 				client.errorResponse(
 					sender,
-					baEnum.ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
+					ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
 					invokeId,
-					baEnum.ErrorClass.PROPERTY,
-					baEnum.ErrorCode.UNKNOWN_PROPERTY,
+					ErrorClass.PROPERTY,
+					ErrorCode.UNKNOWN_PROPERTY,
 				)
 				debug(`Error response sent for unknown property`)
 				return
@@ -548,10 +555,10 @@ client.on('writePropertyMultiple', (data) => {
 					)
 					client.errorResponse(
 						sender,
-						baEnum.ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
+						ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
 						invokeId,
-						baEnum.ErrorClass.PROPERTY,
-						baEnum.ErrorCode.INVALID_ARRAY_INDEX,
+						ErrorClass.PROPERTY,
+						ErrorCode.INVALID_ARRAY_INDEX,
 					)
 					debug(`Error response sent for invalid index`)
 					return
@@ -568,7 +575,7 @@ client.on('writePropertyMultiple', (data) => {
 		)
 		client.simpleAckResponse(
 			sender,
-			baEnum.ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
+			ConfirmedServiceChoice.WRITE_PROPERTY_MULTIPLE,
 			invokeId,
 		)
 		debug(`simpleAckResponse sent successfully`)
@@ -590,10 +597,10 @@ client.on('subscribeProperty', (data) => {
 		if (sender) {
 			client.errorResponse(
 				sender,
-				baEnum.ConfirmedServiceChoice.SUBSCRIBE_COV_PROPERTY,
+				ConfirmedServiceChoice.SUBSCRIBE_COV_PROPERTY,
 				invokeId,
-				baEnum.ErrorClass.SERVICES,
-				baEnum.ErrorCode.ABORT_BUFFER_OVERFLOW,
+				ErrorClass.SERVICES,
+				ErrorCode.ABORT_BUFFER_OVERFLOW,
 			)
 		}
 	} catch (error) {
@@ -617,10 +624,10 @@ client.on('subscribeCov', (data) => {
 			)
 			client.errorResponse(
 				sender,
-				baEnum.ConfirmedServiceChoice.SUBSCRIBE_COV,
+				ConfirmedServiceChoice.SUBSCRIBE_COV,
 				invokeId,
-				baEnum.ErrorClass.SERVICES,
-				baEnum.ErrorCode.REJECT_UNRECOGNIZED_SERVICE,
+				ErrorClass.SERVICES,
+				ErrorCode.REJECT_UNRECOGNIZED_SERVICE,
 			)
 			debug(
 				`Sent abort response to ${typeof sender === 'string' ? sender : sender.address} for invokeId ${invokeId}`,

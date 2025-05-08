@@ -1,5 +1,11 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import {
+	ASN1_ARRAY_ALL,
+	ASN1_NO_PRIORITY,
+	ASN1_MAX_PRIORITY,
+	ASN1_MIN_PRIORITY,
+} from '../enum'
+
 import {
 	EncodeBuffer,
 	BACNetAppData,
@@ -20,13 +26,13 @@ export const encode = (
 ) => {
 	baAsn1.encodeContextObjectId(buffer, 0, objectType, objectInstance)
 	baAsn1.encodeContextEnumerated(buffer, 1, propertyId)
-	if (arrayIndex !== baEnum.ASN1_ARRAY_ALL) {
+	if (arrayIndex !== ASN1_ARRAY_ALL) {
 		baAsn1.encodeContextUnsigned(buffer, 2, arrayIndex)
 	}
 	baAsn1.encodeOpeningTag(buffer, 3)
 	values.forEach((value) => baAsn1.bacappEncodeApplicationData(buffer, value))
 	baAsn1.encodeClosingTag(buffer, 3)
-	if (priority !== baEnum.ASN1_NO_PRIORITY) {
+	if (priority !== ASN1_NO_PRIORITY) {
 		baAsn1.encodeContextUnsigned(buffer, 4, priority)
 	}
 }
@@ -42,7 +48,7 @@ export const decode = (
 		value?: ApplicationData[]
 		priority?: number
 	} = {
-		property: { id: 0, index: baEnum.ASN1_ARRAY_ALL },
+		property: { id: 0, index: ASN1_ARRAY_ALL },
 	}
 
 	let decodedValue
@@ -75,7 +81,7 @@ export const decode = (
 		len += decodedValue.len
 		value.property.index = decodedValue.value
 	} else {
-		value.property.index = baEnum.ASN1_ARRAY_ALL
+		value.property.index = ASN1_ARRAY_ALL
 	}
 
 	if (!baAsn1.decodeIsOpeningTagNumber(buffer, offset + len, 3))
@@ -105,7 +111,7 @@ export const decode = (
 		return undefined
 	len++
 
-	value.priority = baEnum.ASN1_MAX_PRIORITY
+	value.priority = ASN1_MAX_PRIORITY
 
 	if (len < apduLen) {
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
@@ -119,8 +125,8 @@ export const decode = (
 			len += decodedValue.len
 
 			if (
-				decodedValue.value >= baEnum.ASN1_MIN_PRIORITY &&
-				decodedValue.value <= baEnum.ASN1_MAX_PRIORITY
+				decodedValue.value >= ASN1_MIN_PRIORITY &&
+				decodedValue.value <= ASN1_MAX_PRIORITY
 			) {
 				value.priority = decodedValue.value
 			} else {

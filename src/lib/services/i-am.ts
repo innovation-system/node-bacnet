@@ -26,7 +26,7 @@
 import { EncodeBuffer } from '../types'
 
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { ObjectType, ApplicationTag, Segmentation } from '../enum'
 
 export const encode = (
 	buffer: EncodeBuffer,
@@ -35,7 +35,7 @@ export const encode = (
 	segmentation: number,
 	vendorId: number,
 ) => {
-	baAsn1.encodeApplicationObjectId(buffer, baEnum.ObjectType.DEVICE, deviceId)
+	baAsn1.encodeApplicationObjectId(buffer, ObjectType.DEVICE, deviceId)
 	baAsn1.encodeApplicationUnsigned(buffer, maxApdu)
 	baAsn1.encodeApplicationEnumerated(buffer, segmentation)
 	baAsn1.encodeApplicationUnsigned(buffer, vendorId)
@@ -47,30 +47,27 @@ export const decode = (buffer: Buffer, offset: number) => {
 	const orgOffset = offset
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + apduLen)
 	apduLen += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.OBJECTIDENTIFIER)
-		return undefined
+	if (result.tagNumber !== ApplicationTag.OBJECTIDENTIFIER) return undefined
 	result = baAsn1.decodeObjectId(buffer, offset + apduLen)
 	apduLen += result.len
-	if (result.objectType !== baEnum.ObjectType.DEVICE) return undefined
+	if (result.objectType !== ObjectType.DEVICE) return undefined
 	const deviceId = result.instance
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + apduLen)
 	apduLen += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.UNSIGNED_INTEGER)
-		return undefined
+	if (result.tagNumber !== ApplicationTag.UNSIGNED_INTEGER) return undefined
 	result = baAsn1.decodeUnsigned(buffer, offset + apduLen, result.value)
 	apduLen += result.len
 	const maxApdu = result.value
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + apduLen)
 	apduLen += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.ENUMERATED) return undefined
+	if (result.tagNumber !== ApplicationTag.ENUMERATED) return undefined
 	result = baAsn1.decodeEnumerated(buffer, offset + apduLen, result.value)
 	apduLen += result.len
-	if (result.value > baEnum.Segmentation.NO_SEGMENTATION) return undefined
+	if (result.value > Segmentation.NO_SEGMENTATION) return undefined
 	const segmentation = result.value
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + apduLen)
 	apduLen += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.UNSIGNED_INTEGER)
-		return undefined
+	if (result.tagNumber !== ApplicationTag.UNSIGNED_INTEGER) return undefined
 	result = baAsn1.decodeUnsigned(buffer, offset + apduLen, result.value)
 	apduLen += result.len
 	if (result.value > 0xffff) return undefined

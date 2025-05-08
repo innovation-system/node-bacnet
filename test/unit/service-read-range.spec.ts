@@ -3,7 +3,7 @@ import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
-import * as baEnum from '../../src/lib/enum'
+import { ReadRangeType } from '../../src'
 
 test.describe('bacnet - Services layer ReadRange unit', () => {
 	test('should successfully encode and decode by position', (t) => {
@@ -13,7 +13,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			{ type: 61, instance: 35 },
 			85,
 			0xffffffff,
-			baEnum.ReadRangeType.BY_POSITION,
+			ReadRangeType.BY_POSITION,
 			10,
 			null,
 			0,
@@ -32,7 +32,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 				index: 0xffffffff,
 				id: 85,
 			},
-			requestType: baEnum.ReadRangeType.BY_POSITION,
+			requestType: ReadRangeType.BY_POSITION,
 			time: undefined,
 		})
 	})
@@ -44,7 +44,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			{ type: 61, instance: 35 },
 			12,
 			2,
-			baEnum.ReadRangeType.BY_SEQUENCE_NUMBER,
+			ReadRangeType.BY_SEQUENCE_NUMBER,
 			10,
 			null,
 			0,
@@ -63,7 +63,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 				index: 2,
 				id: 12,
 			},
-			requestType: baEnum.ReadRangeType.BY_SEQUENCE_NUMBER,
+			requestType: ReadRangeType.BY_SEQUENCE_NUMBER,
 			time: undefined,
 		})
 	})
@@ -75,7 +75,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			{ type: 61, instance: 35 },
 			85,
 			0xffffffff,
-			baEnum.ReadRangeType.BY_SEQUENCE_NUMBER,
+			ReadRangeType.BY_SEQUENCE_NUMBER,
 			11,
 			null,
 			1111,
@@ -94,7 +94,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 				index: 0xffffffff,
 				id: 85,
 			},
-			requestType: baEnum.ReadRangeType.BY_SEQUENCE_NUMBER,
+			requestType: ReadRangeType.BY_SEQUENCE_NUMBER,
 			time: undefined,
 		})
 	})
@@ -108,7 +108,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			{ type: 61, instance: 35 },
 			85,
 			0xffffffff,
-			baEnum.ReadRangeType.BY_TIME_REFERENCE_TIME_COUNT,
+			ReadRangeType.BY_TIME_REFERENCE_TIME_COUNT,
 			null,
 			date,
 			-1111,
@@ -127,7 +127,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 				index: 0xffffffff,
 				id: 85,
 			},
-			requestType: baEnum.ReadRangeType.BY_TIME_REFERENCE_TIME_COUNT,
+			requestType: ReadRangeType.BY_TIME_REFERENCE_TIME_COUNT,
 			time: date,
 		})
 	})

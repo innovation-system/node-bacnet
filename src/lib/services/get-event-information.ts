@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { TimeStamp } from '../enum'
+
 import { EncodeBuffer, BACNetObjectID, BACNetEventInformation } from '../types'
 
 export const encode = (
@@ -123,14 +124,14 @@ export const decodeAcknowledge = (
 			result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 			len += result.len
 
-			if (result.tagNumber === baEnum.TimeStamp.TIME) {
+			if (result.tagNumber === TimeStamp.TIME) {
 				decodedValue = baAsn1.decodeBacnetTime(buffer, offset + len)
 				len += decodedValue.len
 				event.eventTimeStamps[i] = {
 					value: decodedValue.value,
-					type: baEnum.TimeStamp.TIME,
+					type: TimeStamp.TIME,
 				}
-			} else if (result.tagNumber === baEnum.TimeStamp.SEQUENCE_NUMBER) {
+			} else if (result.tagNumber === TimeStamp.SEQUENCE_NUMBER) {
 				decodedValue = baAsn1.decodeUnsigned(
 					buffer,
 					offset + len,
@@ -139,9 +140,9 @@ export const decodeAcknowledge = (
 				len += decodedValue.len
 				event.eventTimeStamps[i] = {
 					value: decodedValue.value,
-					type: baEnum.TimeStamp.SEQUENCE_NUMBER,
+					type: TimeStamp.SEQUENCE_NUMBER,
 				}
-			} else if (result.tagNumber === baEnum.TimeStamp.DATETIME) {
+			} else if (result.tagNumber === TimeStamp.DATETIME) {
 				const dateRaw = baAsn1.decodeApplicationDate(
 					buffer,
 					offset + len,
@@ -164,7 +165,7 @@ export const decodeAcknowledge = (
 						time.getSeconds(),
 						time.getMilliseconds(),
 					),
-					type: baEnum.TimeStamp.DATETIME,
+					type: TimeStamp.DATETIME,
 				}
 				len++
 			}

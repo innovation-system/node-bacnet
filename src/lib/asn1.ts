@@ -1,6 +1,5 @@
 import * as iconv from 'iconv-lite'
 
-import * as baEnum from './enum'
 import {
 	EncodeBuffer,
 	BACNetCovSubscription,
@@ -31,6 +30,22 @@ import {
 	ReadAccessProperty,
 	ReadAccessError,
 } from './types'
+import {
+	CharacterStringEncoding,
+	ASN1_MAX_OBJECT,
+	ASN1_INSTANCE_BITS,
+	ASN1_MAX_INSTANCE,
+	ApplicationTag,
+	ASN1_MAX_BITSTRING_BYTES,
+	ASN1_ARRAY_ALL,
+	ObjectType,
+	PropertyStates,
+	PropertyIdentifier,
+	ASN1_MAX_OBJECT_TYPE,
+	ASN1_MAX_PROPERTY_ID,
+	ASN1_MAX_APPLICATION_TAG,
+	TimeStamp,
+} from './enum'
 
 export const START_YEAR = 1900
 export const MAX_YEARS = 256
@@ -60,7 +75,7 @@ const getEncodingType = (
 	decodingOffset?: number,
 ): string => {
 	switch (encoding) {
-		case baEnum.CharacterStringEncoding.UCS_2:
+		case CharacterStringEncoding.UCS_2:
 			if (
 				decodingBuffer &&
 				decodingBuffer[decodingOffset] === 0xff &&
@@ -69,11 +84,11 @@ const getEncodingType = (
 				return 'ucs2'
 			}
 			return 'UTF-16BE' // Default to big-endian
-		case baEnum.CharacterStringEncoding.ISO_8859_1:
+		case CharacterStringEncoding.ISO_8859_1:
 			return 'latin1'
-		case baEnum.CharacterStringEncoding.MICROSOFT_DBCS:
+		case CharacterStringEncoding.MICROSOFT_DBCS:
 			return 'cp850'
-		case baEnum.CharacterStringEncoding.JIS_X_0208:
+		case CharacterStringEncoding.JIS_X_0208:
 			return 'Shift_JIS'
 		default:
 			return 'utf8'
@@ -147,8 +162,8 @@ export const encodeBacnetObjectId = (
 	instance: number,
 ): void => {
 	const value =
-		(((objectType & baEnum.ASN1_MAX_OBJECT) << baEnum.ASN1_INSTANCE_BITS) |
-			(instance & baEnum.ASN1_MAX_INSTANCE)) >>>
+		(((objectType & ASN1_MAX_OBJECT) << ASN1_INSTANCE_BITS) |
+			(instance & ASN1_MAX_INSTANCE)) >>>
 		0
 	encodeUnsigned(buffer, value, 4)
 }
@@ -269,33 +284,28 @@ export const encodeApplicationOctetString = (
 	octetOffset: number,
 	octetCount: number,
 ): void => {
-	encodeTag(buffer, baEnum.ApplicationTag.OCTET_STRING, false, octetCount)
+	encodeTag(buffer, ApplicationTag.OCTET_STRING, false, octetCount)
 	encodeOctetString(buffer, octetString, octetOffset, octetCount)
 }
 
 const encodeApplicationNull = (buffer: EncodeBuffer): void => {
-	buffer.buffer[buffer.offset++] = baEnum.ApplicationTag.NULL
+	buffer.buffer[buffer.offset++] = ApplicationTag.NULL
 }
 
 export const encodeApplicationBoolean = (
 	buffer: EncodeBuffer,
 	booleanValue: boolean,
 ): void => {
-	encodeTag(
-		buffer,
-		baEnum.ApplicationTag.BOOLEAN,
-		false,
-		booleanValue ? 1 : 0,
-	)
+	encodeTag(buffer, ApplicationTag.BOOLEAN, false, booleanValue ? 1 : 0)
 }
 
 const encodeApplicationReal = (buffer: EncodeBuffer, value: number): void => {
-	encodeTag(buffer, baEnum.ApplicationTag.REAL, false, 4)
+	encodeTag(buffer, ApplicationTag.REAL, false, 4)
 	encodeBacnetReal(buffer, value)
 }
 
 const encodeApplicationDouble = (buffer: EncodeBuffer, value: number): void => {
-	encodeTag(buffer, baEnum.ApplicationTag.DOUBLE, false, 8)
+	encodeTag(buffer, ApplicationTag.DOUBLE, false, 8)
 	encodeBacnetDouble(buffer, value)
 }
 
@@ -316,7 +326,7 @@ export const encodeApplicationObjectId = (
 ): void => {
 	const tmp = getBuffer()
 	encodeBacnetObjectId(tmp, objectType, instance)
-	encodeTag(buffer, baEnum.ApplicationTag.OBJECTIDENTIFIER, false, tmp.offset)
+	encodeTag(buffer, ApplicationTag.OBJECTIDENTIFIER, false, tmp.offset)
 	tmp.buffer.copy(buffer.buffer, buffer.offset, 0, tmp.offset)
 	buffer.offset += tmp.offset
 }
@@ -327,7 +337,7 @@ export const encodeApplicationUnsigned = (
 ): void => {
 	const tmp = getBuffer()
 	encodeBacnetUnsigned(tmp, value)
-	encodeTag(buffer, baEnum.ApplicationTag.UNSIGNED_INTEGER, false, tmp.offset)
+	encodeTag(buffer, ApplicationTag.UNSIGNED_INTEGER, false, tmp.offset)
 	tmp.buffer.copy(buffer.buffer, buffer.offset, 0, tmp.offset)
 	buffer.offset += tmp.offset
 }
@@ -338,7 +348,7 @@ export const encodeApplicationEnumerated = (
 ): void => {
 	const tmp = getBuffer()
 	encodeBacnetEnumerated(tmp, value)
-	encodeTag(buffer, baEnum.ApplicationTag.ENUMERATED, false, tmp.offset)
+	encodeTag(buffer, ApplicationTag.ENUMERATED, false, tmp.offset)
 	tmp.buffer.copy(buffer.buffer, buffer.offset, 0, tmp.offset)
 	buffer.offset += tmp.offset
 }
@@ -349,7 +359,7 @@ export const encodeApplicationSigned = (
 ): void => {
 	const tmp = getBuffer()
 	encodeBacnetSigned(tmp, value)
-	encodeTag(buffer, baEnum.ApplicationTag.SIGNED_INTEGER, false, tmp.offset)
+	encodeTag(buffer, ApplicationTag.SIGNED_INTEGER, false, tmp.offset)
 	tmp.buffer.copy(buffer.buffer, buffer.offset, 0, tmp.offset)
 	buffer.offset += tmp.offset
 }
@@ -388,7 +398,7 @@ const bitstringOctet = (
 	octetIndex: number,
 ): number => {
 	let octet = 0
-	if (bitString.value && octetIndex < baEnum.ASN1_MAX_BITSTRING_BYTES) {
+	if (bitString.value && octetIndex < ASN1_MAX_BITSTRING_BYTES) {
 		octet = bitString.value[octetIndex]
 	}
 	return octet
@@ -418,12 +428,7 @@ export const encodeApplicationBitstring = (
 ): void => {
 	let bitStringEncodedLength = 1
 	bitStringEncodedLength += bitstringBytesUsed(bitString)
-	encodeTag(
-		buffer,
-		baEnum.ApplicationTag.BIT_STRING,
-		false,
-		bitStringEncodedLength,
-	)
+	encodeTag(buffer, ApplicationTag.BIT_STRING, false, bitStringEncodedLength)
 	encodeBitstring(buffer, bitString)
 }
 
@@ -452,7 +457,7 @@ export const encodeApplicationDate = (
 	buffer: EncodeBuffer,
 	value: Date,
 ): void => {
-	encodeTag(buffer, baEnum.ApplicationTag.DATE, false, 4)
+	encodeTag(buffer, ApplicationTag.DATE, false, 4)
 	encodeBacnetDate(buffer, value)
 }
 
@@ -467,7 +472,7 @@ export const encodeApplicationTime = (
 	buffer: EncodeBuffer,
 	value: Date,
 ): void => {
-	encodeTag(buffer, baEnum.ApplicationTag.TIME, false, 4)
+	encodeTag(buffer, ApplicationTag.TIME, false, 4)
 	encodeBacnetTime(buffer, value)
 }
 
@@ -539,7 +544,7 @@ export const encodeReadAccessSpecification = (
 	encodeOpeningTag(buffer, 1)
 	value.properties.forEach((p) => {
 		encodeContextEnumerated(buffer, 0, p.id)
-		if (p.index && p.index !== baEnum.ASN1_ARRAY_ALL) {
+		if (p.index && p.index !== ASN1_ARRAY_ALL) {
 			encodeContextUnsigned(buffer, 1, p.index)
 		}
 	})
@@ -586,7 +591,7 @@ const encodeCovSubscription = (
 		value.monitoredObjectId.instance,
 	)
 	encodeContextEnumerated(buffer, 1, value.monitoredProperty.id)
-	if (value.monitoredProperty.index !== baEnum.ASN1_ARRAY_ALL) {
+	if (value.monitoredProperty.index !== ASN1_ARRAY_ALL) {
 		encodeContextUnsigned(buffer, 2, value.monitoredProperty.index)
 	}
 	encodeClosingTag(buffer, 1)
@@ -602,28 +607,28 @@ export const bacappEncodeApplicationData = (
 	value: BACNetAppData,
 ): void => {
 	if (value.value === null) {
-		value.type = baEnum.ApplicationTag.NULL
+		value.type = ApplicationTag.NULL
 	}
 	switch (value.type) {
-		case baEnum.ApplicationTag.NULL:
+		case ApplicationTag.NULL:
 			encodeApplicationNull(buffer)
 			break
-		case baEnum.ApplicationTag.BOOLEAN:
+		case ApplicationTag.BOOLEAN:
 			encodeApplicationBoolean(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.UNSIGNED_INTEGER:
+		case ApplicationTag.UNSIGNED_INTEGER:
 			encodeApplicationUnsigned(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.SIGNED_INTEGER:
+		case ApplicationTag.SIGNED_INTEGER:
 			encodeApplicationSigned(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.REAL:
+		case ApplicationTag.REAL:
 			encodeApplicationReal(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.DOUBLE:
+		case ApplicationTag.DOUBLE:
 			encodeApplicationDouble(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.OCTET_STRING:
+		case ApplicationTag.OCTET_STRING:
 			encodeApplicationOctetString(
 				buffer,
 				value.value,
@@ -631,45 +636,45 @@ export const bacappEncodeApplicationData = (
 				value.value.length,
 			)
 			break
-		case baEnum.ApplicationTag.CHARACTER_STRING:
+		case ApplicationTag.CHARACTER_STRING:
 			encodeApplicationCharacterString(
 				buffer,
 				value.value,
 				value.encoding,
 			)
 			break
-		case baEnum.ApplicationTag.BIT_STRING:
+		case ApplicationTag.BIT_STRING:
 			encodeApplicationBitstring(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.ENUMERATED:
+		case ApplicationTag.ENUMERATED:
 			encodeApplicationEnumerated(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.DATE:
+		case ApplicationTag.DATE:
 			encodeApplicationDate(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.TIME:
+		case ApplicationTag.TIME:
 			encodeApplicationTime(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.TIMESTAMP:
+		case ApplicationTag.TIMESTAMP:
 			bacappEncodeTimestamp(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.DATETIME:
+		case ApplicationTag.DATETIME:
 			bacappEncodeDatetime(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.OBJECTIDENTIFIER:
+		case ApplicationTag.OBJECTIDENTIFIER:
 			encodeApplicationObjectId(
 				buffer,
 				value.value.type,
 				value.value.instance,
 			)
 			break
-		case baEnum.ApplicationTag.COV_SUBSCRIPTION:
+		case ApplicationTag.COV_SUBSCRIPTION:
 			encodeCovSubscription(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.READ_ACCESS_RESULT:
+		case ApplicationTag.READ_ACCESS_RESULT:
 			encodeReadAccessResult(buffer, value.value)
 			break
-		case baEnum.ApplicationTag.READ_ACCESS_SPECIFICATION:
+		case ApplicationTag.READ_ACCESS_SPECIFICATION:
 			encodeReadAccessSpecification(buffer, value.value)
 			break
 		case undefined:
@@ -692,10 +697,10 @@ const bacappEncodeDeviceObjPropertyRef = (
 		value.objectId.instance,
 	)
 	encodeContextEnumerated(buffer, 1, value.id)
-	if (value.arrayIndex !== baEnum.ASN1_ARRAY_ALL) {
+	if (value.arrayIndex !== ASN1_ARRAY_ALL) {
 		encodeContextUnsigned(buffer, 2, value.arrayIndex)
 	}
-	if (value.deviceIndentifier.type === baEnum.ObjectType.DEVICE) {
+	if (value.deviceIndentifier.type === ObjectType.DEVICE) {
 		encodeContextObjectId(
 			buffer,
 			3,
@@ -720,46 +725,46 @@ export const bacappEncodePropertyState = (
 	value: BACNetPropertyState,
 ): void => {
 	switch (value.type) {
-		case baEnum.PropertyStates.BOOLEAN_VALUE:
+		case PropertyStates.BOOLEAN_VALUE:
 			encodeContextBoolean(buffer, 0, value.state === 1)
 			break
-		case baEnum.PropertyStates.BINARY_VALUE:
+		case PropertyStates.BINARY_VALUE:
 			encodeContextEnumerated(buffer, 1, value.state)
 			break
-		case baEnum.PropertyStates.EVENT_TYPE:
+		case PropertyStates.EVENT_TYPE:
 			encodeContextEnumerated(buffer, 2, value.state)
 			break
-		case baEnum.PropertyStates.POLARITY:
+		case PropertyStates.POLARITY:
 			encodeContextEnumerated(buffer, 3, value.state)
 			break
-		case baEnum.PropertyStates.PROGRAM_CHANGE:
+		case PropertyStates.PROGRAM_CHANGE:
 			encodeContextEnumerated(buffer, 4, value.state)
 			break
-		case baEnum.PropertyStates.PROGRAM_STATE:
+		case PropertyStates.PROGRAM_STATE:
 			encodeContextEnumerated(buffer, 5, value.state)
 			break
-		case baEnum.PropertyStates.REASON_FOR_HALT:
+		case PropertyStates.REASON_FOR_HALT:
 			encodeContextEnumerated(buffer, 6, value.state)
 			break
-		case baEnum.PropertyStates.RELIABILITY:
+		case PropertyStates.RELIABILITY:
 			encodeContextEnumerated(buffer, 7, value.state)
 			break
-		case baEnum.PropertyStates.STATE:
+		case PropertyStates.STATE:
 			encodeContextEnumerated(buffer, 8, value.state)
 			break
-		case baEnum.PropertyStates.SYSTEM_STATUS:
+		case PropertyStates.SYSTEM_STATUS:
 			encodeContextEnumerated(buffer, 9, value.state)
 			break
-		case baEnum.PropertyStates.UNITS:
+		case PropertyStates.UNITS:
 			encodeContextEnumerated(buffer, 10, value.state)
 			break
-		case baEnum.PropertyStates.UNSIGNED_VALUE:
+		case PropertyStates.UNSIGNED_VALUE:
 			encodeContextUnsigned(buffer, 11, value.state)
 			break
-		case baEnum.PropertyStates.LIFE_SAFETY_MODE:
+		case PropertyStates.LIFE_SAFETY_MODE:
 			encodeContextEnumerated(buffer, 12, value.state)
 			break
-		case baEnum.PropertyStates.LIFE_SAFETY_STATE:
+		case PropertyStates.LIFE_SAFETY_STATE:
 			encodeContextEnumerated(buffer, 13, value.state)
 			break
 		default:
@@ -861,9 +866,8 @@ export const decodeIsOpeningTag = (buffer: Buffer, offset: number): boolean => {
 
 export const decodeObjectId = (buffer: Buffer, offset: number): ObjectId => {
 	const result = decodeUnsigned(buffer, offset, 4)
-	const objectType =
-		(result.value >> baEnum.ASN1_INSTANCE_BITS) & baEnum.ASN1_MAX_OBJECT
-	const instance = result.value & baEnum.ASN1_MAX_INSTANCE
+	const objectType = (result.value >> ASN1_INSTANCE_BITS) & ASN1_MAX_OBJECT
+	const instance = result.value & ASN1_MAX_INSTANCE
 	return {
 		len: result.len,
 		objectType,
@@ -975,7 +979,7 @@ export const encodeReadAccessResult = (
 	encodeOpeningTag(buffer, 1)
 	value.values.forEach((item) => {
 		encodeContextEnumerated(buffer, 2, item.property.id)
-		if (item.property.index !== baEnum.ASN1_ARRAY_ALL) {
+		if (item.property.index !== ASN1_ARRAY_ALL) {
 			encodeContextUnsigned(buffer, 3, item.property.index)
 		}
 		if (
@@ -1028,7 +1032,7 @@ export const decodeReadAccessResult = (
 	while (apduLen - len > 0) {
 		const newEntry: ReadAccessProperty = {
 			id: 0,
-			index: baEnum.ASN1_ARRAY_ALL,
+			index: ASN1_ARRAY_ALL,
 			value: [],
 		}
 
@@ -1091,8 +1095,8 @@ export const decodeReadAccessResult = (
 				return undefined
 			if (
 				localValues.length === 2 &&
-				localValues[0].type === baEnum.ApplicationTag.DATE &&
-				localValues[1].type === baEnum.ApplicationTag.TIME
+				localValues[0].type === ApplicationTag.DATE &&
+				localValues[1].type === ApplicationTag.TIME
 			) {
 				const date = localValues[0].value as Date
 				const time = localValues[1].value as Date
@@ -1107,7 +1111,7 @@ export const decodeReadAccessResult = (
 				)
 				newEntry.value = [
 					{
-						type: baEnum.ApplicationTag.DATETIME,
+						type: ApplicationTag.DATETIME,
 						value: bdatetime,
 						len: localValues[1].len,
 					},
@@ -1144,7 +1148,7 @@ export const decodeReadAccessResult = (
 			len++
 			newEntry.value = [
 				{
-					type: baEnum.ApplicationTag.ERROR,
+					type: ApplicationTag.ERROR,
 					value: err,
 					len: 0,
 				},
@@ -1279,7 +1283,7 @@ export const decodeBitstring = (
 	const bitString: BACNetBitString = { value: [], bitsUsed: 0 }
 	if (lenValue > 0) {
 		const bytesUsed = lenValue - 1
-		if (bytesUsed <= baEnum.ASN1_MAX_BITSTRING_BYTES) {
+		if (bytesUsed <= ASN1_MAX_BITSTRING_BYTES) {
 			len = 1
 			for (let i = 0; i < bytesUsed; i++) {
 				bitString.value.push(byteReverseBits(buffer[offset + len++]))
@@ -1335,7 +1339,7 @@ export const decodeApplicationDate = (
 	offset: number,
 ): Decode<Date> | undefined => {
 	const result = decodeTagNumber(buffer, offset)
-	if (result.tagNumber === baEnum.ApplicationTag.DATE) {
+	if (result.tagNumber === ApplicationTag.DATE) {
 		const value = decodeDate(buffer, offset + 1)
 		return {
 			len: value.len + 1,
@@ -1382,7 +1386,7 @@ export const decodeApplicationTime = (
 	offset: number,
 ): Decode<Date> | undefined => {
 	const result = decodeTagNumber(buffer, offset)
-	if (result.tagNumber === baEnum.ApplicationTag.TIME) {
+	if (result.tagNumber === ApplicationTag.TIME) {
 		const value = decodeBacnetTime(buffer, offset + 1)
 		return {
 			len: value.len + 1,
@@ -1432,33 +1436,33 @@ const bacappDecodeData = (
 		value: null,
 	}
 	switch (tagDataType) {
-		case baEnum.ApplicationTag.NULL:
+		case ApplicationTag.NULL:
 			value.value = null
 			break
-		case baEnum.ApplicationTag.BOOLEAN:
+		case ApplicationTag.BOOLEAN:
 			value.value = lenValueType > 0
 			break
-		case baEnum.ApplicationTag.UNSIGNED_INTEGER:
+		case ApplicationTag.UNSIGNED_INTEGER:
 			result = decodeUnsigned(buffer, offset, lenValueType)
 			value.len += result.len
 			value.value = result.value
 			break
-		case baEnum.ApplicationTag.SIGNED_INTEGER:
+		case ApplicationTag.SIGNED_INTEGER:
 			result = decodeSigned(buffer, offset, lenValueType)
 			value.len += result.len
 			value.value = result.value
 			break
-		case baEnum.ApplicationTag.REAL:
+		case ApplicationTag.REAL:
 			result = decodeRealSafe(buffer, offset, lenValueType)
 			value.len += result.len
 			value.value = result.value
 			break
-		case baEnum.ApplicationTag.DOUBLE:
+		case ApplicationTag.DOUBLE:
 			result = decodeDoubleSafe(buffer, offset, lenValueType)
 			value.len += result.len
 			value.value = result.value
 			break
-		case baEnum.ApplicationTag.OCTET_STRING:
+		case ApplicationTag.OCTET_STRING:
 			result = decodeOctetString(
 				buffer,
 				offset,
@@ -1469,7 +1473,7 @@ const bacappDecodeData = (
 			value.len += result.len
 			value.value = result.value
 			break
-		case baEnum.ApplicationTag.CHARACTER_STRING:
+		case ApplicationTag.CHARACTER_STRING:
 			result = decodeCharacterString(
 				buffer,
 				offset,
@@ -1480,27 +1484,27 @@ const bacappDecodeData = (
 			value.value = result.value
 			value.encoding = result.encoding
 			break
-		case baEnum.ApplicationTag.BIT_STRING:
+		case ApplicationTag.BIT_STRING:
 			result = decodeBitstring(buffer, offset, lenValueType)
 			value.len += result.len
 			value.value = result.value
 			break
-		case baEnum.ApplicationTag.ENUMERATED:
+		case ApplicationTag.ENUMERATED:
 			result = decodeEnumerated(buffer, offset, lenValueType)
 			value.len += result.len
 			value.value = result.value
 			break
-		case baEnum.ApplicationTag.DATE:
+		case ApplicationTag.DATE:
 			result = decodeDateSafe(buffer, offset, lenValueType)
 			value.len += result.len
 			value.value = result.value
 			break
-		case baEnum.ApplicationTag.TIME:
+		case ApplicationTag.TIME:
 			result = decodeBacnetTimeSafe(buffer, offset, lenValueType)
 			value.len += result.len
 			value.value = result.value
 			break
-		case baEnum.ApplicationTag.OBJECTIDENTIFIER:
+		case ApplicationTag.OBJECTIDENTIFIER:
 			result = decodeObjectIdSafe(buffer, offset, lenValueType)
 			value.len += result.len
 			value.value = { type: result.objectType, instance: result.instance }
@@ -1514,112 +1518,112 @@ const bacappDecodeData = (
 const bacappContextTagType = (property: number, tagNumber: number): number => {
 	let tag = 0
 	switch (property) {
-		case baEnum.PropertyIdentifier.ACTUAL_SHED_LEVEL:
-		case baEnum.PropertyIdentifier.REQUESTED_SHED_LEVEL:
-		case baEnum.PropertyIdentifier.EXPECTED_SHED_LEVEL:
+		case PropertyIdentifier.ACTUAL_SHED_LEVEL:
+		case PropertyIdentifier.REQUESTED_SHED_LEVEL:
+		case PropertyIdentifier.EXPECTED_SHED_LEVEL:
 			switch (tagNumber) {
 				case 0:
 				case 1:
-					tag = baEnum.ApplicationTag.UNSIGNED_INTEGER
+					tag = ApplicationTag.UNSIGNED_INTEGER
 					break
 				case 2:
-					tag = baEnum.ApplicationTag.REAL
+					tag = ApplicationTag.REAL
 					break
 				default:
 					break
 			}
 			break
-		case baEnum.PropertyIdentifier.ACTION:
+		case PropertyIdentifier.ACTION:
 			switch (tagNumber) {
 				case 0:
 				case 1:
-					tag = baEnum.ApplicationTag.OBJECTIDENTIFIER
+					tag = ApplicationTag.OBJECTIDENTIFIER
 					break
 				case 2:
-					tag = baEnum.ApplicationTag.ENUMERATED
+					tag = ApplicationTag.ENUMERATED
 					break
 				case 3:
 				case 5:
 				case 6:
-					tag = baEnum.ApplicationTag.UNSIGNED_INTEGER
+					tag = ApplicationTag.UNSIGNED_INTEGER
 					break
 				case 7:
 				case 8:
-					tag = baEnum.ApplicationTag.BOOLEAN
+					tag = ApplicationTag.BOOLEAN
 					break
 				default:
 					break
 			}
 			break
-		case baEnum.PropertyIdentifier.LIST_OF_GROUP_MEMBERS:
+		case PropertyIdentifier.LIST_OF_GROUP_MEMBERS:
 			switch (tagNumber) {
 				case 0:
-					tag = baEnum.ApplicationTag.OBJECTIDENTIFIER
+					tag = ApplicationTag.OBJECTIDENTIFIER
 					break
 				default:
 					break
 			}
 			break
-		case baEnum.PropertyIdentifier.EXCEPTION_SCHEDULE:
+		case PropertyIdentifier.EXCEPTION_SCHEDULE:
 			switch (tagNumber) {
 				case 1:
-					tag = baEnum.ApplicationTag.OBJECTIDENTIFIER
+					tag = ApplicationTag.OBJECTIDENTIFIER
 					break
 				case 3:
-					tag = baEnum.ApplicationTag.UNSIGNED_INTEGER
+					tag = ApplicationTag.UNSIGNED_INTEGER
 					break
 				default:
 					break
 			}
 			break
-		case baEnum.PropertyIdentifier.LOG_DEVICE_OBJECT_PROPERTY:
+		case PropertyIdentifier.LOG_DEVICE_OBJECT_PROPERTY:
 			switch (tagNumber) {
 				case 0:
 				case 3:
-					tag = baEnum.ApplicationTag.OBJECTIDENTIFIER
+					tag = ApplicationTag.OBJECTIDENTIFIER
 					break
 				case 1:
-					tag = baEnum.ApplicationTag.ENUMERATED
+					tag = ApplicationTag.ENUMERATED
 					break
 				case 2:
-					tag = baEnum.ApplicationTag.UNSIGNED_INTEGER
+					tag = ApplicationTag.UNSIGNED_INTEGER
 					break
 				default:
 					break
 			}
 			break
-		case baEnum.PropertyIdentifier.SUBORDINATE_LIST:
+		case PropertyIdentifier.SUBORDINATE_LIST:
 			switch (tagNumber) {
 				case 0:
 				case 1:
-					tag = baEnum.ApplicationTag.OBJECTIDENTIFIER
+					tag = ApplicationTag.OBJECTIDENTIFIER
 					break
 				default:
 					break
 			}
 			break
-		case baEnum.PropertyIdentifier.RECIPIENT_LIST:
+		case PropertyIdentifier.RECIPIENT_LIST:
 			switch (tagNumber) {
 				case 0:
-					tag = baEnum.ApplicationTag.OBJECTIDENTIFIER
+					tag = ApplicationTag.OBJECTIDENTIFIER
 					break
 				default:
 					break
 			}
 			break
-		case baEnum.PropertyIdentifier.ACTIVE_COV_SUBSCRIPTIONS:
+		case PropertyIdentifier.ACTIVE_COV_SUBSCRIPTIONS:
 			switch (tagNumber) {
 				case 0:
 				case 1:
 					break
 				case 2:
-					tag = baEnum.ApplicationTag.BOOLEAN
+					tag = ApplicationTag.BOOLEAN
 					break
 				case 3:
-					tag = baEnum.ApplicationTag.UNSIGNED_INTEGER
+					tag = ApplicationTag.UNSIGNED_INTEGER
 					break
 				case 4:
-					tag = baEnum.ApplicationTag.REAL
+					tag = ApplicationTag.REAL
 					break
 				default:
 					break
@@ -1636,7 +1640,7 @@ const decodeDeviceObjPropertyRef = (
 	offset: number,
 ): DeviceObjPropertyRef | undefined => {
 	let len = 0
-	// let arrayIndex = baEnum.ASN1_ARRAY_ALL;
+	// let arrayIndex = ASN1_ARRAY_ALL;
 	if (!decodeIsContextTag(buffer, offset + len, 0)) return undefined
 	len++
 	let objectId = decodeObjectId(buffer, offset + len)
@@ -1702,7 +1706,7 @@ export const decodeReadAccessSpecification = (
 	) {
 		const propertyRef: BACNetPropertyID = {
 			id: 0,
-			index: baEnum.ASN1_ARRAY_ALL,
+			index: ASN1_ARRAY_ALL,
 		}
 		if (!isContextSpecific(buffer[offset + len])) return undefined
 		const tagResult = decodeTagNumberAndValue(buffer, offset + len)
@@ -1775,15 +1779,13 @@ const decodeCovSubscription = (
 	len++
 	result = decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.UNSIGNED_INTEGER)
-		return undefined
+	if (result.tagNumber !== ApplicationTag.UNSIGNED_INTEGER) return undefined
 	decodedValue = decodeUnsigned(buffer, offset + len, result.value)
 	len += decodedValue.len
 	value.recipient.network = decodedValue.value
 	result = decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.OCTET_STRING)
-		return undefined
+	if (result.tagNumber !== ApplicationTag.OCTET_STRING) return undefined
 	decodedValue = decodeOctetString(
 		buffer,
 		offset + len,
@@ -1829,7 +1831,7 @@ const decodeCovSubscription = (
 		len += decodedValue.len
 		value.monitoredProperty.index = decodedValue.value
 	} else {
-		value.monitoredProperty.index = baEnum.ASN1_ARRAY_ALL
+		value.monitoredProperty.index = ASN1_ARRAY_ALL
 	}
 	if (!decodeIsClosingTagNumber(buffer, offset + len, 1)) return undefined
 	len++
@@ -1943,7 +1945,7 @@ const bacappDecodeContextApplicationData = (
 ): ApplicationData | undefined => {
 	let len = 0
 	if (isContextSpecific(buffer[offset])) {
-		if (propertyId === baEnum.PropertyIdentifier.LIST_OF_GROUP_MEMBERS) {
+		if (propertyId === PropertyIdentifier.LIST_OF_GROUP_MEMBERS) {
 			const result = decodeReadAccessSpecification(
 				buffer,
 				offset,
@@ -1951,64 +1953,63 @@ const bacappDecodeContextApplicationData = (
 			)
 			if (!result) return undefined
 			return {
-				type: baEnum.ApplicationTag.READ_ACCESS_SPECIFICATION,
+				type: ApplicationTag.READ_ACCESS_SPECIFICATION,
 				value: result.value,
 				len: result.len,
 			}
 		}
-		if (propertyId === baEnum.PropertyIdentifier.ACTIVE_COV_SUBSCRIPTIONS) {
+		if (propertyId === PropertyIdentifier.ACTIVE_COV_SUBSCRIPTIONS) {
 			const result = decodeCovSubscription(buffer, offset, maxOffset)
 			if (!result) return undefined
 			return {
-				type: baEnum.ApplicationTag.COV_SUBSCRIPTION,
+				type: ApplicationTag.COV_SUBSCRIPTION,
 				value: result.value,
 				len: result.len,
 			}
 		}
 		if (
-			objectType === baEnum.ObjectType.GROUP &&
-			propertyId === baEnum.PropertyIdentifier.PRESENT_VALUE
+			objectType === ObjectType.GROUP &&
+			propertyId === PropertyIdentifier.PRESENT_VALUE
 		) {
 			const result = decodeReadAccessResult(buffer, offset, maxOffset)
 			if (!result) return undefined
 			return {
-				type: baEnum.ApplicationTag.READ_ACCESS_RESULT,
+				type: ApplicationTag.READ_ACCESS_RESULT,
 				value: result.value,
 				len: result.len,
 			}
 		}
 		if (
 			propertyId ===
-				baEnum.PropertyIdentifier.LIST_OF_OBJECT_PROPERTY_REFERENCES ||
-			propertyId ===
-				baEnum.PropertyIdentifier.LOG_DEVICE_OBJECT_PROPERTY ||
-			propertyId === baEnum.PropertyIdentifier.OBJECT_PROPERTY_REFERENCE
+				PropertyIdentifier.LIST_OF_OBJECT_PROPERTY_REFERENCES ||
+			propertyId === PropertyIdentifier.LOG_DEVICE_OBJECT_PROPERTY ||
+			propertyId === PropertyIdentifier.OBJECT_PROPERTY_REFERENCE
 		) {
 			const result = decodeDeviceObjPropertyRef(buffer, offset)
 			if (!result) return undefined
 			return {
-				type: baEnum.ApplicationTag.OBJECT_PROPERTY_REFERENCE,
+				type: ApplicationTag.OBJECT_PROPERTY_REFERENCE,
 				value: result.value,
 				len: result.len,
 			}
 		}
-		if (propertyId === baEnum.PropertyIdentifier.DATE_LIST) {
+		if (propertyId === PropertyIdentifier.DATE_LIST) {
 			const result = decodeCalendar(buffer, offset, maxOffset)
 			if (!result) return undefined
 			return {
-				type: baEnum.ApplicationTag.CONTEXT_SPECIFIC_DECODED,
+				type: ApplicationTag.CONTEXT_SPECIFIC_DECODED,
 				value: result.value,
 				len: result.len,
 			}
 		}
-		if (propertyId === baEnum.PropertyIdentifier.EVENT_TIME_STAMPS) {
+		if (propertyId === PropertyIdentifier.EVENT_TIME_STAMPS) {
 			let subEvtResult
 			const evtResult = decodeTagNumberAndValue(buffer, offset + len)
 			len += 1
 			if (evtResult.tagNumber === 0) {
 				subEvtResult = decodeBacnetTime(buffer, offset + 1)
 				return {
-					type: baEnum.ApplicationTag.TIMESTAMP,
+					type: ApplicationTag.TIMESTAMP,
 					value: subEvtResult.value,
 					len: subEvtResult.len + 1,
 				}
@@ -2020,7 +2021,7 @@ const bacappDecodeContextApplicationData = (
 					evtResult.value,
 				)
 				return {
-					type: baEnum.ApplicationTag.UNSIGNED_INTEGER,
+					type: ApplicationTag.UNSIGNED_INTEGER,
 					value: subEvtResult.value,
 					len: subEvtResult.len + 1,
 				}
@@ -2028,7 +2029,7 @@ const bacappDecodeContextApplicationData = (
 			if (evtResult.tagNumber === 2) {
 				subEvtResult = decodeBacnetDatetime(buffer, offset + len)
 				return {
-					type: baEnum.ApplicationTag.TIMESTAMP,
+					type: ApplicationTag.TIMESTAMP,
 					value: subEvtResult.value,
 					len: subEvtResult.len + 2,
 				}
@@ -2050,8 +2051,8 @@ const bacappDecodeContextApplicationData = (
 					buffer,
 					offset + len,
 					maxOffset,
-					baEnum.ASN1_MAX_OBJECT_TYPE,
-					baEnum.ASN1_MAX_PROPERTY_ID,
+					ASN1_MAX_OBJECT_TYPE,
+					ASN1_MAX_PROPERTY_ID,
 				)
 				if (!result) return undefined
 				list.push(result)
@@ -2061,7 +2062,7 @@ const bacappDecodeContextApplicationData = (
 					propertyId,
 					subResult.tagNumber,
 				)
-				if (overrideTagNumber !== baEnum.ASN1_MAX_APPLICATION_TAG) {
+				if (overrideTagNumber !== ASN1_MAX_APPLICATION_TAG) {
 					subResult.tagNumber = overrideTagNumber
 				}
 				const bacappResult = bacappDecodeData(
@@ -2092,7 +2093,7 @@ const bacappDecodeContextApplicationData = (
 							offset + len + subResult.len,
 							offset + len + subResult.len + subResult.value,
 						),
-						type: baEnum.ApplicationTag.CONTEXT_SPECIFIC_ENCODED,
+						type: ApplicationTag.CONTEXT_SPECIFIC_ENCODED,
 					})
 					len += subResult.len + subResult.value
 				}
@@ -2101,7 +2102,7 @@ const bacappDecodeContextApplicationData = (
 				return {
 					len,
 					value: list[0],
-					type: baEnum.ApplicationTag.CONTEXT_SPECIFIC_DECODED,
+					type: ApplicationTag.CONTEXT_SPECIFIC_DECODED,
 				}
 			}
 		}
@@ -2114,7 +2115,7 @@ const bacappDecodeContextApplicationData = (
 		return {
 			len,
 			value: list,
-			type: baEnum.ApplicationTag.CONTEXT_SPECIFIC_DECODED,
+			type: ApplicationTag.CONTEXT_SPECIFIC_DECODED,
 		}
 	}
 	return undefined
@@ -2125,13 +2126,13 @@ export const bacappEncodeTimestamp = (
 	value: { type: number; value: any },
 ): void => {
 	switch (value.type) {
-		case baEnum.TimeStamp.TIME:
+		case TimeStamp.TIME:
 			encodeContextTime(buffer, 0, value.value)
 			break
-		case baEnum.TimeStamp.SEQUENCE_NUMBER:
+		case TimeStamp.SEQUENCE_NUMBER:
 			encodeContextUnsigned(buffer, 1, value.value)
 			break
-		case baEnum.TimeStamp.DATETIME:
+		case TimeStamp.DATETIME:
 			bacappEncodeContextDatetime(buffer, 2, value.value)
 			break
 		default:
@@ -2205,7 +2206,7 @@ const encodeBacnetCharacterString = (
 	value: string,
 	encoding?: number,
 ): void => {
-	encoding = encoding || baEnum.CharacterStringEncoding.UTF_8
+	encoding = encoding || CharacterStringEncoding.UTF_8
 	buffer.buffer[buffer.offset++] = encoding
 	const bufEncoded = iconv.encode(value, getEncodingType(encoding))
 	buffer.offset += bufEncoded.copy(buffer.buffer, buffer.offset)
@@ -2218,7 +2219,7 @@ export const encodeApplicationCharacterString = (
 ): void => {
 	const tmp = getBuffer()
 	encodeBacnetCharacterString(tmp, value, encoding)
-	encodeTag(buffer, baEnum.ApplicationTag.CHARACTER_STRING, false, tmp.offset)
+	encodeTag(buffer, ApplicationTag.CHARACTER_STRING, false, tmp.offset)
 	tmp.buffer.copy(buffer.buffer, buffer.offset, 0, tmp.offset)
 	buffer.offset += tmp.offset
 }

@@ -3,7 +3,7 @@ import assert from 'node:assert'
 
 import * as utils from './utils'
 import * as baServices from '../../src/lib/services'
-import * as baEnum from '../../src/lib/enum'
+import { TimeStamp } from '../../src'
 
 test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 	test('should successfully encode and decode with time timestamp', () => {
@@ -18,8 +18,8 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			{ type: 0, instance: 33 },
 			5,
 			'Alarm Acknowledge Test',
-			{ value: eventTime, type: baEnum.TimeStamp.TIME },
-			{ value: ackTime, type: baEnum.TimeStamp.TIME },
+			{ value: eventTime, type: TimeStamp.TIME },
+			{ value: ackTime, type: TimeStamp.TIME },
 		)
 		const result = baServices.alarmAcknowledge.decode(
 			buffer.buffer,
@@ -50,8 +50,8 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			{ type: 0, instance: 33 },
 			5,
 			'Alarm Acknowledge Test',
-			{ value: eventTime, type: baEnum.TimeStamp.SEQUENCE_NUMBER },
-			{ value: ackTime, type: baEnum.TimeStamp.SEQUENCE_NUMBER },
+			{ value: eventTime, type: TimeStamp.SEQUENCE_NUMBER },
+			{ value: ackTime, type: TimeStamp.SEQUENCE_NUMBER },
 		)
 		const result = baServices.alarmAcknowledge.decode(
 			buffer.buffer,
@@ -84,8 +84,8 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			{ type: 0, instance: 33 },
 			5,
 			'Alarm Acknowledge Test',
-			{ value: eventTime, type: baEnum.TimeStamp.DATETIME },
-			{ value: ackTime, type: baEnum.TimeStamp.DATETIME },
+			{ value: eventTime, type: TimeStamp.DATETIME },
+			{ value: ackTime, type: TimeStamp.DATETIME },
 		)
 		const result = baServices.alarmAcknowledge.decode(
 			buffer.buffer,

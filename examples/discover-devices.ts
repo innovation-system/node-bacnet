@@ -8,7 +8,7 @@ import Bacnet, {
 	PropertyIdentifier,
 	BACNetObjectID,
 	DecodeAcknowledgeSingleResult,
-} from '../src/index'
+} from '../src'
 
 // create instance of Bacnet
 const bacnetClient = new Bacnet({ apduTimeout: 10000, interface: '0.0.0.0' })

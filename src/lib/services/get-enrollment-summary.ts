@@ -1,5 +1,5 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { ApplicationTag } from '../enum'
 import { EncodeBuffer } from '../types'
 
 export const encode = (
@@ -180,7 +180,7 @@ export const decodeAcknowledge = (
 
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 		len += result.len
-		if (result.tagNumber !== baEnum.ApplicationTag.OBJECTIDENTIFIER)
+		if (result.tagNumber !== ApplicationTag.OBJECTIDENTIFIER)
 			return undefined
 
 		result = baAsn1.decodeObjectId(buffer, offset + len)
@@ -192,8 +192,7 @@ export const decodeAcknowledge = (
 
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 		len += result.len
-		if (result.tagNumber !== baEnum.ApplicationTag.ENUMERATED)
-			return undefined
+		if (result.tagNumber !== ApplicationTag.ENUMERATED) return undefined
 
 		result = baAsn1.decodeEnumerated(buffer, offset + len, result.value)
 		len += result.len
@@ -201,8 +200,7 @@ export const decodeAcknowledge = (
 
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 		len += result.len
-		if (result.tagNumber !== baEnum.ApplicationTag.ENUMERATED)
-			return undefined
+		if (result.tagNumber !== ApplicationTag.ENUMERATED) return undefined
 
 		result = baAsn1.decodeEnumerated(buffer, offset + len, result.value)
 		len += result.len
@@ -210,7 +208,7 @@ export const decodeAcknowledge = (
 
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 		len += result.len
-		if (result.tagNumber !== baEnum.ApplicationTag.UNSIGNED_INTEGER)
+		if (result.tagNumber !== ApplicationTag.UNSIGNED_INTEGER)
 			return undefined
 
 		result = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
@@ -219,7 +217,7 @@ export const decodeAcknowledge = (
 
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 		len += result.len
-		if (result.tagNumber !== baEnum.ApplicationTag.UNSIGNED_INTEGER)
+		if (result.tagNumber !== ApplicationTag.UNSIGNED_INTEGER)
 			return undefined
 
 		result = baAsn1.decodeUnsigned(buffer, offset + len, result.value)

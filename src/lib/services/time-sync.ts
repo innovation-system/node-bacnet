@@ -1,5 +1,6 @@
 import * as baAsn1 from '../asn1'
-import * as baEnum from '../enum'
+import { ApplicationTag } from '../enum'
+
 import { EncodeBuffer } from '../types'
 
 export const encode = (buffer: EncodeBuffer, time: Date) => {
@@ -12,12 +13,12 @@ export const decode = (buffer: Buffer, offset: number) => {
 	let result: any
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.DATE) return undefined
+	if (result.tagNumber !== ApplicationTag.DATE) return undefined
 	const date = baAsn1.decodeDate(buffer, offset + len)
 	len += date.len
 	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 	len += result.len
-	if (result.tagNumber !== baEnum.ApplicationTag.TIME) return undefined
+	if (result.tagNumber !== ApplicationTag.TIME) return undefined
 	const time = baAsn1.decodeBacnetTime(buffer, offset + len)
 	len += time.len
 	return {
