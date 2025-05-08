@@ -57,6 +57,7 @@ import {
 	ReceiverAddress,
 	PropertyReference,
 	TypedValue,
+	BacnetService,
 } from './types'
 import { format } from 'util'
 
@@ -193,7 +194,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 	 * @returns {*}
 	 * @private
 	 */
-	private _invokeCallback(id: number, err: Error | null, result?: any) {
+	private _invokeCallback(id: number, err: Error | null, result?: any): void {
 		const callback = this._invokeStore[id]
 		if (callback) {
 			trace(`InvokeId ${id} found -> call callback`)
@@ -238,7 +239,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 	 * @returns {{offset: (number), buffer: *}}
 	 * @private
 	 */
-	private _getBuffer(isForwarded?) {
+	private _getBuffer(isForwarded?: any) {
 		return Object.assign(
 			{},
 			{
@@ -527,7 +528,10 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		trace(`Received service request${id}:`, name)
 
 		// Find a function to decode the packet.
-		const serviceHandler = baServices[name]
+		const serviceHandler = baServices[
+			name as keyof typeof baServices
+		] as BacnetService
+
 		if (serviceHandler) {
 			try {
 				content.payload = serviceHandler.decode(buffer, offset, length)
