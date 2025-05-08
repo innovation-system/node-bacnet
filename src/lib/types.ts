@@ -561,3 +561,16 @@ export interface BacnetService {
 	encode: (buffer: EncodeBuffer, ...args: any[]) => void
 	decode: (buffer: Buffer, offset: number, apduLen: number) => Decode<any>
 }
+
+export interface PropertyResult {
+	id: number
+	index: number
+	value: ApplicationData[]
+}
+
+export interface DeviceObjectResult {
+	values: Array<{
+		objectId: BACNetObjectID
+		values: PropertyResult[]
+	}>
+}

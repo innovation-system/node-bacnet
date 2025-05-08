@@ -36,6 +36,10 @@ import Bacnet, {
 	ServicesSupported,
 	ShedState,
 	StatusFlags,
+	ApplicationData,
+	BACnetMessage,
+	DeviceObjectResult,
+	PropertyResult,
 } from '../src'
 import * as process from 'process'
 
@@ -210,11 +214,11 @@ const debug = process.argv.includes('--debug')
  * @returns {*}
  */
 function getAllPropertiesManually(
-	address: any,
+	address: string | { address: string; forwardedFrom?: string },
 	objectId: BACNetObjectID,
-	callback: (result: any) => void,
+	callback: (result: DeviceObjectResult) => void,
 	propList?: number[],
-	result?: any[],
+	result?: PropertyResult[],
 ): void {
 	if (!propList) {
 		propList = propSubSet.map((x) => x) // Clone the array
@@ -246,7 +250,7 @@ function getAllPropertiesManually(
 
 	// Read only object-list property
 	bacnetClient.readProperty(
-		address,
+		address as string,
 		objectId,
 		prop,
 		{}, // Options object
@@ -255,10 +259,11 @@ function getAllPropertiesManually(
 				if (debug) {
 					console.log(`Handle value ${prop}: `, JSON.stringify(value))
 				}
-				const objRes: any = {}
-				objRes.id = value.property.id
-				objRes.index = value.property.index
-				objRes.value = value.values
+				const objRes: PropertyResult = {
+					id: value.property.id,
+					index: value.property.index,
+					value: value.values,
+				}
 				result.push(objRes)
 			} else {
 				// console.log('Device do not contain object ' + getEnumName(PropertyIdentifier, prop));
@@ -350,7 +355,7 @@ function handleBitString(
  * @param callback
  */
 function parseValue(
-	address: any,
+	address: string | { address: string; forwardedFrom?: string },
 	objId: number,
 	parentType: number,
 	value: any,
@@ -461,7 +466,7 @@ function parseValue(
 						},
 					]
 					bacnetClient.readPropertyMultiple(
-						address,
+						address as string,
 						requestArray,
 						(err, resValue) => {
 							//console.log(JSON.stringify(value.value) + ': ' + JSON.stringify(resValue));
@@ -538,11 +543,11 @@ function parseValue(
  * @param callback
  */
 function parseDeviceObject(
-	address: any,
-	obj: any,
+	address: string | { address: string; forwardedFrom?: string },
+	obj: DeviceObjectResult | any,
 	parent: BACNetObjectID,
 	supportsMultiple: boolean,
-	callback: (result: any) => void,
+	callback: (result: Record<string, any>) => void,
 ): void {
 	if (debug) {
 		console.log(
@@ -720,7 +725,7 @@ let objectsDone = 0
  * @param deviceId
  * @param obj
  */
-function printResultObject(deviceId: number, obj: any): void {
+function printResultObject(deviceId: number, obj: Record<string, any>): void {
 	objectsDone++
 	console.log(
 		`Device ${deviceId} (${objectsDone}/${Object.keys(knownDevices).length}) read successfully ...`,
@@ -749,7 +754,7 @@ if (process.argv.length === 3) {
 const bacnetClient = new Bacnet({ apduTimeout: 4000, interface: '0.0.0.0' })
 
 // emitted for each new message
-bacnetClient.on('message', (msg: any, rinfo: any) => {
+bacnetClient.on('message', (msg: BACnetMessage, rinfo: string) => {
 	console.log(msg)
 	if (rinfo) console.log(rinfo)
 })
@@ -770,7 +775,7 @@ bacnetClient.on('listening', () => {
 const knownDevices: number[] = []
 
 // emitted when a new device is discovered in the network
-bacnetClient.on('iAm', (device: any) => {
+bacnetClient.on('iAm', (device) => {
 	// Make sure device has the expected structure
 	if (!device.header || !device.payload) {
 		console.log('Received invalid device information')
@@ -801,35 +806,39 @@ bacnetClient.on('iAm', (device: any) => {
 		},
 	]
 
-	bacnetClient.readPropertyMultiple(address, requestArray, (err, value) => {
-		if (err) {
-			console.log(
-				deviceId,
-				'No ReadPropertyMultiple supported:',
-				err.message,
-			)
-			getAllPropertiesManually(
-				address,
-				{ type: 8, instance: deviceId },
-				(result) => {
-					parseDeviceObject(
-						address,
-						result,
-						{ type: 8, instance: deviceId },
-						false,
-						(res) => printResultObject(deviceId, res),
-					)
-				},
-			)
-		} else {
-			console.log(deviceId, 'ReadPropertyMultiple supported ...')
-			parseDeviceObject(
-				address,
-				value,
-				{ type: 8, instance: deviceId },
-				true,
-				(res) => printResultObject(deviceId, res),
-			)
-		}
-	})
+	bacnetClient.readPropertyMultiple(
+		address.address,
+		requestArray,
+		(err, value) => {
+			if (err) {
+				console.log(
+					deviceId,
+					'No ReadPropertyMultiple supported:',
+					err.message,
+				)
+				getAllPropertiesManually(
+					address,
+					{ type: 8, instance: deviceId },
+					(result) => {
+						parseDeviceObject(
+							address,
+							result,
+							{ type: 8, instance: deviceId },
+							false,
+							(res) => printResultObject(deviceId, res),
+						)
+					},
+				)
+			} else {
+				console.log(deviceId, 'ReadPropertyMultiple supported ...')
+				parseDeviceObject(
+					address,
+					value,
+					{ type: 8, instance: deviceId },
+					true,
+					(res) => printResultObject(deviceId, res),
+				)
+			}
+		},
+	)
 })
