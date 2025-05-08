@@ -82,7 +82,8 @@ export const decode = (
 	if (funct & NpduControlBit.DESTINATION_SPECIFIED) {
 		hopCount = buffer[offset++]
 	}
-	let networkMsgType = NetworkLayerMessageType.WHO_IS_ROUTER_TO_NETWORK
+	let networkMsgType: number =
+		NetworkLayerMessageType.WHO_IS_ROUTER_TO_NETWORK
 	let vendorId = 0
 	if (funct & NpduControlBit.NETWORK_LAYER_MESSAGE) {
 		networkMsgType = buffer[offset++]
