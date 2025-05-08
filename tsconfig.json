@@ -24,6 +24,7 @@
 	"include": [
 	  "src/**/*.ts",
 	  "test/**/*.ts",
+	  "examples/**/*.ts",
 	  "emulator/**/*.ts",
 	  "eslint.config.mjs"
 	],

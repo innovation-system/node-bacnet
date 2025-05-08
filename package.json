@@ -13,8 +13,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "lint": "eslint src/**/*.*",
-    "lint:fix": "eslint --fix \"src/**/*\"",
+    "lint": "eslint src/**/*.* emulator/**/*.* examples/**/*.* test/**/*.*",
+    "lint:fix": "eslint --fix \"src/**/*\" \"emulator/**/*\" \"examples/**/*\" \"test/**/*\"",
     "test:all": "node --require esbuild-register --test test/**/*.spec.ts",
     "test:unit:coverage": "nyc --silent --no-clean npm run test:unit",
     "test:integration:coverage": "nyc --silent --no-clean npm run test:integration",

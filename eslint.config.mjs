@@ -16,7 +16,7 @@ const compat = new FlatCompat({
 })
 
 export default defineConfig([
-	globalIgnores(['examples/', 'dist/']),
+	globalIgnores(['dist/']),
 
 	// Configuration for JavaScript files
 	{
