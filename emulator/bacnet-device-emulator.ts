@@ -2,14 +2,25 @@ import debugLib from 'debug'
 import Client from '../src/lib/client'
 import * as baEnum from '../src/lib/enum'
 import { BACnetClientEvents } from '../src/lib/EventTypes'
+import { ValueOf } from '../src'
 
 const debug = debugLib('bacnet:device:debug')
 
-interface DataStore {
-	[key: string]: {
-		[propertyId: number]: any[]
+type DataStore = Record<
+	`${ValueOf<typeof baEnum.ObjectType>}:${number}`, // <objectType>:<objectInstance>
+	{
+		[propertyId: ValueOf<typeof baEnum.PropertyIdentifier>]: {
+			value:
+				| string
+				| number
+				| {
+						type: ValueOf<typeof baEnum.PropertyIdentifier>
+						instance: number
+				  }
+			type: ValueOf<typeof baEnum.ApplicationTag>
+		}[]
 	}
-}
+>
 
 const settings = {
 	deviceId: 1234,
@@ -21,7 +32,12 @@ const client = new Client()
 
 const dataStore: DataStore = {
 	'1:0': {
-		75: [{ value: { type: 1, instance: 0 }, type: 12 }], // PROP_OBJECT_IDENTIFIER
+		75: [
+			{
+				value: { type: 1, instance: 0 },
+				type: 12,
+			},
+		], // PROP_OBJECT_IDENTIFIER
 		77: [{ value: 'Analog Output 0', type: 7 }], // PROP_OBJECT_NAME
 		79: [{ value: 1, type: 9 }], // PROP_OBJECT_TYPE
 		85: [{ value: 5, type: 4 }], // PROP_PRESENT_VALUE

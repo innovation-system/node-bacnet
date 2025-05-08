@@ -1,14 +1,27 @@
 // Utility function to replace underscore's invert
-function invert<T extends Record<string, number>>(
+
+export type ValueOf<T extends Record<string, number>> = T[keyof T]
+
+export type InvertedEnum<T extends Record<string, number>> = {
+	[K in ValueOf<T>]: keyof { [P in keyof T as T[P] extends K ? P : never]: P }
+} & {
+	// Makes sure TypeScript errors on non-existent properties
+	[k: number]: never
+}
+
+export function invert<T extends Record<string, number>>(
 	obj: T,
-): { [K in T[keyof T]]: keyof T } {
-	const result = {} as { [K in T[keyof T]]: keyof T }
+): InvertedEnum<T> {
+	const result: Record<number, string> = {}
+
 	for (const key in obj) {
 		if (Object.prototype.hasOwnProperty.call(obj, key)) {
-			result[obj[key] as T[keyof T]] = key as keyof T
+			const value = obj[key]
+			result[value] = key
 		}
 	}
-	return result
+
+	return result as InvertedEnum<T>
 }
 
 /**
@@ -113,7 +126,7 @@ export const ConfirmedServiceChoice = {
 	GET_EVENT_INFORMATION: 29,
 	SUBSCRIBE_COV_PROPERTY_MULTIPLE: 30,
 	CONFIRMED_COV_NOTIFICATION_MULTIPLE: 31,
-}
+} as const
 
 export const ConfirmedServiceChoiceName = invert(ConfirmedServiceChoice)
 
@@ -130,7 +143,7 @@ export const UnconfirmedServiceChoice = {
 	UTC_TIME_SYNCHRONIZATION: 9,
 	WRITE_GROUP: 10,
 	UNCONFIRMED_COV_NOTIFICATION_MULTIPLE: 11,
-}
+} as const
 
 export const UnconfirmedServiceChoiceName = invert(UnconfirmedServiceChoice)
 
@@ -147,7 +160,7 @@ export const AbortReason = {
 	OUT_OF_RESOURCES: 9,
 	TSM_TIMEOUT: 10,
 	APDU_TOO_LONG: 11,
-}
+} as const
 
 export const AbortReasonName = invert(AbortReason)
 
@@ -162,7 +175,7 @@ export const RejectReason = {
 	TOO_MANY_ARGUMENTS: 7,
 	UNDEFINED_ENUMERATION: 8,
 	UNRECOGNIZED_SERVICE: 9,
-}
+} as const
 
 export const RejectReasonName = invert(RejectReason)
 
@@ -175,7 +188,7 @@ export const ErrorClass = {
 	SERVICES: 5,
 	VT: 6,
 	COMMUNICATION: 7,
-}
+} as const
 
 export const ErrorClassName = invert(ErrorClass)
 
@@ -313,7 +326,7 @@ export const ErrorCode = {
 	VT_SESSION_TERMINATION_FAILURE: 39,
 	WRITE_ACCESS_DENIED: 40,
 	WRITE_BDT_FAILED: 116,
-}
+} as const
 
 export const ErrorCodeName = invert(ErrorCode)
 
@@ -324,7 +337,7 @@ export const AccessAuthenticationFactorDisable = {
 	DISABLED_STOLEN: 3,
 	DISABLED_DAMAGED: 4,
 	DISABLED_DESTROYED: 5,
-}
+} as const
 
 export const AccessAuthenticationFactorDisableName = invert(
 	AccessAuthenticationFactorDisable,
@@ -335,7 +348,7 @@ export const AccessCredentialDisable = {
 	DISABLE: 1,
 	DISABLE_MANUAL: 2,
 	DISABLE_LOCKOUT: 3,
-}
+} as const
 
 export const AccessCredentialDisableName = invert(AccessCredentialDisable)
 
@@ -350,7 +363,7 @@ export const AccessCredentialDisableReason = {
 	DISABLED_MAX_USES: 7,
 	DISABLED_INACTIVITY: 8,
 	DISABLED_MANUAL: 9,
-}
+} as const
 
 export const AccessCredentialDisableReasonName = invert(
 	AccessCredentialDisableReason,
@@ -411,7 +424,7 @@ export const AccessEvent = {
 	DENIED_VERIFICATION_FAILED: 162,
 	DENIED_VERIFICATION_TIMEOUT: 163,
 	DENIED_OTHER: 164,
-}
+} as const
 
 export const AccessEventName = invert(AccessEvent)
 
@@ -419,7 +432,7 @@ export const AccessPassbackMode = {
 	PASSBACK_OFF: 0,
 	HARD_PASSBACK: 1,
 	SOFT_PASSBACK: 2,
-}
+} as const
 
 export const AccessPassbackModeName = invert(AccessPassbackMode)
 
@@ -427,7 +440,7 @@ export const AccessUserType = {
 	ASSET: 0,
 	GROUP: 1,
 	PERSON: 2,
-}
+} as const
 
 export const AccessUserTypeName = invert(AccessUserType)
 
@@ -439,14 +452,14 @@ export const AccessZoneOccupancyState = {
 	ABOVE_UPPER_LIMIT: 4,
 	DISABLED: 5,
 	NOT_SUPPORTED: 6,
-}
+} as const
 
 export const AccessZoneOccupancyStateName = invert(AccessZoneOccupancyState)
 
 export const Action = {
 	DIRECT: 0,
 	REVERSE: 1,
-}
+} as const
 
 export const ActionName = invert(Action)
 
@@ -476,7 +489,7 @@ export const AuthenticationFactorType = {
 	CBEFF_B: 22,
 	CBEFF_C: 23,
 	USER_PASSWORD: 24,
-}
+} as const
 
 export const AuthenticationFactorTypeName = invert(AuthenticationFactorType)
 
@@ -488,7 +501,7 @@ export const AuthenticationStatus = {
 	WAITING_FOR_ACCOMPANIMENT: 4,
 	WAITING_FOR_VERIFICATION: 5,
 	IN_PROGRESS: 6,
-}
+} as const
 
 export const AuthenticationStatusName = invert(AuthenticationStatus)
 
@@ -500,7 +513,7 @@ export const AuthorizationExemption = {
 	DENY: 4,
 	VERIFICATION: 5,
 	AUTHORIZATION_DELAY: 6,
-}
+} as const
 
 export const AuthorizationExemptionName = invert(AuthorizationExemption)
 
@@ -511,7 +524,7 @@ export const AuthorizationMode = {
 	VERIFICATION_REQUIRED: 3,
 	AUTHORIZATION_DELAYED: 4,
 	NONE: 5,
-}
+} as const
 
 export const AuthorizationModeName = invert(AuthorizationMode)
 
@@ -523,7 +536,7 @@ export const BackupState = {
 	PERFORMING_A_RESTORE: 4,
 	BACKUP_FAILURE: 5,
 	RESTORE_FAILURE: 6,
-}
+} as const
 
 export const BackupStateName = invert(BackupState)
 
@@ -534,14 +547,14 @@ export const BinaryLightingPV = {
 	WARN_OFF: 3,
 	WARN_RELINQUISH: 4,
 	STOP: 5,
-}
+} as const
 
 export const BinaryLightingPVName = invert(BinaryLightingPV)
 
 export const BinaryPV = {
 	INACTIVE: 0,
 	ACTIVE: 1,
-}
+} as const
 
 export const BinaryPVName = invert(BinaryPV)
 
@@ -552,7 +565,7 @@ export const DeviceStatus = {
 	DOWNLOAD_IN_PROGRESS: 3,
 	NON_OPERATIONAL: 4,
 	BACKUP_IN_PROGRESS: 5,
-}
+} as const
 
 export const DeviceStatusName = invert(DeviceStatus)
 
@@ -566,7 +579,7 @@ export const DoorAlarmState = {
 	LOCK_DOWN: 6,
 	FREE_ACCESS: 7,
 	EGRESS_OPEN: 8,
-}
+} as const
 
 export const DoorAlarmStateName = invert(DoorAlarmState)
 
@@ -574,7 +587,7 @@ export const DoorSecuredStatus = {
 	SECURED: 0,
 	UNSECURED: 1,
 	UNKNOWN: 2,
-}
+} as const
 
 export const DoorSecuredStatusName = invert(DoorSecuredStatus)
 
@@ -589,7 +602,7 @@ export const DoorStatus = {
 	OPENING: 7,
 	SAFETY_LOCKED: 8,
 	LIMITED_OPENED: 9,
-}
+} as const
 
 export const DoorStatusName = invert(DoorStatus)
 
@@ -598,7 +611,7 @@ export const DoorValue = {
 	UNLOCK: 1,
 	PULSE_UNLOCK: 2,
 	EXTENDED_PULSE_UNLOCK: 3,
-}
+} as const
 
 export const DoorValueName = invert(DoorValue)
 
@@ -865,7 +878,7 @@ export const EngineeringUnits = {
 	PH: 234,
 	GRAMS_PER_SQUARE_METER: 235,
 	MINUTES_PER_DEGREE_KELVIN: 236,
-}
+} as const
 
 export const EngineeringUnitsName = invert(EngineeringUnits)
 
@@ -879,7 +892,7 @@ export const EscalatorFault = {
 	CONTROLLER_SUPPLY_FAULT: 6,
 	DRIVE_TEMPERATURE_EXCEEDED: 7,
 	COMB_PLATE_FAULT: 8,
-}
+} as const
 
 export const EscalatorFaultName = invert(EscalatorFault)
 
@@ -890,7 +903,7 @@ export const EscalatorMode = {
 	DOWN: 3,
 	INSPECTION: 4,
 	OUT_OF_SERVICE: 5,
-}
+} as const
 
 export const EscalatorModeName = invert(EscalatorMode)
 
@@ -901,7 +914,7 @@ export const EscalatorOperationDirection = {
 	UP_REDUCED_SPEED: 3,
 	DOWN_RATED_SPEED: 4,
 	DOWN_REDUCED_SPEED: 5,
-}
+} as const
 
 export const EscalatorOperationDirectionName = invert(
 	EscalatorOperationDirection,
@@ -914,7 +927,7 @@ export const EventState = {
 	HIGH_LIMIT: 3,
 	LOW_LIMIT: 4,
 	LIFE_SAFETY_ALARM: 5,
-}
+} as const
 
 export const EventStateName = invert(EventState)
 
@@ -940,7 +953,7 @@ export const EventType = {
 	NONE: 20,
 	CHANGE_OF_DISCRETE_VALUE: 21,
 	CHANGE_OF_TIMER: 22,
-}
+} as const
 
 export const EventTypeName = invert(EventType)
 
@@ -953,14 +966,14 @@ export const FaultType = {
 	FAULT_STATUS_FLAGS: 5,
 	FAULT_OUT_OF_RANGE: 6,
 	FAULT_LISTED: 7,
-}
+} as const
 
 export const FaultTypeName = invert(FaultType)
 
 export const FileAccessMethod = {
 	RECORD_ACCESS: 0,
 	STREAM_ACCESS: 1,
-}
+} as const
 
 export const FileAccessMethodName = invert(FileAccessMethod)
 
@@ -968,7 +981,7 @@ export const IPMode = {
 	NORMAL: 0,
 	FOREIGN: 1,
 	BBMD: 2,
-}
+} as const
 
 export const IPModeName = invert(IPMode)
 
@@ -988,7 +1001,7 @@ export const LifeSafetyMode = {
 	DISABLED: 12,
 	AUTOMATIC_RELEASE_DISABLED: 13,
 	DEFAULT: 14,
-}
+} as const
 
 export const LifeSafetyModeName = invert(LifeSafetyMode)
 
@@ -1003,7 +1016,7 @@ export const LifeSafetyOperation = {
 	UNSILENCE: 7,
 	UNSILENCE_AUDIBLE: 8,
 	UNSILENCE_VISUAL: 9,
-}
+} as const
 
 export const LifeSafetyOperationName = invert(LifeSafetyOperation)
 
@@ -1032,7 +1045,7 @@ export const LifeSafetyState = {
 	GENERAL_ALARM: 21,
 	SUPERVISORY: 22,
 	TEST_SUPERVISORY: 23,
-}
+} as const
 
 export const LifeSafetyStateName = invert(LifeSafetyState)
 
@@ -1043,7 +1056,7 @@ export const LiftCarDirection = {
 	UP: 3,
 	DOWN: 4,
 	UP_AND_DOWN: 5,
-}
+} as const
 
 export const LiftCarDirectionName = invert(LiftCarDirection)
 
@@ -1051,7 +1064,7 @@ export const LiftCarDoorCommand = {
 	NONE: 0,
 	OPEN: 1,
 	CLOSE: 2,
-}
+} as const
 
 export const LiftCarDoorCommandName = invert(LiftCarDoorCommand)
 
@@ -1066,7 +1079,7 @@ export const LiftCarDriveStatus = {
 	TWO_FLOOR_JUMP: 7,
 	THREE_FLOOR_JUMP: 8,
 	MULTI_FLOOR_JUMP: 9,
-}
+} as const
 
 export const LiftCarDriveStatusName = invert(LiftCarDriveStatus)
 
@@ -1085,7 +1098,7 @@ export const LiftCarMode = {
 	FIRE_OPERATION: 11,
 	OUT_OF_SERVICE: 12,
 	OCCUPANT_EVACUATION: 13,
-}
+} as const
 
 export const LiftCarModeName = invert(LiftCarMode)
 
@@ -1107,7 +1120,7 @@ export const LiftFault = {
 	POSITION_LOST: 14,
 	DRIVE_TEMPERATURE_EXCEEDED: 15,
 	LOAD_MEASUREMENT_FAULT: 16,
-}
+} as const
 
 export const LiftFaultName = invert(LiftFault)
 
@@ -1119,7 +1132,7 @@ export const LiftGroupMode = {
 	FOUR_WAY: 4,
 	EMERGENCY_POWER: 5,
 	UP_PEAK: 6,
-}
+} as const
 
 export const LiftGroupModeName = invert(LiftGroupMode)
 
@@ -1129,7 +1142,7 @@ export const LightingInProgress = {
 	RAMP_ACTIVE: 2,
 	NOT_CONTROLLED: 3,
 	OTHER: 4,
-}
+} as const
 
 export const LightingInProgressName = invert(LightingInProgress)
 
@@ -1145,7 +1158,7 @@ export const LightingOperation = {
 	WARN_OFF: 8,
 	WARN_RELINQUISH: 9,
 	STOP: 10,
-}
+} as const
 
 export const LightingOperationName = invert(LightingOperation)
 
@@ -1153,7 +1166,7 @@ export const LightingTransition = {
 	NONE: 0,
 	FADE: 1,
 	RAMP: 2,
-}
+} as const
 
 export const LightingTransitionName = invert(LightingTransition)
 
@@ -1163,7 +1176,7 @@ export const LockStatus = {
 	LOCK_FAULT: 2,
 	UNUSED: 3,
 	UNKNOWN: 4,
-}
+} as const
 
 export const LockStatusName = invert(LockStatus)
 
@@ -1171,7 +1184,7 @@ export const LoggingType = {
 	POLLED: 0,
 	COV: 1,
 	TRIGGERED: 2,
-}
+} as const
 
 export const LoggingTypeName = invert(LoggingType)
 
@@ -1180,7 +1193,7 @@ export const Maintenance = {
 	PERIODIC_TEST: 1,
 	NEED_SERVICE_OPERATIONAL: 2,
 	NEED_SERVICE_INOPERATIVE: 3,
-}
+} as const
 
 export const MaintenanceName = invert(Maintenance)
 
@@ -1189,7 +1202,7 @@ export const NetworkNumberQuality = {
 	LEARNED: 1,
 	LEARNED_CONFIGURED: 2,
 	CONFIGURED: 3,
-}
+} as const
 
 export const NetworkNumberQualityName = invert(NetworkNumberQuality)
 
@@ -1202,7 +1215,7 @@ export const NetworkPortCommand = {
 	RESTART_AUTONEGOTIATION: 5,
 	DISCONNECT: 6,
 	RESTART_PORT: 7,
-}
+} as const
 
 export const NetworkPortCommandName = invert(NetworkPortCommand)
 
@@ -1217,7 +1230,7 @@ export const NetworkType = {
 	VIRTUAL: 7,
 	IPV6: 9,
 	SERIAL: 10,
-}
+} as const
 
 export const NetworkTypeName = invert(NetworkType)
 
@@ -1244,7 +1257,7 @@ export const NodeType = {
 	PROTOCOL: 19,
 	ROOM: 20,
 	ZONE: 21,
-}
+} as const
 
 export const NodeTypeName = invert(NodeType)
 
@@ -1252,7 +1265,7 @@ export const NotifyType = {
 	ALARM: 0,
 	EVENT: 1,
 	ACK_NOTIFICATION: 2,
-}
+} as const
 
 export const NotifyTypeName = invert(NotifyType)
 
@@ -1317,14 +1330,14 @@ export const ObjectType = {
 	TIMER: 31,
 	TREND_LOG: 20,
 	TREND_LOG_MULTIPLE: 27,
-}
+} as const
 
 export const ObjectTypeName = invert(ObjectType)
 
 export const Polarity = {
 	NORMAL: 0,
 	REVERSE: 1,
-}
+} as const
 
 export const PolarityName = invert(Polarity)
 
@@ -1334,7 +1347,7 @@ export const ProgramError = {
 	INTERNAL: 2,
 	PROGRAM: 3,
 	OTHER: 4,
-}
+} as const
 
 export const ProgramErrorName = invert(ProgramError)
 
@@ -1345,7 +1358,7 @@ export const ProgramRequest = {
 	HALT: 3,
 	RESTART: 4,
 	UNLOAD: 5,
-}
+} as const
 
 export const ProgramRequestName = invert(ProgramRequest)
 
@@ -1356,7 +1369,7 @@ export const ProgramState = {
 	WAITING: 3,
 	HALTED: 4,
 	UNLOADING: 5,
-}
+} as const
 
 export const ProgramStateName = invert(ProgramState)
 
@@ -1816,7 +1829,7 @@ export const PropertyIdentifier = {
 	ZONE_FROM: 320,
 	ZONE_MEMBERS: 165,
 	ZONE_TO: 321,
-}
+} as const
 
 export const PropertyIdentifierName = invert(PropertyIdentifier)
 
@@ -1825,7 +1838,7 @@ export const ProtocolLevel = {
 	PROTOCOL: 1,
 	BACNET_APPLICATION: 2,
 	NON_BACNET_APPLICATION: 3,
-}
+} as const
 
 export const ProtocolLevelName = invert(ProtocolLevel)
 
@@ -1860,7 +1873,7 @@ export const Relationship = {
 	RECEIVES_COOL_WATER: 27,
 	SUPPLIES_STEAM: 28,
 	RECEIVES_STEAM: 29,
-}
+} as const
 
 export const RelationshipName = invert(Relationship)
 
@@ -1889,7 +1902,7 @@ export const Reliability = {
 	PROPRIETARY_COMMAND_FAILURE: 22,
 	FAULTS_LISTED: 23,
 	REFERENCED_OBJECT_FAULT: 24,
-}
+} as const
 
 export const ReliabilityName = invert(Reliability)
 
@@ -1903,7 +1916,7 @@ export const RestartReason = {
 	SOFTWARE_WATCHDOG: 6,
 	SUSPENDED: 7,
 	ACTIVATE_CHANGES: 8,
-}
+} as const
 
 export const RestartReasonName = invert(RestartReason)
 
@@ -1914,7 +1927,7 @@ export const SecurityLevel = {
 	ENCRYPTED: 3,
 	SIGNED_END_TO_END: 4,
 	ENCRYPTED_END_TO_END: 5,
-}
+} as const
 
 export const SecurityLevelName = invert(SecurityLevel)
 
@@ -1923,7 +1936,7 @@ export const SecurityPolicy = {
 	PLAIN_TRUSTED: 1,
 	SIGNED_TRUSTED: 2,
 	ENCRYPTED_TRUSTED: 3,
-}
+} as const
 
 export const SecurityPolicyName = invert(SecurityPolicy)
 
@@ -1932,7 +1945,7 @@ export const Segmentation = {
 	SEGMENTED_TRANSMIT: 1,
 	SEGMENTED_RECEIVE: 2,
 	NO_SEGMENTATION: 3,
-}
+} as const
 
 export const SegmentationName = invert(Segmentation)
 
@@ -1941,7 +1954,7 @@ export const ShedState = {
 	SHED_REQUEST_PENDING: 1,
 	SHED_COMPLIANT: 2,
 	SHED_NON_COMPLIANT: 3,
-}
+} as const
 
 export const ShedStateName = invert(ShedState)
 
@@ -1950,7 +1963,7 @@ export const SilencedState = {
 	AUDIBLE_SILENCED: 1,
 	VISIBLE_SILENCED: 2,
 	ALL_SILENCED: 3,
-}
+} as const
 
 export const SilencedStateName = invert(SilencedState)
 
@@ -1958,7 +1971,7 @@ export const TimerState = {
 	IDLE: 0,
 	RUNNING: 1,
 	EXPIRED: 2,
-}
+} as const
 
 export const TimerStateName = invert(TimerState)
 
@@ -1971,7 +1984,7 @@ export const TimerTransition = {
 	FORCED_TO_EXPIRED: 5,
 	EXPIRED_TO_IDLE: 6,
 	EXPIRED_TO_RUNNING: 7,
-}
+} as const
 
 export const TimerTransitionName = invert(TimerTransition)
 
@@ -1983,7 +1996,7 @@ export const VTClass = {
 	DEC_VT220: 4,
 	HP_700_94: 5,
 	IBM_3130: 6,
-}
+} as const
 
 export const VTClassName = invert(VTClass)
 
@@ -1992,7 +2005,7 @@ export const WriteStatus = {
 	IN_PROGRESS: 1,
 	SUCCESSFUL: 2,
 	FAILED: 3,
-}
+} as const
 
 export const WriteStatusName = invert(WriteStatus)
 
@@ -2005,7 +2018,7 @@ export const DaysOfWeek = {
 	FRIDAY: 4,
 	SATURDAY: 5,
 	SUNDAY: 6,
-}
+} as const
 
 export const DaysOfWeekName = invert(DaysOfWeek)
 
@@ -2013,14 +2026,14 @@ export const EventTransitionBits = {
 	TO_OFFNORMAL: 0,
 	TO_FAULT: 1,
 	TO_NORMAL: 2,
-}
+} as const
 
 export const EventTransitionBitsName = invert(EventTransitionBits)
 
 export const LimitEnable = {
 	LOW_LIMIT_ENABLE: 0,
 	HIGH_LIMIT_ENABLE: 1,
-}
+} as const
 
 export const LimitEnableName = invert(LimitEnable)
 
@@ -2028,7 +2041,7 @@ export const LogStatus = {
 	LOG_DISABLED: 0,
 	BUFFER_PURGED: 1,
 	LOG_INTERRUPTED: 2,
-}
+} as const
 
 export const LogStatusName = invert(LogStatus)
 
@@ -2093,7 +2106,7 @@ export const ObjectTypesSupported = {
 	ELEVATOR_GROUP: 57,
 	ESCALATOR: 58,
 	LIFT: 59,
-}
+} as const
 
 export const ObjectTypesSupportedName = invert(ObjectTypesSupported)
 
@@ -2101,7 +2114,7 @@ export const ResultFlags = {
 	FIRST_ITEM: 0,
 	LAST_ITEM: 1,
 	MORE_ITEMS: 2,
-}
+} as const
 
 export const ResultFlagsName = invert(ResultFlags)
 
@@ -2150,7 +2163,7 @@ export const ServicesSupported = {
 	SUBSCRIBE_COV_PROPERTY_MULTIPLE: 41,
 	CONFIRMED_COV_NOTIFICATION_MULTIPLE: 42,
 	UNCONFIRMED_COV_NOTIFICATION_MULTIPLE: 43,
-}
+} as const
 
 export const ServicesSupportedName = invert(ServicesSupported)
 
@@ -2159,7 +2172,7 @@ export const StatusFlags = {
 	FAULT: 1,
 	OVERRIDDEN: 2,
 	OUT_OF_SERVICE: 3,
-}
+} as const
 
 export const StatusFlagsName = invert(StatusFlags)
 
@@ -2204,7 +2217,7 @@ export const ApplicationTag = {
 	CONTEXT_SPECIFIC_DECODED: 118,
 	CONTEXT_SPECIFIC_ENCODED: 119,
 	LOG_RECORD: 120,
-}
+} as const
 
 export const ApplicationTagName = invert(ApplicationTag)
 
@@ -2217,7 +2230,7 @@ export const BvlcResultFormat = {
 	READ_FOREIGN_DEVICE_TABLE_NAK: 0x0040,
 	DELETE_FOREIGN_DEVICE_TABLE_ENTRY_NAK: 0x0050,
 	DISTRIBUTE_BROADCAST_TO_NETWORK_NAK: 0x0060,
-}
+} as const
 
 export const BvlcResultFormatName = invert(BvlcResultFormat)
 
@@ -2236,7 +2249,7 @@ export const BvlcResultPurpose = {
 	ORIGINAL_UNICAST_NPDU: 0x0a,
 	ORIGINAL_BROADCAST_NPDU: 0x0b,
 	SECURE_BVLL: 0x0c,
-}
+} as const
 
 export const BvlcResultPurposeName = invert(BvlcResultPurpose)
 
@@ -2248,7 +2261,7 @@ export const CharacterStringEncoding = {
 	UCS_4: 3,
 	UCS_2: 4,
 	ISO_8859_1: 5,
-}
+} as const
 
 export const CharacterStringEncodingName = invert(CharacterStringEncoding)
 
@@ -2256,7 +2269,7 @@ export const CharacterStringEncodingName = invert(CharacterStringEncoding)
 export const CovType = {
 	REAL: 0,
 	BIT_STRING: 1,
-}
+} as const
 
 export const CovTypeName = invert(CovType)
 
@@ -2269,7 +2282,7 @@ export const EnableDisable = {
 	ENABLE: 0,
 	DISABLE: 1,
 	DISABLE_INITIATION: 2,
-}
+} as const
 
 export const EnableDisableName = invert(EnableDisable)
 
@@ -2285,7 +2298,7 @@ export const MaxApduLengthAccepted = {
 	OCTETS_480: 0b0011,
 	OCTETS_1024: 0b0100,
 	OCTETS_1476: 0b0101,
-}
+} as const
 
 export const MaxApduLengthAcceptedName = invert(MaxApduLengthAccepted)
 
@@ -2303,7 +2316,7 @@ export const MaxSegmentsAccepted = {
 	SEGMENTS_32: 0b101 << 4,
 	SEGMENTS_64: 0b110 << 4,
 	SEGMENTS_65: 0b111 << 4,
-}
+} as const
 
 export const MaxSegmentsAcceptedName = invert(MaxSegmentsAccepted)
 
@@ -2329,7 +2342,7 @@ export const NetworkLayerMessageType = {
 	SET_MASTER_KEY: 0x11,
 	WHAT_IS_NETWORK_NUMBER: 0x12,
 	NETWORK_NUMBER_IS: 0x13,
-}
+} as const
 
 export const NetworkLayerMessageTypeName = invert(NetworkLayerMessageType)
 
@@ -2339,7 +2352,7 @@ export const NpduControlBit = {
 	SOURCE_SPECIFIED: 1 << 3,
 	DESTINATION_SPECIFIED: 1 << 5,
 	NETWORK_LAYER_MESSAGE: 1 << 7,
-}
+} as const
 
 export const NpduControlBitName = invert(NpduControlBit)
 
@@ -2349,7 +2362,7 @@ export const NpduControlPriority = {
 	URGENT_MESSAGE: 0b01,
 	CRITICAL_EQUIPMENT_MESSAGE: 0b10,
 	LIFE_SAFETY_MESSAGE: 0b11,
-}
+} as const
 
 export const NpduControlPriorityName = invert(NpduControlPriority)
 
@@ -2358,7 +2371,7 @@ export const PduConReqBit = {
 	SEGMENTED_RESPONSE_ACCEPTED: 1 << 1,
 	MORE_FOLLOWS: 1 << 2,
 	SEGMENTED_MESSAGE: 1 << 3,
-}
+} as const
 
 export const PduConReqBitName = invert(PduConReqBit)
 
@@ -2366,7 +2379,7 @@ export const PduConReqBitName = invert(PduConReqBit)
 export const PduSegAckBit = {
 	SERVER: 1 << 0,
 	NEGATIVE_ACK: 1 << 1,
-}
+} as const
 
 export const PduSegAckBitName = invert(PduSegAckBit)
 
@@ -2380,7 +2393,7 @@ export const PduType = {
 	ERROR: 5 << 4,
 	REJECT: 6 << 4,
 	ABORT: 7 << 4,
-}
+} as const
 
 export const PduTypeName = invert(PduType)
 
@@ -2444,7 +2457,7 @@ export const PropertyStates = {
 	LIFT_FAULT: 57,
 	PROTOCOL_LEVEL: 58,
 	EXTENDED_VALUE: 63,
-}
+} as const
 
 export const PropertyStatesName = invert(PropertyStates)
 
@@ -2453,7 +2466,7 @@ export const ReadRangeType = {
 	BY_POSITION: 0,
 	BY_SEQUENCE_NUMBER: 1,
 	BY_TIME_REFERENCE_TIME_COUNT: 2,
-}
+} as const
 
 export const ReadRangeTypeName = invert(ReadRangeType)
 
@@ -2471,7 +2484,7 @@ export const ReinitializedState = {
 	ENDRESTORE: 5,
 	ABORTRESTORE: 6,
 	ACTIVATE_CHANGES: 7,
-}
+} as const
 
 export const ReinitializedStateName = invert(ReinitializedState)
 
@@ -2480,6 +2493,6 @@ export const TimeStamp = {
 	TIME: 0,
 	SEQUENCE_NUMBER: 1,
 	DATETIME: 2,
-}
+} as const
 
 export const TimeStampName = invert(TimeStamp)
