@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert'
 
-import * as services from '../../src/lib/services/index'
+import * as services from '../../src/lib/services/Index'
 
 test.describe('bacnet - register foreign device integration', () => {
 	// TODO: this is just documentation what it does for now - needs a review

@@ -9,7 +9,7 @@ import debugLib from 'debug'
 
 // Local Modules
 import Transport from './transport'
-import * as baServices from './services'
+import * as baServices from './services/Index'
 import * as baAsn1 from './asn1'
 import * as baApdu from './apdu'
 import * as baNpdu from './npdu'

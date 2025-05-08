@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import * as baServices from '../../src/lib/services/Index'
 
 test.describe('bacnet - Services layer WhoIs unit', () => {
 	test('should successfully encode and decode', (t) => {

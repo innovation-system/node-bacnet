@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import * as baServices from '../../src/lib/services/Index'
 
 function removeLen(obj: any): any {
 	if (obj === null || typeof obj !== 'object') return obj
