@@ -143,7 +143,7 @@ function getAllPropertiesManually(
     return callback({
       values: [
         {
-          objectId: objectId,
+          objectId,
           values: result
         }
       ]
@@ -164,7 +164,7 @@ function getAllPropertiesManually(
     (err, value) => {
       if (!err && value) {
         if (debug) {
-          console.log('Handle value ' + prop + ': ', JSON.stringify(value));
+          console.log(`Handle value ${  prop  }: `, JSON.stringify(value));
         }
         const objRes: any = {};
         objRes.id = value.property.id;
@@ -287,7 +287,7 @@ function parseValue(
           resValue = handleBitString(value.value.value, value.value.bitsUsed, PropertyIdentifierToEnumMap[objId]);
         } else {
           if (parentType !== baEnum.ObjectType.BITSTRING_VALUE) {
-            console.log('Unknown value for BIT_STRING type for objId ' + baEnum.getEnumName(baEnum.PropertyIdentifier, objId) + ' and parent type ' + baEnum.getEnumName(baEnum.ObjectType, parentType));
+            console.log(`Unknown value for BIT_STRING type for objId ${  baEnum.getEnumName(baEnum.PropertyIdentifier, objId)  } and parent type ${  baEnum.getEnumName(baEnum.ObjectType, parentType)}`);
           }
           resValue = value.value;
         }
@@ -299,7 +299,7 @@ function parseValue(
         } else if (PropertyIdentifierToEnumMap[objId]) {
           resValue = baEnum.getEnumName(PropertyIdentifierToEnumMap[objId], value.value);
         } else {
-          console.log('Unknown value for ENUMERATED type for objId ' + baEnum.getEnumName(baEnum.PropertyIdentifier, objId) + ' and parent type ' + baEnum.getEnumName(baEnum.ObjectType, parentType));
+          console.log(`Unknown value for ENUMERATED type for objId ${  baEnum.getEnumName(baEnum.PropertyIdentifier, objId)  } and parent type ${  baEnum.getEnumName(baEnum.ObjectType, parentType)}`);
           resValue = value.value;
         }
         break;
@@ -349,7 +349,7 @@ function parseValue(
         resValue = value.value;
         break;
       default:
-        console.log('unknown type ' + value.type + ': ' + JSON.stringify(value));
+        console.log(`unknown type ${  value.type  }: ${  JSON.stringify(value)}`);
         resValue = value;
     }
   }
@@ -373,7 +373,7 @@ function parseDeviceObject(
     callback: (result: any) => void
   ): void {
     if (debug) {
-      console.log('START parseDeviceObject: ' + JSON.stringify(parent) + ' : ' + JSON.stringify(obj));
+      console.log(`START parseDeviceObject: ${  JSON.stringify(parent)  } : ${  JSON.stringify(obj)}`);
     }
   
     if(!obj) {
@@ -406,7 +406,7 @@ function parseDeviceObject(
         const firstDeviceId = String(obj.values[0].objectId.instance);
         if (resultObj[firstDeviceId]) {
           if (debug) {
-            console.log('END parseDeviceObject (single device): ' + JSON.stringify(parent) + ' : ' + JSON.stringify(resultObj[firstDeviceId]));
+            console.log(`END parseDeviceObject (single device): ${  JSON.stringify(parent)  } : ${  JSON.stringify(resultObj[firstDeviceId])}`);
           }
           callback(resultObj[firstDeviceId]);
           return;
@@ -414,7 +414,7 @@ function parseDeviceObject(
       }
       
       if (debug) {
-        console.log('END parseDeviceObject (multiple devices): ' + JSON.stringify(parent) + ' : ' + JSON.stringify(resultObj));
+        console.log(`END parseDeviceObject (multiple devices): ${  JSON.stringify(parent)  } : ${  JSON.stringify(resultObj)}`);
       }
       callback(resultObj);
     };
@@ -450,7 +450,7 @@ function parseDeviceObject(
         
         let objId = baEnum.getEnumName(baEnum.PropertyIdentifier, devObj.id);
         if (objId && devObj.index !== 4294967295) {
-          objId += '-' + devObj.index;
+          objId += `-${  devObj.index}`;
         }
         
         if (!objId) {
@@ -527,7 +527,7 @@ function printResultObject(deviceId: number, obj: any): void {
   if (objectsDone === Object.keys(knownDevices).length) {
     setTimeout(() => {
       bacnetClient.close();
-      console.log('closed transport ' + Date.now());
+      console.log(`closed transport ${  Date.now()}`);
     }, 1000);
   }
 }
@@ -557,7 +557,7 @@ bacnetClient.on('error', (err: Error) => {
 
 // emmitted when Bacnet server listens for incoming UDP packages
 bacnetClient.on('listening', () => {
-  console.log('sent whoIs ' + Date.now());
+  console.log(`sent whoIs ${  Date.now()}`);
   // discover devices once we are listening
   bacnetClient.whoIs();
 });
@@ -581,7 +581,7 @@ bacnetClient.on('iAm', (device: any) => {
   if (knownDevices.includes(deviceId)) return;
   if (limitToDevice !== null && limitToDevice !== deviceId) return;
 
-  console.log('Found Device ' + deviceId + ' on ' + JSON.stringify(address));
+  console.log(`Found Device ${  deviceId  } on ${  JSON.stringify(address)}`);
   knownDevices.push(deviceId);
 
   const propertyList: BACNetPropertyID[] = [];

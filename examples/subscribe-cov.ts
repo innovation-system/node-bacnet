@@ -27,19 +27,19 @@ bacnetClient.on('error', (err: Error) => {
 
 // emmitted when Bacnet server listens for incoming UDP packages
 bacnetClient.on('listening', () => {
-  console.log('sent whoIs ' + Date.now());
+  console.log(`sent whoIs ${  Date.now()}`);
   // discover devices once we are listening
   bacnetClient.whoIs();
 });
 
 // emitted when "Change of object" Messages are coming in
 bacnetClient.on('covNotifyUnconfirmed', (data: any) => {
-  console.log('Received COV: ' + JSON.stringify(data));
+  console.log(`Received COV: ${  JSON.stringify(data)}`);
 });
 
 // emitted when a new device is discovered in the network
 bacnetClient.on('iAm', (device: any) => {
-  console.log('Received iAm: ' + JSON.stringify(device, null, 4));
+  console.log(`Received iAm: ${  JSON.stringify(device, null, 4)}`);
   
   // Make sure device has the expected structure
   if (!device.header || !device.payload) {
@@ -53,7 +53,7 @@ bacnetClient.on('iAm', (device: any) => {
 
   //discovered device ID
   const deviceId = device.payload.deviceId;
-  console.log('Found Device ' + deviceId + ' on ' + JSON.stringify(address));
+  console.log(`Found Device ${  deviceId  } on ${  JSON.stringify(address)}`);
 
   // Define object ID for analog input 0
   const analogInput: BACNetObjectID = { type: 0, instance: 0 };
@@ -75,7 +75,7 @@ bacnetClient.on('iAm', (device: any) => {
     0, 
     options,
     (err) => {
-      console.log('subscribeCOV' + (err ? err : ''));
+      console.log(`subscribeCOV${  err ? err : ''}`);
     }
   );
 
@@ -91,7 +91,7 @@ bacnetClient.on('iAm', (device: any) => {
       1, 
       options,
       (err) => {
-        console.log('UnsubscribeCOV' + (err ? err : ''));
+        console.log(`UnsubscribeCOV${  err ? err : ''}`);
       }
     );
   }, 20000);
@@ -100,5 +100,5 @@ bacnetClient.on('iAm', (device: any) => {
 // after 30s end the connection
 setTimeout(() => {
   bacnetClient.close();
-  console.log('closed transport ' + Date.now());
+  console.log(`closed transport ${  Date.now()}`);
 }, 30000); // do not close too fast

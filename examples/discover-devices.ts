@@ -23,7 +23,7 @@ bacnetClient.on('listening', () => {
 
   setTimeout(() => {
     bacnetClient.close();
-    console.log('closed transport ' + Date.now());
+    console.log(`closed transport ${  Date.now()}`);
   }, 30000);
 });
 
@@ -53,7 +53,7 @@ bacnetClient.on('iAm', (device: any) => {
     PropertyIdentifier.OBJECT_NAME,
     (err, value: DecodeAcknowledgeSingleResult | undefined) => {
       if (err) {
-        console.log('Found Device ' + deviceId + ' on ' + JSON.stringify(address));
+        console.log(`Found Device ${  deviceId  } on ${  JSON.stringify(address)}`);
         console.log(err);
       } else {
         bacnetClient.readProperty(
@@ -62,13 +62,13 @@ bacnetClient.on('iAm', (device: any) => {
           PropertyIdentifier.VENDOR_NAME,
           (err2, valueVendor) => {
             if (value && value.values && value.values[0]?.value) {
-              console.log('Found Device ' + deviceId + ' on ' + JSON.stringify(address) + ': ' + value.values[0].value);
+              console.log(`Found Device ${  deviceId  } on ${  JSON.stringify(address)  }: ${  value.values[0].value}`);
             } else {
-              console.log('Found Device ' + deviceId + ' on ' + JSON.stringify(address));
+              console.log(`Found Device ${  deviceId  } on ${  JSON.stringify(address)}`);
               console.log('value: ', JSON.stringify(value));
             }
             if (!err2 && valueVendor?.values && valueVendor.values[0]?.value) {
-              console.log('Vendor: ' + valueVendor.values[0].value);
+              console.log(`Vendor: ${  valueVendor.values[0].value}`);
             }
             console.log();
           }
