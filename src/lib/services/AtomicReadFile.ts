@@ -2,7 +2,7 @@ import * as baAsn1 from '../asn1'
 import { ApplicationTag } from '../enum'
 import { EncodeBuffer, BACNetObjectID } from '../types'
 
-export class AtomicReadFileService {
+export class AtomicReadFile {
 	public static encode(
 		buffer: EncodeBuffer,
 		isStream: boolean,

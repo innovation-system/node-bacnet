@@ -2,7 +2,7 @@ import * as baAsn1 from '../asn1'
 import { TimeStamp } from '../enum'
 import { EncodeBuffer, BACNetObjectID } from '../types'
 
-export class AlarmAcknowledgeService {
+export class AlarmAcknowledge {
 	public static encode(
 		buffer: EncodeBuffer,
 		ackProcessId: number,

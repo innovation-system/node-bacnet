@@ -1606,7 +1606,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		baServices.atomicReadFile.encode(
+		baServices.AtomicReadFile.encode(
 			buffer,
 			true,
 			objectId,
@@ -1618,7 +1618,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			if (err) {
 				return void next(err)
 			}
-			const result = baServices.atomicReadFile.decodeAcknowledge(
+			const result = baServices.AtomicReadFile.decodeAcknowledge(
 				data.buffer,
 				data.offset,
 			)
@@ -1994,7 +1994,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		baServices.addListElement.encode(
+		baServices.AddListElement.encode(
 			buffer,
 			objectId,
 			reference.id,
@@ -2051,7 +2051,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		baServices.addListElement.encode(
+		baServices.AddListElement.encode(
 			buffer,
 			objectId,
 			reference.id,
@@ -2115,7 +2115,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			if (err) {
 				return void next(err)
 			}
-			const result = baServices.alarmSummary.decode(
+			const result = baServices.AlarmSummary.decode(
 				data.buffer,
 				data.offset,
 				data.length,
@@ -2242,7 +2242,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		baServices.alarmAcknowledge.encode(
+		baServices.AlarmAcknowledge.encode(
 			buffer,
 			57,
 			objectId,

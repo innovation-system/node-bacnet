@@ -1,7 +1,7 @@
-export * as addListElement from './Add-list-element'
-export * as alarmAcknowledge from './Alarm-acknowledge'
-export * as alarmSummary from './Alarm-summary'
-export * as atomicReadFile from './Atomic-read-file'
+import { AddListElement } from './AddListElement'
+import { AlarmAcknowledge } from './AlarmAcknowledge'
+import { AlarmSummary } from './AlarmSummary'
+import { AtomicReadFile } from './AtomicReadFile'
 export * as atomicWriteFile from './Atomic-write-file'
 export * as covNotify from './Cov-notify'
 export * as covNotifyUnconfirmed from './Cov-notify'
@@ -30,3 +30,15 @@ export * as whoHas from './Who-has'
 export * as whoIs from './Who-is'
 export * as writeProperty from './Write-property'
 export * as writePropertyMultiple from './Write-property-multiple'
+
+export { AddListElement } from './AddListElement'
+export { AlarmAcknowledge } from './AlarmAcknowledge'
+export { AlarmSummary } from './AlarmSummary'
+export { AtomicReadFile } from './AtomicReadFile'
+
+export const ServicesMap = {
+	addListElement: AddListElement,
+	alarmAcknowledge: AlarmAcknowledge,
+	alarmSummary: AlarmSummary,
+	atomicReadFile: AtomicReadFile,
+}

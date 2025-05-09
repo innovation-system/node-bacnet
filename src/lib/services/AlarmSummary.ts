@@ -1,7 +1,7 @@
 import * as baAsn1 from '../asn1'
 import { EncodeBuffer, BACNetAlarm } from '../types'
 
-export class AlarmSummaryService {
+export class AlarmSummary {
 	public static encode(buffer: EncodeBuffer, alarms: BACNetAlarm[]): void {
 		alarms.forEach((alarm) => {
 			baAsn1.encodeContextObjectId(
