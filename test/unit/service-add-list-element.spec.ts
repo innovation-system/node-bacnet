@@ -2,12 +2,12 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import { ServicesMap } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer AddListElement unit', () => {
 	test('should successfully encode and decode', () => {
 		const buffer = utils.getBuffer()
-		baServices.addListElement.encode(
+		ServicesMap.addListElement.encode(
 			buffer,
 			{ type: 11, instance: 560 },
 			85,
@@ -17,7 +17,7 @@ test.describe('bacnet - Services layer AddListElement unit', () => {
 				{ type: 2, value: 1 },
 			],
 		)
-		const result = baServices.addListElement.decode(
+		const result = ServicesMap.addListElement.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,

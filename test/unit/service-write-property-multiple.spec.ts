@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import { ServicesMap } from '../../src/lib/services'
 
 function removeLen(obj: any): any {
 	if (obj === null || typeof obj !== 'object') return obj
@@ -27,7 +27,7 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		baServices.writePropertyMultiple.encode(
+		ServicesMap.writePropertyMultiple.encode(
 			buffer,
 			{ type: 39, instance: 2400 },
 			[
@@ -64,7 +64,7 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 				},
 			],
 		)
-		const result = baServices.writePropertyMultiple.decode(
+		const result = ServicesMap.writePropertyMultiple.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -126,7 +126,7 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 		const buffer = utils.getBuffer()
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		baServices.writePropertyMultiple.encode(
+		ServicesMap.writePropertyMultiple.encode(
 			buffer,
 			{ type: 39, instance: 2400 },
 			[
@@ -137,7 +137,7 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 				},
 			],
 		)
-		const result = baServices.writePropertyMultiple.decode(
+		const result = ServicesMap.writePropertyMultiple.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -165,7 +165,7 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 		const buffer = utils.getBuffer()
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		baServices.writePropertyMultiple.encode(
+		ServicesMap.writePropertyMultiple.encode(
 			buffer,
 			{ type: 39, instance: 2400 },
 			[
@@ -176,7 +176,7 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 				},
 			],
 		)
-		const result = baServices.writePropertyMultiple.decode(
+		const result = ServicesMap.writePropertyMultiple.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,

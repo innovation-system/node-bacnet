@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import { ServicesMap } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer CreateObject unit', () => {
 	test('should successfully encode and decode', () => {
@@ -10,7 +10,7 @@ test.describe('bacnet - Services layer CreateObject unit', () => {
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		baServices.createObject.encode(buffer, { type: 1, instance: 10 }, [
+		ServicesMap.createObject.encode(buffer, { type: 1, instance: 10 }, [
 			{
 				property: { id: 81, index: 0xffffffff },
 				value: [
@@ -47,7 +47,7 @@ test.describe('bacnet - Services layer CreateObject unit', () => {
 				priority: 0,
 			},
 		])
-		const result = baServices.createObject.decode(
+		const result = ServicesMap.createObject.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,

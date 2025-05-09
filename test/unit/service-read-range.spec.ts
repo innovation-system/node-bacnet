@@ -2,13 +2,13 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import { ServicesMap } from '../../src/lib/services'
 import { ReadRangeType } from '../../src'
 
 test.describe('bacnet - Services layer ReadRange unit', () => {
 	test('should successfully encode and decode by position', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.readRange.encode(
+		ServicesMap.readRange.encode(
 			buffer,
 			{ type: 61, instance: 35 },
 			85,
@@ -18,7 +18,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			null,
 			0,
 		)
-		const result = baServices.readRange.decode(
+		const result = ServicesMap.readRange.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -39,7 +39,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 
 	test('should successfully encode and decode by position with array index', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.readRange.encode(
+		ServicesMap.readRange.encode(
 			buffer,
 			{ type: 61, instance: 35 },
 			12,
@@ -49,7 +49,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			null,
 			0,
 		)
-		const result = baServices.readRange.decode(
+		const result = ServicesMap.readRange.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -70,7 +70,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 
 	test('should successfully encode and decode by sequence', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.readRange.encode(
+		ServicesMap.readRange.encode(
 			buffer,
 			{ type: 61, instance: 35 },
 			85,
@@ -80,7 +80,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			null,
 			1111,
 		)
-		const result = baServices.readRange.decode(
+		const result = ServicesMap.readRange.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -103,7 +103,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 		const buffer = utils.getBuffer()
 		const date = new Date(1, 1, 1)
 		date.setMilliseconds(990)
-		baServices.readRange.encode(
+		ServicesMap.readRange.encode(
 			buffer,
 			{ type: 61, instance: 35 },
 			85,
@@ -113,7 +113,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			date,
 			-1111,
 		)
-		const result = baServices.readRange.decode(
+		const result = ServicesMap.readRange.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -136,7 +136,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 test.describe('ReadRangeAcknowledge', () => {
 	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.readRange.encodeAcknowledge(
+		ServicesMap.readRange.encodeAcknowledge(
 			buffer,
 			{ type: 12, instance: 500 },
 			5048,
@@ -147,7 +147,7 @@ test.describe('ReadRangeAcknowledge', () => {
 			2,
 			2,
 		)
-		const result = baServices.readRange.decodeAcknowledge(
+		const result = ServicesMap.readRange.decodeAcknowledge(
 			buffer.buffer,
 			0,
 			buffer.offset,

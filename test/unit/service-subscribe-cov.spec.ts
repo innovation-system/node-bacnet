@@ -2,18 +2,18 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import { ServicesMap } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer subscribeCov unit', () => {
 	test('should successfully encode and decode a cancelation request', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.subscribeCov.encode(
+		ServicesMap.subscribeCov.encode(
 			buffer,
 			10,
 			{ type: 3, instance: 1 },
 			true,
 		)
-		const result = baServices.subscribeCov.decode(
+		const result = ServicesMap.subscribeCov.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -28,7 +28,7 @@ test.describe('bacnet - Services layer subscribeCov unit', () => {
 
 	test('should successfully encode and decode subscription request', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.subscribeCov.encode(
+		ServicesMap.subscribeCov.encode(
 			buffer,
 			11,
 			{ type: 3, instance: 2 },
@@ -36,7 +36,7 @@ test.describe('bacnet - Services layer subscribeCov unit', () => {
 			true,
 			5000,
 		)
-		const result = baServices.subscribeCov.decode(
+		const result = ServicesMap.subscribeCov.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
