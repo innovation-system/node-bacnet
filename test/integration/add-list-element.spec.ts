@@ -3,11 +3,11 @@ import assert from 'node:assert'
 
 import * as utils from './utils'
 
-test.describe('bacnet - AddListElement integration', () => {
+test.describe('bacnet - addListElement integration', () => {
 	test('should return a timeout error if no device is available', (t) => {
 		return new Promise((resolve) => {
 			const client = new utils.BacnetClient({ apduTimeout: 200 })
-			client.AddListElement(
+			client.addListElement(
 				'127.0.0.2',
 				{ type: 19, instance: 101 },
 				{ id: 80, index: 0 },

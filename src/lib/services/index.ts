@@ -2,6 +2,7 @@ import { AddListElement } from './AddListElement'
 import { AlarmAcknowledge } from './AlarmAcknowledge'
 import { AlarmSummary } from './AlarmSummary'
 import { AtomicReadFile } from './AtomicReadFile'
+
 export * as atomicWriteFile from './Atomic-write-file'
 export * as covNotify from './Cov-notify'
 export * as covNotifyUnconfirmed from './Cov-notify'
@@ -36,9 +37,9 @@ export { AlarmAcknowledge } from './AlarmAcknowledge'
 export { AlarmSummary } from './AlarmSummary'
 export { AtomicReadFile } from './AtomicReadFile'
 
-export const ServicesMap = {
-	AddListElement,
-	AlarmAcknowledge,
-	AlarmSummary,
-	AtomicReadFile,
+export const sMap = {
+	addListElement: AddListElement,
+	alarmAcknowledge: AlarmAcknowledge,
+	alarmSummary: AlarmSummary,
+	atomicReadFile: AtomicReadFile,
 }

@@ -111,7 +111,7 @@ const confirmedServiceMap: BACnetEventsMap = {
 	[beC.WRITE_PROPERTY_MULTIPLE]: 'writePropertyMultiple',
 	[beC.CONFIRMED_COV_NOTIFICATION]: 'covNotify',
 	[beC.ATOMIC_WRITE_FILE]: 'atomicWriteFile',
-	[beC.ATOMIC_READ_FILE]: 'AtomicReadFile',
+	[beC.ATOMIC_READ_FILE]: 'atomicReadFile',
 	[beC.SUBSCRIBE_COV]: 'subscribeCov',
 	[beC.SUBSCRIBE_COV_PROPERTY]: 'subscribeProperty',
 	[beC.DEVICE_COMMUNICATION_CONTROL]: 'deviceCommunicationControl',
@@ -120,12 +120,12 @@ const confirmedServiceMap: BACnetEventsMap = {
 	[beC.READ_RANGE]: 'readRange',
 	[beC.CREATE_OBJECT]: 'createObject',
 	[beC.DELETE_OBJECT]: 'deleteObject',
-	[beC.ACKNOWLEDGE_ALARM]: 'AlarmAcknowledge',
+	[beC.ACKNOWLEDGE_ALARM]: 'alarmAcknowledge',
 	[beC.GET_ALARM_SUMMARY]: 'getAlarmSummary',
 	[beC.GET_ENROLLMENT_SUMMARY]: 'getEnrollmentSummary',
 	[beC.GET_EVENT_INFORMATION]: 'getEventInformation',
 	[beC.LIFE_SAFETY_OPERATION]: 'lifeSafetyOperation',
-	[beC.ADD_LIST_ELEMENT]: 'AddListElement',
+	[beC.ADD_LIST_ELEMENT]: 'addListElement',
 	[beC.REMOVE_LIST_ELEMENT]: 'removeListElement',
 	[beC.CONFIRMED_PRIVATE_TRANSFER]: 'privateTransfer',
 }
@@ -1606,7 +1606,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		baServices.AtomicReadFile.encode(
+		baServices.atomicReadFile.encode(
 			buffer,
 			true,
 			objectId,
@@ -1618,7 +1618,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			if (err) {
 				return void next(err)
 			}
-			const result = baServices.AtomicReadFile.decodeAcknowledge(
+			const result = baServices.atomicReadFile.decodeAcknowledge(
 				data.buffer,
 				data.offset,
 			)
@@ -1994,7 +1994,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		baServices.AddListElement.encode(
+		baServices.addListElement.encode(
 			buffer,
 			objectId,
 			reference.id,
@@ -2016,7 +2016,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 	/**
 	 * Adds an element to a list property
 	 */
-	public AddListElement(
+	public addListElement(
 		receiver: string | { address: string; forwardedFrom?: string },
 		objectId: BACNetObjectID,
 		reference: {
@@ -2051,7 +2051,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		baServices.AddListElement.encode(
+		baServices.addListElement.encode(
 			buffer,
 			objectId,
 			reference.id,
@@ -2115,7 +2115,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			if (err) {
 				return void next(err)
 			}
-			const result = baServices.AlarmSummary.decode(
+			const result = baServices.alarmSummary.decode(
 				data.buffer,
 				data.offset,
 				data.length,
@@ -2242,7 +2242,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		baServices.AlarmAcknowledge.encode(
+		baServices.alarmAcknowledge.encode(
 			buffer,
 			57,
 			objectId,
