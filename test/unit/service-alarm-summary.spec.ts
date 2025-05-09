@@ -7,7 +7,7 @@ import * as baServices from '../../src/lib/services'
 test.describe('bacnet - Services layer AlarmSummary unit', () => {
 	test('should successfully encode and decode', () => {
 		const buffer = utils.getBuffer()
-		baServices.alarmSummary.encode(buffer, [
+		baServices.AlarmSummary.encode(buffer, [
 			{
 				objectId: { type: 12, instance: 12 },
 				alarmState: 12,
@@ -19,7 +19,7 @@ test.describe('bacnet - Services layer AlarmSummary unit', () => {
 				acknowledgedTransitions: { value: [13], bitsUsed: 6 },
 			},
 		])
-		const result = baServices.alarmSummary.decode(
+		const result = baServices.AlarmSummary.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,

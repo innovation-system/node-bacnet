@@ -133,7 +133,7 @@ export interface BACnetClientEvents {
 	atomicWriteFile: (
 		content: BaseEventContent & { payload: AtomicFilePayload },
 	) => void
-	atomicReadFile: (
+	AtomicReadFile: (
 		content: BaseEventContent & { payload: AtomicFilePayload },
 	) => void
 	subscribeCov: (content: SubscribeCovContent) => void
@@ -160,7 +160,7 @@ export interface BACnetClientEvents {
 	deleteObject: (
 		content: BaseEventContent & { payload: ObjectOperationPayload },
 	) => void
-	alarmAcknowledge: (
+	AlarmAcknowledge: (
 		content: BaseEventContent & { payload: SimpleAckPayload },
 	) => void
 	getAlarmSummary: (
@@ -171,7 +171,7 @@ export interface BACnetClientEvents {
 		content: BaseEventContent & { payload: BACNetEventInformation[] },
 	) => void
 	lifeSafetyOperation: (content: BaseEventContent & { payload: any }) => void
-	addListElement: (
+	AddListElement: (
 		content: BaseEventContent & { payload: ListElementOperationPayload },
 	) => void
 	removeListElement: (

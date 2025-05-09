@@ -37,8 +37,8 @@ export { AlarmSummary } from './AlarmSummary'
 export { AtomicReadFile } from './AtomicReadFile'
 
 export const ServicesMap = {
-	addListElement: AddListElement,
-	alarmAcknowledge: AlarmAcknowledge,
-	alarmSummary: AlarmSummary,
-	atomicReadFile: AtomicReadFile,
+	AddListElement,
+	AlarmAcknowledge,
+	AlarmSummary,
+	AtomicReadFile,
 }

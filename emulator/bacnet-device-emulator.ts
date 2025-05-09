@@ -662,8 +662,8 @@ client.on('subscribeCov', (data) => {
 })
 
 const otherServices: (keyof BACnetClientEvents)[] = [
-	'atomicReadFile',
-	'atomicReadFile',
+	'AtomicReadFile',
+	'AtomicReadFile',
 	'deviceCommunicationControl',
 	'reinitializeDevice',
 	'readRange',

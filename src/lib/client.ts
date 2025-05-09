@@ -111,7 +111,7 @@ const confirmedServiceMap: BACnetEventsMap = {
 	[beC.WRITE_PROPERTY_MULTIPLE]: 'writePropertyMultiple',
 	[beC.CONFIRMED_COV_NOTIFICATION]: 'covNotify',
 	[beC.ATOMIC_WRITE_FILE]: 'atomicWriteFile',
-	[beC.ATOMIC_READ_FILE]: 'atomicReadFile',
+	[beC.ATOMIC_READ_FILE]: 'AtomicReadFile',
 	[beC.SUBSCRIBE_COV]: 'subscribeCov',
 	[beC.SUBSCRIBE_COV_PROPERTY]: 'subscribeProperty',
 	[beC.DEVICE_COMMUNICATION_CONTROL]: 'deviceCommunicationControl',
@@ -120,12 +120,12 @@ const confirmedServiceMap: BACnetEventsMap = {
 	[beC.READ_RANGE]: 'readRange',
 	[beC.CREATE_OBJECT]: 'createObject',
 	[beC.DELETE_OBJECT]: 'deleteObject',
-	[beC.ACKNOWLEDGE_ALARM]: 'alarmAcknowledge',
+	[beC.ACKNOWLEDGE_ALARM]: 'AlarmAcknowledge',
 	[beC.GET_ALARM_SUMMARY]: 'getAlarmSummary',
 	[beC.GET_ENROLLMENT_SUMMARY]: 'getEnrollmentSummary',
 	[beC.GET_EVENT_INFORMATION]: 'getEventInformation',
 	[beC.LIFE_SAFETY_OPERATION]: 'lifeSafetyOperation',
-	[beC.ADD_LIST_ELEMENT]: 'addListElement',
+	[beC.ADD_LIST_ELEMENT]: 'AddListElement',
 	[beC.REMOVE_LIST_ELEMENT]: 'removeListElement',
 	[beC.CONFIRMED_PRIVATE_TRANSFER]: 'privateTransfer',
 }
@@ -2016,7 +2016,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 	/**
 	 * Adds an element to a list property
 	 */
-	public addListElement(
+	public AddListElement(
 		receiver: string | { address: string; forwardedFrom?: string },
 		objectId: BACNetObjectID,
 		reference: {
