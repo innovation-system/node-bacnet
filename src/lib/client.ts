@@ -1,5 +1,3 @@
-// Util Modules
-import { EventEmitter } from 'events'
 import {
 	BACnetClientEvents,
 	BACnetEventsMap,
@@ -7,7 +5,6 @@ import {
 } from './EventTypes'
 import debugLib from 'debug'
 
-// Local Modules
 import Transport from './transport'
 import * as baServices from './services'
 import * as baAsn1 from './asn1'
