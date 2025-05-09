@@ -8,9 +8,9 @@ import {
 	BACNetPropertyID,
 	ReadPropertyRequest,
 } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class ReadProperty extends BacnetAckService {
+export default class ReadProperty extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		objectType: number,

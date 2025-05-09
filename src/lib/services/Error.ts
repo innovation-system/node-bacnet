@@ -1,9 +1,9 @@
 import * as baAsn1 from '../asn1'
 import { ErrorClassName, ErrorCodeName } from '../enum'
 import { EncodeBuffer } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class Error extends BacnetAckService {
+export default class Error extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		errorClass: number,
@@ -43,17 +43,5 @@ export default class Error extends BacnetAckService {
 			`(${result.class}) ` +
 			`Code: ${ErrorCodeName[result.code]} (${result.code})`
 		)
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error()
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error()
 	}
 }

@@ -1,9 +1,9 @@
 import * as baAsn1 from '../asn1'
 import { ObjectType, ASN1_ARRAY_ALL, ASN1_NO_PRIORITY } from '../enum'
 import { EncodeBuffer, BACNetObjectID } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class CovNotify extends BacnetAckService {
+export default class CovNotify extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		subscriberProcessId: number,
@@ -176,17 +176,5 @@ export default class CovNotify extends BacnetAckService {
 			timeRemaining,
 			values,
 		}
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error('CovNotify does not support acknowledge operations')
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error('CovNotify does not support acknowledge operations')
 	}
 }

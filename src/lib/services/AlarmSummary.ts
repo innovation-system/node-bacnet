@@ -1,8 +1,8 @@
 import * as baAsn1 from '../asn1'
 import { EncodeBuffer, BACNetAlarm } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class AlarmSummary extends BacnetAckService {
+export default class AlarmSummary extends BacnetService {
 	public static encode(buffer: EncodeBuffer, alarms: BACNetAlarm[]): void {
 		alarms.forEach((alarm) => {
 			baAsn1.encodeContextObjectId(
@@ -65,17 +65,5 @@ export default class AlarmSummary extends BacnetAckService {
 			len,
 			alarms,
 		}
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error('AlarmSummary does not support acknowledge operations')
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error('AlarmSummary does not support acknowledge operations')
 	}
 }

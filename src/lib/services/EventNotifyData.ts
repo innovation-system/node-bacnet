@@ -1,9 +1,9 @@
 import * as baAsn1 from '../asn1'
 import { NotifyType, EventType, CovType } from '../enum'
 import { EncodeBuffer } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class EventNotifyData extends BacnetAckService {
+export default class EventNotifyData extends BacnetService {
 	public static encode(buffer: EncodeBuffer, data: any): void {
 		baAsn1.encodeContextUnsigned(buffer, 0, data.processId)
 		baAsn1.encodeContextObjectId(
@@ -393,21 +393,5 @@ export default class EventNotifyData extends BacnetAckService {
 
 		eventData.len = len
 		return eventData
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error(
-			'EventNotifyData does not support acknowledge operations',
-		)
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error(
-			'EventNotifyData does not support acknowledge operations',
-		)
 	}
 }

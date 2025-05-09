@@ -1,8 +1,8 @@
 import * as baAsn1 from '../asn1'
 import { EncodeBuffer } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class PrivateTransfer extends BacnetAckService {
+export default class PrivateTransfer extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		vendorId: number,
@@ -45,21 +45,5 @@ export default class PrivateTransfer extends BacnetAckService {
 		len += result.len
 		value.len = len
 		return value
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error(
-			'PrivateTransfer does not support acknowledge operations',
-		)
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error(
-			'PrivateTransfer does not support acknowledge operations',
-		)
 	}
 }

@@ -1,8 +1,8 @@
 import * as baAsn1 from '../asn1'
 import { EncodeBuffer, BACNetObjectID } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class LifeSafetyOperation extends BacnetAckService {
+export default class LifeSafetyOperation extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		processId: number,
@@ -60,21 +60,5 @@ export default class LifeSafetyOperation extends BacnetAckService {
 		}
 		value.len = len
 		return value
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error(
-			'LifeSafetyOperation does not support acknowledge operations',
-		)
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error(
-			'LifeSafetyOperation does not support acknowledge operations',
-		)
 	}
 }

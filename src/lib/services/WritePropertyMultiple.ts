@@ -6,7 +6,7 @@ import {
 	BACNetPropertyID,
 	BACNetAppData,
 } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
 interface BACNETWPM {
 	property: BACNetPropertyID
@@ -14,7 +14,7 @@ interface BACNETWPM {
 	priority: number
 }
 
-export default class WritePropertyMultiple extends BacnetAckService {
+export default class WritePropertyMultiple extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		objectId: BACNetObjectID,
@@ -148,22 +148,6 @@ export default class WritePropertyMultiple extends BacnetAckService {
 				object.objectId,
 				object.values,
 			),
-		)
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error(
-			'WritePropertyMultiple does not support acknowledge operations',
-		)
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error(
-			'WritePropertyMultiple does not support acknowledge operations',
 		)
 	}
 }

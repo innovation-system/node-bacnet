@@ -26,9 +26,9 @@
 import { EncodeBuffer } from '../types'
 import * as baAsn1 from '../asn1'
 import { ObjectType, ApplicationTag, Segmentation } from '../enum'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class IAm extends BacnetAckService {
+export default class IAm extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		deviceId: number,
@@ -83,17 +83,5 @@ export default class IAm extends BacnetAckService {
 			segmentation,
 			vendorId,
 		}
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error('IAm does not support acknowledge operations')
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error('IAm does not support acknowledge operations')
 	}
 }

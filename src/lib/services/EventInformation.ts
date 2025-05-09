@@ -1,9 +1,9 @@
 import * as baAsn1 from '../asn1'
 import { ApplicationTag } from '../enum'
 import { EncodeBuffer, BACNetEvent } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class EventInformation extends BacnetAckService {
+export default class EventInformation extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		events: BACNetEvent[],
@@ -163,21 +163,5 @@ export default class EventInformation extends BacnetAckService {
 			alarms,
 			moreEvents,
 		}
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error(
-			'EventInformation does not support acknowledge operations',
-		)
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error(
-			'EventInformation does not support acknowledge operations',
-		)
 	}
 }

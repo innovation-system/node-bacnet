@@ -1,9 +1,9 @@
 import * as baAsn1 from '../asn1'
 import { TimeStamp } from '../enum'
 import { EncodeBuffer, BACNetObjectID } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class AlarmAcknowledge extends BacnetAckService {
+export default class AlarmAcknowledge extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		ackProcessId: number,
@@ -160,21 +160,5 @@ export default class AlarmAcknowledge extends BacnetAckService {
 		len++
 		value.len = len
 		return value
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error(
-			'AlarmAcknowledge does not support acknowledge operations',
-		)
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error(
-			'AlarmAcknowledge does not support acknowledge operations',
-		)
 	}
 }

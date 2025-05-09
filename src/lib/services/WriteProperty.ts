@@ -13,9 +13,9 @@ import {
 	WritePropertyRequest,
 	ApplicationData,
 } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class WriteProperty extends BacnetAckService {
+export default class WriteProperty extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		objectType: number,
@@ -156,17 +156,5 @@ export default class WriteProperty extends BacnetAckService {
 				priority: number
 			},
 		}
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error('WriteProperty does not support acknowledge operations')
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error('WriteProperty does not support acknowledge operations')
 	}
 }

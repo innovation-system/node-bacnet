@@ -1,8 +1,8 @@
 import * as baAsn1 from '../asn1'
 import { EncodeBuffer, BACNetObjectID } from '../types'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
-export default class DeleteObject extends BacnetAckService {
+export default class DeleteObject extends BacnetService {
 	public static encode(buffer: EncodeBuffer, objectId: BACNetObjectID): void {
 		baAsn1.encodeApplicationObjectId(
 			buffer,
@@ -22,17 +22,5 @@ export default class DeleteObject extends BacnetAckService {
 		if (len !== apduLen) return undefined
 		value.len = len
 		return value
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error('DeleteObject does not support acknowledge operations')
-	}
-
-	public static decodeAcknowledge(
-		buffer: Buffer,
-		offset: number,
-		apduLen: number,
-	): any {
-		throw new Error('DeleteObject does not support acknowledge operations')
 	}
 }

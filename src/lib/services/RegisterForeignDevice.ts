@@ -1,12 +1,12 @@
 import * as baAsn1 from '../asn1'
-import { BacnetAckService } from './AbstractServices'
+import { BacnetService } from './AbstractServices'
 
 interface DecodeResult {
 	len: number
 	ttl: number
 }
 
-export default class RegisterForeignDevice extends BacnetAckService {
+export default class RegisterForeignDevice extends BacnetService {
 	public static encode(
 		buffer: { buffer: Buffer; offset: number },
 		ttl: number,
@@ -27,11 +27,5 @@ export default class RegisterForeignDevice extends BacnetAckService {
 			len,
 			ttl: result.value,
 		}
-	}
-
-	public static encodeAcknowledge(...args: any[]): void {
-		throw new Error(
-			'RegisterForeignDevice does not support acknowledge operations',
-		)
 	}
 }
