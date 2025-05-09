@@ -1,5 +1,13 @@
 # Changelog
 
+# [1.2.0](https://github.com/innovation-system/node-bacnet/compare/v1.1.0...v1.2.0) (2025-05-09)
+
+
+### Features
+
+* add BACnet device emulator ([#24](https://github.com/innovation-system/node-bacnet/issues/24)) ([85b0f70](https://github.com/innovation-system/node-bacnet/commit/85b0f701e016752f4897030aded36ec35a40aee2))
+* add examples ([#25](https://github.com/innovation-system/node-bacnet/issues/25)) ([fa86561](https://github.com/innovation-system/node-bacnet/commit/fa8656194f381736fb918f6ef0036f97232046fe))
+
 # [1.1.0](https://github.com/innovation-system/node-bacnet/compare/v1.0.3...v1.1.0) (2025-05-05)
 
 
