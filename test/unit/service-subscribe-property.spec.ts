@@ -2,12 +2,12 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import { ServicesMap } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer SubscribeProperty unit', () => {
 	test('should successfully encode and decode with cancellation request', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.subscribeProperty.encode(
+		ServicesMap.subscribeProperty.encode(
 			buffer,
 			7,
 			{ type: 148, instance: 362 },
@@ -18,7 +18,7 @@ test.describe('bacnet - Services layer SubscribeProperty unit', () => {
 			true,
 			1,
 		)
-		const result = baServices.subscribeProperty.decode(buffer.buffer, 0)
+		const result = ServicesMap.subscribeProperty.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			cancellationRequest: true,
@@ -39,7 +39,7 @@ test.describe('bacnet - Services layer SubscribeProperty unit', () => {
 
 	test('should successfully encode and decode without cancellation request', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.subscribeProperty.encode(
+		ServicesMap.subscribeProperty.encode(
 			buffer,
 			8,
 			{ type: 149, instance: 363 },
@@ -50,7 +50,7 @@ test.describe('bacnet - Services layer SubscribeProperty unit', () => {
 			false,
 			10,
 		)
-		const result = baServices.subscribeProperty.decode(buffer.buffer, 0)
+		const result = ServicesMap.subscribeProperty.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			cancellationRequest: false,

@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import { ServicesMap } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer EventInformation unit', () => {
 	test('should successfully encode and decode', (t) => {
@@ -13,7 +13,7 @@ test.describe('bacnet - Services layer EventInformation unit', () => {
 		date2.setMilliseconds(990)
 		const date3 = new Date()
 		date3.setMilliseconds(990)
-		baServices.eventInformation.encode(
+		ServicesMap.eventInformation.encode(
 			buffer,
 			[
 				{
@@ -28,7 +28,7 @@ test.describe('bacnet - Services layer EventInformation unit', () => {
 			],
 			false,
 		)
-		const result = baServices.eventInformation.decode(
+		const result = ServicesMap.eventInformation.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,

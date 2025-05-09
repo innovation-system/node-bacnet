@@ -2,13 +2,13 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import { ServicesMap } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer GetEnrollmentSummary unit', () => {
 	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.getEnrollmentSummary.encode(buffer, 2)
-		const result = baServices.getEnrollmentSummary.decode(buffer.buffer, 0)
+		ServicesMap.getEnrollmentSummary.encode(buffer, 2)
+		const result = ServicesMap.getEnrollmentSummary.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			acknowledgmentFilter: 2,
@@ -17,7 +17,7 @@ test.describe('bacnet - Services layer GetEnrollmentSummary unit', () => {
 
 	test('should successfully encode and decode full payload', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.getEnrollmentSummary.encode(
+		ServicesMap.getEnrollmentSummary.encode(
 			buffer,
 			2,
 			{ objectId: { type: 5, instance: 33 }, processId: 7 },
@@ -26,7 +26,7 @@ test.describe('bacnet - Services layer GetEnrollmentSummary unit', () => {
 			{ min: 1, max: 65 },
 			5,
 		)
-		const result = baServices.getEnrollmentSummary.decode(buffer.buffer, 0)
+		const result = ServicesMap.getEnrollmentSummary.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			acknowledgmentFilter: 2,
@@ -45,7 +45,7 @@ test.describe('bacnet - Services layer GetEnrollmentSummary unit', () => {
 test.describe('GetEnrollmentSummaryAcknowledge', () => {
 	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
-		baServices.getEnrollmentSummary.encodeAcknowledge(buffer, [
+		ServicesMap.getEnrollmentSummary.encodeAcknowledge(buffer, [
 			{
 				objectId: { type: 12, instance: 120 },
 				eventType: 3,
@@ -54,7 +54,7 @@ test.describe('GetEnrollmentSummaryAcknowledge', () => {
 				notificationClass: 11,
 			},
 		])
-		const result = baServices.getEnrollmentSummary.decodeAcknowledge(
+		const result = ServicesMap.getEnrollmentSummary.decodeAcknowledge(
 			buffer.buffer,
 			0,
 			buffer.offset,

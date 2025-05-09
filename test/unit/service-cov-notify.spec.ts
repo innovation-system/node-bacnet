@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import { ServicesMap } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer COVNotify unit', () => {
 	test('should successfully encode and decode', () => {
@@ -10,7 +10,7 @@ test.describe('bacnet - Services layer COVNotify unit', () => {
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		baServices.covNotify.encode(
+		ServicesMap.covNotify.encode(
 			buffer,
 			7,
 			443,
@@ -54,7 +54,7 @@ test.describe('bacnet - Services layer COVNotify unit', () => {
 				},
 			],
 		)
-		const result = baServices.covNotify.decode(
+		const result = ServicesMap.covNotify.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,

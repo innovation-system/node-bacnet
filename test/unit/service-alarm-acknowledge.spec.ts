@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import { ServicesMap } from '../../src/lib/services'
 import { TimeStamp } from '../../src'
 
 test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
@@ -12,7 +12,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 		eventTime.setMilliseconds(990)
 		const ackTime = new Date(1, 1, 1)
 		ackTime.setMilliseconds(880)
-		baServices.alarmAcknowledge.encode(
+		ServicesMap.alarmAcknowledge.encode(
 			buffer,
 			57,
 			{ type: 0, instance: 33 },
@@ -21,7 +21,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			{ value: eventTime, type: TimeStamp.TIME },
 			{ value: ackTime, type: TimeStamp.TIME },
 		)
-		const result = baServices.alarmAcknowledge.decode(
+		const result = ServicesMap.alarmAcknowledge.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -44,7 +44,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 		const buffer = utils.getBuffer()
 		const eventTime = 5
 		const ackTime = 6
-		baServices.alarmAcknowledge.encode(
+		ServicesMap.alarmAcknowledge.encode(
 			buffer,
 			57,
 			{ type: 0, instance: 33 },
@@ -53,7 +53,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			{ value: eventTime, type: TimeStamp.SEQUENCE_NUMBER },
 			{ value: ackTime, type: TimeStamp.SEQUENCE_NUMBER },
 		)
-		const result = baServices.alarmAcknowledge.decode(
+		const result = ServicesMap.alarmAcknowledge.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -78,7 +78,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 		eventTime.setMilliseconds(990)
 		const ackTime = new Date(1, 1, 2)
 		ackTime.setMilliseconds(880)
-		baServices.alarmAcknowledge.encode(
+		ServicesMap.alarmAcknowledge.encode(
 			buffer,
 			57,
 			{ type: 0, instance: 33 },
@@ -87,7 +87,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			{ value: eventTime, type: TimeStamp.DATETIME },
 			{ value: ackTime, type: TimeStamp.DATETIME },
 		)
-		const result = baServices.alarmAcknowledge.decode(
+		const result = ServicesMap.alarmAcknowledge.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,

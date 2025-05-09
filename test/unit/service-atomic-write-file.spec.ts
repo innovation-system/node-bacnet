@@ -2,19 +2,19 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import * as baServices from '../../src/lib/services'
+import { ServicesMap } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer AtomicWriteFile unit', () => {
 	test('should successfully encode and decode as stream', () => {
 		const buffer = utils.getBuffer()
-		baServices.atomicWriteFile.encode(
+		ServicesMap.atomicWriteFile.encode(
 			buffer,
 			true,
 			{ type: 12, instance: 51 },
 			5,
 			[[12, 12]],
 		)
-		const result = baServices.atomicWriteFile.decode(
+		const result = ServicesMap.atomicWriteFile.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -30,7 +30,7 @@ test.describe('bacnet - Services layer AtomicWriteFile unit', () => {
 
 	test('should successfully encode and decode as non-stream', () => {
 		const buffer = utils.getBuffer()
-		baServices.atomicWriteFile.encode(
+		ServicesMap.atomicWriteFile.encode(
 			buffer,
 			false,
 			{ type: 12, instance: 88 },
@@ -40,7 +40,7 @@ test.describe('bacnet - Services layer AtomicWriteFile unit', () => {
 				[12, 12],
 			],
 		)
-		const result = baServices.atomicWriteFile.decode(
+		const result = ServicesMap.atomicWriteFile.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -61,8 +61,8 @@ test.describe('bacnet - Services layer AtomicWriteFile unit', () => {
 test.describe('AtomicWriteFileAcknowledge', () => {
 	test('should successfully encode and decode streamed file', () => {
 		const buffer = utils.getBuffer()
-		baServices.atomicWriteFile.encodeAcknowledge(buffer, true, -10)
-		const result = baServices.atomicWriteFile.decodeAcknowledge(
+		ServicesMap.atomicWriteFile.encodeAcknowledge(buffer, true, -10)
+		const result = ServicesMap.atomicWriteFile.decodeAcknowledge(
 			buffer.buffer,
 			0,
 		)
@@ -75,8 +75,8 @@ test.describe('AtomicWriteFileAcknowledge', () => {
 
 	test('should successfully encode and decode non-streamed file', () => {
 		const buffer = utils.getBuffer()
-		baServices.atomicWriteFile.encodeAcknowledge(buffer, false, 10)
-		const result = baServices.atomicWriteFile.decodeAcknowledge(
+		ServicesMap.atomicWriteFile.encodeAcknowledge(buffer, false, 10)
+		const result = ServicesMap.atomicWriteFile.decodeAcknowledge(
 			buffer.buffer,
 			0,
 		)

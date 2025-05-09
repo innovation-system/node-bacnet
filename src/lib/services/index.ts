@@ -1,32 +1,105 @@
-export * as addListElement from './add-list-element'
-export * as alarmAcknowledge from './alarm-acknowledge'
-export * as alarmSummary from './alarm-summary'
-export * as atomicReadFile from './atomic-read-file'
-export * as atomicWriteFile from './atomic-write-file'
-export * as covNotify from './cov-notify'
-export * as covNotifyUnconfirmed from './cov-notify'
-export * as createObject from './create-object'
-export * as deleteObject from './delete-object'
-export * as deviceCommunicationControl from './device-communication-control'
-export * as error from './error'
-export * as eventInformation from './event-information'
-export * as eventNotifyData from './event-notify-data'
-export * as getEnrollmentSummary from './get-enrollment-summary'
-export * as getEventInformation from './get-event-information'
-export * as iAm from './i-am'
-export * as iHave from './i-have'
-export * as lifeSafetyOperation from './life-safety-operation'
-export * as privateTransfer from './private-transfer'
-export * as readProperty from './read-property'
-export * as readPropertyMultiple from './read-property-multiple'
-export * as readRange from './read-range'
-export * as registerForeignDevice from './register-foreign-device'
-export * as reinitializeDevice from './reinitialize-device'
-export * as subscribeCov from './subscribe-cov'
-export * as subscribeProperty from './subscribe-property'
-export * as timeSync from './time-sync'
-export * as timeSyncUTC from './time-sync'
-export * as whoHas from './who-has'
-export * as whoIs from './who-is'
-export * as writeProperty from './write-property'
-export * as writePropertyMultiple from './write-property-multiple'
+// Import abstract classes
+import { BacnetService, BacnetAckService } from './AbstractServices'
+
+// Import service classes
+import AddListElement from './AddListElement'
+import AlarmAcknowledge from './AlarmAcknowledge'
+import AlarmSummary from './AlarmSummary'
+import AtomicReadFile from './AtomicReadFile'
+import AtomicWriteFile from './AtomicWriteFile'
+import CovNotify from './CovNotify'
+import CreateObject from './CreateObject'
+import DeleteObject from './DeleteObject'
+import DeviceCommunicationControl from './DeviceCommunicationControl'
+import Error from './Error'
+import EventInformation from './EventInformation'
+import EventNotifyData from './EventNotifyData'
+import GetEnrollmentSummary from './GetEnrollmentSummary'
+import GetEventInformation from './GetEventInformation'
+import IAm from './IAm'
+import IHave from './IHave'
+import LifeSafetyOperation from './LifeSafetyOperation'
+import PrivateTransfer from './PrivateTransfer'
+import ReadProperty from './ReadProperty'
+import ReadPropertyMultiple from './ReadPropertyMultiple'
+import ReadRange from './ReadRange'
+import RegisterForeignDevice from './RegisterForeignDevice'
+import ReinitializeDevice from './ReinitializeDevice'
+import SubscribeCov from './SubscribeCov'
+import SubscribeProperty from './SubscribeProperty'
+import TimeSync from './TimeSync'
+import WhoHas from './WhoHas'
+import WhoIs from './WhoIs'
+import WriteProperty from './WriteProperty'
+import WritePropertyMultiple from './WritePropertyMultiple'
+
+// Export abstract classes
+export { BacnetService, BacnetAckService }
+
+// Export service classes
+export { AddListElement }
+export { AlarmAcknowledge }
+export { AlarmSummary }
+export { AtomicReadFile }
+export { AtomicWriteFile }
+export { CovNotify }
+export { CreateObject }
+export { DeleteObject }
+export { DeviceCommunicationControl }
+export { Error }
+export { EventInformation }
+export { EventNotifyData }
+export { GetEnrollmentSummary }
+export { GetEventInformation }
+export { IAm }
+export { IHave }
+export { LifeSafetyOperation }
+export { PrivateTransfer }
+export { ReadProperty }
+export { ReadPropertyMultiple }
+export { ReadRange }
+export { RegisterForeignDevice }
+export { ReinitializeDevice }
+export { SubscribeCov }
+export { SubscribeProperty }
+export { TimeSync }
+export { WhoHas }
+export { WhoIs }
+export { WriteProperty }
+export { WritePropertyMultiple }
+
+// Create and export ServicesMap
+export const ServicesMap = {
+	addListElement: AddListElement,
+	alarmAcknowledge: AlarmAcknowledge,
+	alarmSummary: AlarmSummary,
+	atomicReadFile: AtomicReadFile,
+	atomicWriteFile: AtomicWriteFile,
+	covNotify: CovNotify,
+	covNotifyUnconfirmed: CovNotify,
+	createObject: CreateObject,
+	deleteObject: DeleteObject,
+	deviceCommunicationControl: DeviceCommunicationControl,
+	error: Error,
+	eventInformation: EventInformation,
+	eventNotifyData: EventNotifyData,
+	getEnrollmentSummary: GetEnrollmentSummary,
+	getEventInformation: GetEventInformation,
+	iAm: IAm,
+	iHave: IHave,
+	lifeSafetyOperation: LifeSafetyOperation,
+	privateTransfer: PrivateTransfer,
+	readProperty: ReadProperty,
+	readPropertyMultiple: ReadPropertyMultiple,
+	readRange: ReadRange,
+	registerForeignDevice: RegisterForeignDevice,
+	reinitializeDevice: ReinitializeDevice,
+	subscribeCov: SubscribeCov,
+	subscribeProperty: SubscribeProperty,
+	timeSync: TimeSync,
+	timeSyncUTC: TimeSync,
+	whoHas: WhoHas,
+	whoIs: WhoIs,
+	writeProperty: WriteProperty,
+	writePropertyMultiple: WritePropertyMultiple,
+}
