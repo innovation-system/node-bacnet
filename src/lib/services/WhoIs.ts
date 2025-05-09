@@ -1,47 +1,65 @@
 import * as baAsn1 from '../asn1'
 import { ASN1_MAX_INSTANCE } from '../enum'
-
 import { EncodeBuffer } from '../types'
+import { BacnetAckService } from './AbstractServices'
 
-export const encode = (
-	buffer: EncodeBuffer,
-	lowLimit: number,
-	highLimit: number,
-) => {
-	if (
-		lowLimit >= 0 &&
-		lowLimit <= ASN1_MAX_INSTANCE &&
-		highLimit >= 0 &&
-		highLimit <= ASN1_MAX_INSTANCE
+export default class WhoIs extends BacnetAckService {
+	public static encode(
+		buffer: EncodeBuffer,
+		lowLimit: number,
+		highLimit: number,
 	) {
-		baAsn1.encodeContextUnsigned(buffer, 0, lowLimit)
-		baAsn1.encodeContextUnsigned(buffer, 1, highLimit)
+		if (
+			lowLimit >= 0 &&
+			lowLimit <= ASN1_MAX_INSTANCE &&
+			highLimit >= 0 &&
+			highLimit <= ASN1_MAX_INSTANCE
+		) {
+			baAsn1.encodeContextUnsigned(buffer, 0, lowLimit)
+			baAsn1.encodeContextUnsigned(buffer, 1, highLimit)
+		}
 	}
-}
 
-export const decode = (buffer: Buffer, offset: number, apduLen: number) => {
-	let len = 0
-	const value: any = {}
-	if (apduLen <= 0) return {}
-	let result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
-	len += result.len
-	if (result.tagNumber !== 0) return undefined
-	if (apduLen <= len) return undefined
-	let decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
-	len += decodedValue.len
-	if (decodedValue.value <= ASN1_MAX_INSTANCE) {
-		value.lowLimit = decodedValue.value
+	public static decode(buffer: Buffer, offset: number, apduLen: number) {
+		let len = 0
+		const value: any = {}
+		if (apduLen <= 0) return {}
+		let result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
+		len += result.len
+		if (result.tagNumber !== 0) return undefined
+		if (apduLen <= len) return undefined
+		let decodedValue = baAsn1.decodeUnsigned(
+			buffer,
+			offset + len,
+			result.value,
+		)
+		len += decodedValue.len
+		if (decodedValue.value <= ASN1_MAX_INSTANCE) {
+			value.lowLimit = decodedValue.value
+		}
+		if (apduLen <= len) return undefined
+		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
+		len += result.len
+		if (result.tagNumber !== 1) return undefined
+		if (apduLen <= len) return undefined
+		decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
+		len += decodedValue.len
+		if (decodedValue.value <= ASN1_MAX_INSTANCE) {
+			value.highLimit = decodedValue.value
+		}
+		value.len = len
+		return value
 	}
-	if (apduLen <= len) return undefined
-	result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
-	len += result.len
-	if (result.tagNumber !== 1) return undefined
-	if (apduLen <= len) return undefined
-	decodedValue = baAsn1.decodeUnsigned(buffer, offset + len, result.value)
-	len += decodedValue.len
-	if (decodedValue.value <= ASN1_MAX_INSTANCE) {
-		value.highLimit = decodedValue.value
+
+	public static encodeAcknowledge(...args: any[]): void {
+		throw new Error('WhoIs does not support acknowledge operations')
 	}
-	value.len = len
-	return value
+
+	public static decodeAcknowledge(
+		buffer: Buffer,
+		offset: number,
+		apduLen: number,
+	): any {
+		throw new Error('WhoIs does not support acknowledge operations')
+	}
 }
