@@ -43,7 +43,6 @@ export { AlarmSummary }
 export { AtomicReadFile }
 export { AtomicWriteFile }
 export { CovNotify }
-export { CovNotify as CovNotifyUnconfirmed }
 export { CreateObject }
 export { DeleteObject }
 export { DeviceCommunicationControl }
@@ -64,11 +63,44 @@ export { ReinitializeDevice }
 export { SubscribeCov }
 export { SubscribeProperty }
 export { TimeSync }
-export { TimeSync as TimeSyncUTC }
 export { WhoHas }
 export { WhoIs }
 export { WriteProperty }
 export { WritePropertyMultiple }
+
+// Export for backward compatibility
+export const addListElement = AddListElement
+export const alarmAcknowledge = AlarmAcknowledge
+export const alarmSummary = AlarmSummary
+export const atomicReadFile = AtomicReadFile
+export const atomicWriteFile = AtomicWriteFile
+export const covNotify = CovNotify
+export const covNotifyUnconfirmed = CovNotify
+export const createObject = CreateObject
+export const deleteObject = DeleteObject
+export const deviceCommunicationControl = DeviceCommunicationControl
+export const error = Error
+export const eventInformation = EventInformation
+export const eventNotifyData = EventNotifyData
+export const getEnrollmentSummary = GetEnrollmentSummary
+export const getEventInformation = GetEventInformation
+export const iAm = IAm
+export const iHave = IHave
+export const lifeSafetyOperation = LifeSafetyOperation
+export const privateTransfer = PrivateTransfer
+export const readProperty = ReadProperty
+export const readPropertyMultiple = ReadPropertyMultiple
+export const readRange = ReadRange
+export const registerForeignDevice = RegisterForeignDevice
+export const reinitializeDevice = ReinitializeDevice
+export const subscribeCov = SubscribeCov
+export const subscribeProperty = SubscribeProperty
+export const timeSync = TimeSync
+export const timeSyncUTC = TimeSync
+export const whoHas = WhoHas
+export const whoIs = WhoIs
+export const writeProperty = WriteProperty
+export const writePropertyMultiple = WritePropertyMultiple
 
 // Create and export ServicesMap
 export const ServicesMap = {
