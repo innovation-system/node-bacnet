@@ -1,8 +1,9 @@
 import * as baAsn1 from '../asn1'
 import { TimeStamp } from '../enum'
 import { EncodeBuffer, BACNetObjectID } from '../types'
+import { BacnetAckService } from './AbstractServices'
 
-export class AlarmAcknowledge {
+export default class AlarmAcknowledge extends BacnetAckService {
 	public static encode(
 		buffer: EncodeBuffer,
 		ackProcessId: number,

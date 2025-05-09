@@ -1,8 +1,9 @@
 import * as baAsn1 from '../asn1'
 import { ApplicationTag } from '../enum'
 import { EncodeBuffer, BACNetObjectID } from '../types'
+import { BacnetAckService } from './AbstractServices'
 
-export class AtomicReadFile {
+export default class AtomicReadFile extends BacnetAckService {
 	public static encode(
 		buffer: EncodeBuffer,
 		isStream: boolean,

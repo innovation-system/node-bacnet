@@ -1,8 +1,9 @@
 import * as baAsn1 from '../asn1'
 import { ASN1_ARRAY_ALL } from '../enum'
 import { EncodeBuffer, BACNetObjectID, BACNetAppData } from '../types'
+import { BacnetAckService } from './AbstractServices'
 
-export class AddListElement {
+export default class AddListElement extends BacnetAckService {
 	public static encode(
 		buffer: EncodeBuffer,
 		objectId: BACNetObjectID,
