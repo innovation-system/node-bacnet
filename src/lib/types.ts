@@ -20,7 +20,7 @@ export type AddressParameter = string | ReceiverAddress
 
 export interface PropertyReference {
 	id: number
-	index: number
+	index?: number
 }
 
 export interface TypedValue {
