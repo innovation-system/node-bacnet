@@ -585,3 +585,17 @@ export interface WritePropertyMultipleObject {
 	objectId: BACNetObjectID
 	values: WritePropertyMultipleValue[]
 }
+
+export interface DecodeAtomicWriteFileResult {
+	len: number
+	isStream: boolean
+	position: number
+}
+
+export interface DecodeAtomicReadFileResult {
+	len: number
+	endOfFile: boolean
+	isStream: boolean
+	position: number
+	buffer: Buffer
+}
