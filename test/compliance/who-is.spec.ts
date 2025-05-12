@@ -3,13 +3,13 @@ import assert from 'node:assert'
 import { once } from 'node:events'
 
 import * as utils from './utils'
-import Client from '../../src'
+import BACnetClient from '../../src'
 
 // you need to have this run against the official backstack c
 // demo device started as deviceId 1234
 // use "npm run docker" to execute this
 test.describe('bacnet - whoIs compliance', () => {
-	let bacnetClient: Client
+	let bacnetClient: BACnetClient
 
 	function asyncWhoIs(
 		options?: { lowLimit?: number; highLimit?: number },

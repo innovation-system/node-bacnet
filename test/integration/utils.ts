@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events'
-import Client from '../../src/lib/client'
+import BACnetClient from '../../src/lib/client'
 
-export const BacnetClient = Client
+export const BacnetClient = BACnetClient
 
 export class TransportStub extends EventEmitter {
 	constructor() {

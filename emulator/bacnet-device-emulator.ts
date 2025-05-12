@@ -1,5 +1,5 @@
 import debugLib from 'debug'
-import Client from '../src/lib/client'
+import BACnetClient from '../src/lib/client'
 import { BACnetClientEvents } from '../src/lib/EventTypes'
 import {
 	Segmentation,
@@ -30,7 +30,7 @@ const settings = {
 	maxApdu: 1482,
 }
 
-const client = new Client()
+const client = new BACnetClient()
 
 const dataStore: DataStore = {
 	'1:0': {

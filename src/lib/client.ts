@@ -157,23 +157,18 @@ const confirmedServiceMap: BACnetEventsMap = {
 
 /**
  * To be able to communicate to BACNET devices, you have to initialize a new bacnet instance.
- * @class bacnet
- * @param {object=} this._settings - The options object used for parameterizing the bacnet.
- * @param {number=} [options.port=47808] - BACNET communication port for listening and sending.
- * @param {string=} options.interface - Specific BACNET communication interface if different from primary one.
- * @param {string=} [options.broadcastAddress=255.255.255.255] - The address used for broadcast messages.
- * @param {number=} [options.apduTimeout=3000] - The timeout in milliseconds until a transaction should be interpreted as error.
+ * @class BACnetClient
  * @example
- * const bacnet = require('node-bacnet');
+ * import BACnetClient from "@innovation-system/node-bacnet";
  *
- * const client = new bacnet({
- *   port: 47809,                          // Use BAC1 as communication port
+ * const client = new BACnetClient({
+ *   port: 47809,
  *   interface: '192.168.251.10',          // Listen on a specific interface
  *   broadcastAddress: '192.168.251.255',  // Use the subnet broadcast address
  *   apduTimeout: 6000                     // Wait twice as long for response
  * });
  */
-export default class Client extends TypedEventEmitter<BACnetClientEvents> {
+export default class BACnetClient extends TypedEventEmitter<BACnetClientEvents> {
 	private _settings: ClientOptions
 
 	private _transport: Transport
@@ -924,8 +919,9 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		 * @event bacnet.error
 		 * @param {error} err - The error object thrown by the underlying transport layer.
 		 * @example
-		 * const bacnet = require('node-bacnet');
-		 * const client = new bacnet();
+		 * import BACnetClient from "@innovation-system/node-bacnet";
+		 *
+		 * const client = new BACnetClient();
 		 *
 		 * client.on('error', (err) => {
 		 *   console.log('Error occurred: ', err);

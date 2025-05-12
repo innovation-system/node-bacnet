@@ -3,7 +3,7 @@ import assert from 'node:assert'
 
 import * as utils from './utils'
 import { once } from 'node:events'
-import Client, {
+import BACnetClient, {
 	BACNetObjectID,
 	DecodeAcknowledgeSingleResult,
 } from '../../src'
@@ -12,7 +12,7 @@ import Client, {
 // demo device started as deviceId 1234
 // use "npm run docker" to execute this
 test.describe('bacnet - read property compliance', () => {
-	let bacnetClient: Client
+	let bacnetClient: BACnetClient
 	let discoveredAddress: any
 	const onClose: ((callback: () => void) => void) | null = null
 

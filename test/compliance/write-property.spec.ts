@@ -3,13 +3,13 @@ import assert from 'node:assert'
 import { once } from 'node:events'
 
 import * as utils from './utils'
-import Client, { BACNetObjectID, BACNetAppData } from '../../src'
+import BACnetClient, { BACNetObjectID, BACNetAppData } from '../../src'
 
 // you need to have this run against the official backstack c
 // demo device started as deviceId 1234
 // use "npm run docker" to execute this
 test.describe('bacnet - write property compliance', () => {
-	let bacnetClient: Client
+	let bacnetClient: BACnetClient
 	let discoveredAddress: any
 	const onClose: ((callback: () => void) => void) | null = null
 
