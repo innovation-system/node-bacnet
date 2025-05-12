@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
+import { WriteProperty } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer WriteProperty unit', () => {
 	test('should successfully encode and decode', (t) => {
@@ -10,7 +10,7 @@ test.describe('bacnet - Services layer WriteProperty unit', () => {
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		ServicesMap.writeProperty.encode(buffer, 31, 12, 80, 0xffffffff, 0, [
+		WriteProperty.encode(buffer, 31, 12, 80, 0xffffffff, 0, [
 			{ type: 0, value: null },
 			{ type: 1, value: null },
 			{ type: 1, value: true },
@@ -31,11 +31,7 @@ test.describe('bacnet - Services layer WriteProperty unit', () => {
 			{ type: 11, value: time },
 			{ type: 12, value: { type: 3, instance: 0 } },
 		])
-		const result = ServicesMap.writeProperty.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = WriteProperty.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			objectId: {
@@ -78,7 +74,7 @@ test.describe('bacnet - Services layer WriteProperty unit', () => {
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		ServicesMap.writeProperty.encode(buffer, 31, 12, 80, 0xffffffff, 8, [
+		WriteProperty.encode(buffer, 31, 12, 80, 0xffffffff, 8, [
 			{ type: 0, value: null },
 			{ type: 1, value: null },
 			{ type: 1, value: true },
@@ -99,11 +95,7 @@ test.describe('bacnet - Services layer WriteProperty unit', () => {
 			{ type: 11, value: time },
 			{ type: 12, value: { type: 3, instance: 0 } },
 		])
-		const result = ServicesMap.writeProperty.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = WriteProperty.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			objectId: {
@@ -146,7 +138,7 @@ test.describe('bacnet - Services layer WriteProperty unit', () => {
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		ServicesMap.writeProperty.encode(buffer, 31, 12, 80, 2, 0, [
+		WriteProperty.encode(buffer, 31, 12, 80, 2, 0, [
 			{ type: 0, value: null },
 			{ type: 0, value: null },
 			{ type: 1, value: true },
@@ -167,11 +159,7 @@ test.describe('bacnet - Services layer WriteProperty unit', () => {
 			{ type: 11, value: time },
 			{ type: 12, value: { type: 3, instance: 0 } },
 		])
-		const result = ServicesMap.writeProperty.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = WriteProperty.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			objectId: {

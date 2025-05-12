@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
+import { CreateObject } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer CreateObject unit', () => {
 	test('should successfully encode and decode', () => {
@@ -10,7 +10,7 @@ test.describe('bacnet - Services layer CreateObject unit', () => {
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		ServicesMap.createObject.encode(buffer, { type: 1, instance: 10 }, [
+		CreateObject.encode(buffer, { type: 1, instance: 10 }, [
 			{
 				property: { id: 81, index: 0xffffffff },
 				value: [
@@ -47,11 +47,7 @@ test.describe('bacnet - Services layer CreateObject unit', () => {
 				priority: 0,
 			},
 		])
-		const result = ServicesMap.createObject.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = CreateObject.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		result.values[0].value[12].value =
 			Math.floor(result.values[0].value[12].value * 1000) / 1000

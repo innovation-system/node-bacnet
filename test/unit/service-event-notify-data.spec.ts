@@ -2,15 +2,15 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
 import { CovType } from '../../src'
+import { EventNotifyData } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer EventNotifyData unit', () => {
 	test('should successfully encode and decode a change of bitstring event', (t) => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
-		ServicesMap.eventNotifyData.encode(buffer, {
+		EventNotifyData.encode(buffer, {
 			processId: 3,
 			initiatingObjectId: { type: 60, instance: 12 },
 			eventObjectId: { type: 61, instance: 1121 },
@@ -32,7 +32,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 				value: [0xaa, 0xaa, 0xaa],
 			},
 		})
-		const result = ServicesMap.eventNotifyData.decode(buffer.buffer, 0)
+		const result = EventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			processId: 3,
@@ -54,7 +54,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
-		ServicesMap.eventNotifyData.encode(buffer, {
+		EventNotifyData.encode(buffer, {
 			processId: 3,
 			initiatingObjectId: {},
 			eventObjectId: {},
@@ -73,7 +73,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 				value: [0xaa, 0xaa, 0xaa],
 			},
 		})
-		const result = ServicesMap.eventNotifyData.decode(buffer.buffer, 0)
+		const result = EventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			processId: 3,
@@ -95,7 +95,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
-		ServicesMap.eventNotifyData.encode(buffer, {
+		EventNotifyData.encode(buffer, {
 			processId: 3,
 			initiatingObjectId: {},
 			eventObjectId: {},
@@ -112,7 +112,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 				value: [0xaa, 0xaa, 0xaa],
 			},
 		})
-		const result = ServicesMap.eventNotifyData.decode(buffer.buffer, 0)
+		const result = EventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			processId: 3,
@@ -134,7 +134,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
-		ServicesMap.eventNotifyData.encode(buffer, {
+		EventNotifyData.encode(buffer, {
 			processId: 3,
 			initiatingObjectId: {},
 			eventObjectId: {},
@@ -155,7 +155,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 			floatingLimitSetPointValue: 120,
 			floatingLimitErrorLimit: 120,
 		})
-		const result = ServicesMap.eventNotifyData.decode(buffer.buffer, 0)
+		const result = EventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			processId: 3,
@@ -178,7 +178,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
-		ServicesMap.eventNotifyData.encode(buffer, {
+		EventNotifyData.encode(buffer, {
 			processId: 3,
 			initiatingObjectId: {},
 			eventObjectId: {},
@@ -193,7 +193,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 			outOfRangeDeadband: 50,
 			outOfRangeExceededLimit: 150,
 		})
-		const result = ServicesMap.eventNotifyData.decode(buffer.buffer, 0)
+		const result = EventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			processId: 3,
@@ -216,7 +216,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
-		ServicesMap.eventNotifyData.encode(buffer, {
+		EventNotifyData.encode(buffer, {
 			processId: 3,
 			initiatingObjectId: {},
 			eventObjectId: {},
@@ -234,7 +234,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 			},
 			changeOfLifeSafetyOperationExpected: 2,
 		})
-		const result = ServicesMap.eventNotifyData.decode(buffer.buffer, 0)
+		const result = EventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			processId: 3,
@@ -256,7 +256,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
-		ServicesMap.eventNotifyData.encode(buffer, {
+		EventNotifyData.encode(buffer, {
 			processId: 3,
 			initiatingObjectId: {},
 			eventObjectId: {},
@@ -275,7 +275,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 			bufferReadyPreviousNotification: 121,
 			bufferReadyCurrentNotification: 281,
 		})
-		const result = ServicesMap.eventNotifyData.decode(buffer.buffer, 0)
+		const result = EventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			processId: 3,
@@ -297,7 +297,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 		const buffer = utils.getBuffer()
 		const date = new Date()
 		date.setMilliseconds(880)
-		ServicesMap.eventNotifyData.encode(buffer, {
+		EventNotifyData.encode(buffer, {
 			processId: 3,
 			initiatingObjectId: {},
 			eventObjectId: {},
@@ -314,7 +314,7 @@ test.describe('bacnet - Services layer EventNotifyData unit', () => {
 			},
 			unsignedRangeExceededLimit: 100,
 		})
-		const result = ServicesMap.eventNotifyData.decode(buffer.buffer, 0)
+		const result = EventNotifyData.decode(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			processId: 3,

@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
+import { WritePropertyMultiple } from '../../src/lib/services'
 
 function removeLen(obj: any): any {
 	if (obj === null || typeof obj !== 'object') return obj
@@ -27,44 +27,40 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		ServicesMap.writePropertyMultiple.encode(
-			buffer,
-			{ type: 39, instance: 2400 },
-			[
-				{
-					property: { id: 81, index: 0xffffffff },
-					value: [
-						{ type: 0, value: null },
-						{ type: 0, value: null },
-						{ type: 1, value: true },
-						{ type: 1, value: false },
-						{ type: 2, value: 1 },
-						{ type: 2, value: 1000 },
-						{ type: 2, value: 1000000 },
-						{ type: 2, value: 1000000000 },
-						{ type: 3, value: -1 },
-						{ type: 3, value: -1000 },
-						{ type: 3, value: -1000000 },
-						{ type: 3, value: -1000000000 },
-						{ type: 4, value: 0.1 },
-						{ type: 5, value: 100.121212 },
-						{ type: 6, value: [1, 2, 100, 200] },
-						{ type: 7, value: 'Test1234$' },
-						{ type: 8, value: { bitsUsed: 0, value: [] } },
-						{
-							type: 8,
-							value: { bitsUsed: 24, value: [0xaa, 0xaa, 0xaa] },
-						},
-						{ type: 9, value: 4 },
-						{ type: 10, value: date },
-						{ type: 11, value: time },
-						{ type: 12, value: { type: 3, instance: 0 } },
-					],
-					priority: 0,
-				},
-			],
-		)
-		const result = ServicesMap.writePropertyMultiple.decode(
+		WritePropertyMultiple.encode(buffer, { type: 39, instance: 2400 }, [
+			{
+				property: { id: 81, index: 0xffffffff },
+				value: [
+					{ type: 0, value: null },
+					{ type: 0, value: null },
+					{ type: 1, value: true },
+					{ type: 1, value: false },
+					{ type: 2, value: 1 },
+					{ type: 2, value: 1000 },
+					{ type: 2, value: 1000000 },
+					{ type: 2, value: 1000000000 },
+					{ type: 3, value: -1 },
+					{ type: 3, value: -1000 },
+					{ type: 3, value: -1000000 },
+					{ type: 3, value: -1000000000 },
+					{ type: 4, value: 0.1 },
+					{ type: 5, value: 100.121212 },
+					{ type: 6, value: [1, 2, 100, 200] },
+					{ type: 7, value: 'Test1234$' },
+					{ type: 8, value: { bitsUsed: 0, value: [] } },
+					{
+						type: 8,
+						value: { bitsUsed: 24, value: [0xaa, 0xaa, 0xaa] },
+					},
+					{ type: 9, value: 4 },
+					{ type: 10, value: date },
+					{ type: 11, value: time },
+					{ type: 12, value: { type: 3, instance: 0 } },
+				],
+				priority: 0,
+			},
+		])
+		const result = WritePropertyMultiple.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -126,18 +122,14 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 		const buffer = utils.getBuffer()
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		ServicesMap.writePropertyMultiple.encode(
-			buffer,
-			{ type: 39, instance: 2400 },
-			[
-				{
-					property: { id: 81, index: 0xffffffff },
-					value: [{ type: 7, value: 'Test1234$' }],
-					priority: 12,
-				},
-			],
-		)
-		const result = ServicesMap.writePropertyMultiple.decode(
+		WritePropertyMultiple.encode(buffer, { type: 39, instance: 2400 }, [
+			{
+				property: { id: 81, index: 0xffffffff },
+				value: [{ type: 7, value: 'Test1234$' }],
+				priority: 12,
+			},
+		])
+		const result = WritePropertyMultiple.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -165,18 +157,14 @@ test.describe('bacnet - Services layer WritePropertyMultiple unit', () => {
 		const buffer = utils.getBuffer()
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		ServicesMap.writePropertyMultiple.encode(
-			buffer,
-			{ type: 39, instance: 2400 },
-			[
-				{
-					property: { id: 81, index: 414141 },
-					value: [{ type: 7, value: 'Test1234$' }],
-					priority: 0,
-				},
-			],
-		)
-		const result = ServicesMap.writePropertyMultiple.decode(
+		WritePropertyMultiple.encode(buffer, { type: 39, instance: 2400 }, [
+			{
+				property: { id: 81, index: 414141 },
+				value: [{ type: 7, value: 'Test1234$' }],
+				priority: 0,
+			},
+		])
+		const result = WritePropertyMultiple.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,

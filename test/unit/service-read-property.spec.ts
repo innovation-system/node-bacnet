@@ -2,17 +2,13 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
+import { ReadProperty } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer ReadProperty unit', () => {
 	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.readProperty.encode(buffer, 4, 630, 85, 0xffffffff)
-		const result = ServicesMap.readProperty.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		ReadProperty.encode(buffer, 4, 630, 85, 0xffffffff)
+		const result = ReadProperty.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			objectId: { type: 4, instance: 630 },
@@ -22,12 +18,8 @@ test.describe('bacnet - Services layer ReadProperty unit', () => {
 
 	test('should successfully encode and decode with object-type > 512', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.readProperty.encode(buffer, 630, 5, 12, 0xffffffff)
-		const result = ServicesMap.readProperty.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		ReadProperty.encode(buffer, 630, 5, 12, 0xffffffff)
+		const result = ReadProperty.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			objectId: { type: 630, instance: 5 },
@@ -37,12 +29,8 @@ test.describe('bacnet - Services layer ReadProperty unit', () => {
 
 	test('should successfully encode and decode with array index', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.readProperty.encode(buffer, 4, 630, 85, 2)
-		const result = ServicesMap.readProperty.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		ReadProperty.encode(buffer, 4, 630, 85, 2)
+		const result = ReadProperty.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			objectId: { type: 4, instance: 630 },
@@ -54,7 +42,7 @@ test.describe('bacnet - Services layer ReadProperty unit', () => {
 test.describe('ReadPropertyAcknowledge', () => {
 	test('should successfully encode and decode a boolean value', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.readProperty.encodeAcknowledge(
+		ReadProperty.encodeAcknowledge(
 			buffer,
 			{ type: 8, instance: 40000 },
 			81,
@@ -64,7 +52,7 @@ test.describe('ReadPropertyAcknowledge', () => {
 				{ type: 1, value: false },
 			],
 		)
-		const result = ServicesMap.readProperty.decodeAcknowledge(
+		const result = ReadProperty.decodeAcknowledge(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -90,7 +78,7 @@ test.describe('ReadPropertyAcknowledge', () => {
 	// The full file would include all the original test cases with similar conversion.
 	test('should successfully encode and decode an unsigned value', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.readProperty.encodeAcknowledge(
+		ReadProperty.encodeAcknowledge(
 			buffer,
 			{ type: 8, instance: 40000 },
 			81,
@@ -102,7 +90,7 @@ test.describe('ReadPropertyAcknowledge', () => {
 				{ type: 2, value: 1000000000 },
 			],
 		)
-		const result = ServicesMap.readProperty.decodeAcknowledge(
+		const result = ReadProperty.decodeAcknowledge(
 			buffer.buffer,
 			0,
 			buffer.offset,

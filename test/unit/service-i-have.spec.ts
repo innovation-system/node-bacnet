@@ -2,18 +2,18 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
+import { IHave } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer iHave unit', () => {
 	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.iHave.encode(
+		IHave.encode(
 			buffer,
 			{ type: 8, instance: 443 },
 			{ type: 0, instance: 4 },
 			'LgtCmd01',
 		)
-		const result = ServicesMap.iHave.decode(buffer.buffer, 0, buffer.offset)
+		const result = IHave.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			deviceId: { type: 8, instance: 443 },

@@ -2,23 +2,15 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
+import { AtomicWriteFile } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer AtomicWriteFile unit', () => {
 	test('should successfully encode and decode as stream', () => {
 		const buffer = utils.getBuffer()
-		ServicesMap.atomicWriteFile.encode(
-			buffer,
-			true,
-			{ type: 12, instance: 51 },
-			5,
-			[[12, 12]],
-		)
-		const result = ServicesMap.atomicWriteFile.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		AtomicWriteFile.encode(buffer, true, { type: 12, instance: 51 }, 5, [
+			[12, 12],
+		])
+		const result = AtomicWriteFile.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			objectId: { type: 12, instance: 51 },
@@ -30,21 +22,11 @@ test.describe('bacnet - Services layer AtomicWriteFile unit', () => {
 
 	test('should successfully encode and decode as non-stream', () => {
 		const buffer = utils.getBuffer()
-		ServicesMap.atomicWriteFile.encode(
-			buffer,
-			false,
-			{ type: 12, instance: 88 },
-			10,
-			[
-				[12, 12],
-				[12, 12],
-			],
-		)
-		const result = ServicesMap.atomicWriteFile.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		AtomicWriteFile.encode(buffer, false, { type: 12, instance: 88 }, 10, [
+			[12, 12],
+			[12, 12],
+		])
+		const result = AtomicWriteFile.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			objectId: { type: 12, instance: 88 },
@@ -61,11 +43,8 @@ test.describe('bacnet - Services layer AtomicWriteFile unit', () => {
 test.describe('AtomicWriteFileAcknowledge', () => {
 	test('should successfully encode and decode streamed file', () => {
 		const buffer = utils.getBuffer()
-		ServicesMap.atomicWriteFile.encodeAcknowledge(buffer, true, -10)
-		const result = ServicesMap.atomicWriteFile.decodeAcknowledge(
-			buffer.buffer,
-			0,
-		)
+		AtomicWriteFile.encodeAcknowledge(buffer, true, -10)
+		const result = AtomicWriteFile.decodeAcknowledge(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			isStream: true,
@@ -75,11 +54,8 @@ test.describe('AtomicWriteFileAcknowledge', () => {
 
 	test('should successfully encode and decode non-streamed file', () => {
 		const buffer = utils.getBuffer()
-		ServicesMap.atomicWriteFile.encodeAcknowledge(buffer, false, 10)
-		const result = ServicesMap.atomicWriteFile.decodeAcknowledge(
-			buffer.buffer,
-			0,
-		)
+		AtomicWriteFile.encodeAcknowledge(buffer, false, 10)
+		const result = AtomicWriteFile.decodeAcknowledge(buffer.buffer, 0)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			isStream: false,

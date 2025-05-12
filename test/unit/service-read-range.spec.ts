@@ -2,13 +2,13 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
+import { ReadRange } from '../../src/lib/services'
 import { ReadRangeType } from '../../src'
 
 test.describe('bacnet - Services layer ReadRange unit', () => {
 	test('should successfully encode and decode by position', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.readRange.encode(
+		ReadRange.encode(
 			buffer,
 			{ type: 61, instance: 35 },
 			85,
@@ -18,11 +18,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			null,
 			0,
 		)
-		const result = ServicesMap.readRange.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = ReadRange.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			count: 0,
@@ -39,7 +35,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 
 	test('should successfully encode and decode by position with array index', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.readRange.encode(
+		ReadRange.encode(
 			buffer,
 			{ type: 61, instance: 35 },
 			12,
@@ -49,11 +45,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			null,
 			0,
 		)
-		const result = ServicesMap.readRange.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = ReadRange.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			count: 0,
@@ -70,7 +62,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 
 	test('should successfully encode and decode by sequence', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.readRange.encode(
+		ReadRange.encode(
 			buffer,
 			{ type: 61, instance: 35 },
 			85,
@@ -80,11 +72,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			null,
 			1111,
 		)
-		const result = ServicesMap.readRange.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = ReadRange.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			count: 1111,
@@ -103,7 +91,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 		const buffer = utils.getBuffer()
 		const date = new Date(1, 1, 1)
 		date.setMilliseconds(990)
-		ServicesMap.readRange.encode(
+		ReadRange.encode(
 			buffer,
 			{ type: 61, instance: 35 },
 			85,
@@ -113,11 +101,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 			date,
 			-1111,
 		)
-		const result = ServicesMap.readRange.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = ReadRange.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			count: -1111,
@@ -136,7 +120,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 test.describe('ReadRangeAcknowledge', () => {
 	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.readRange.encodeAcknowledge(
+		ReadRange.encodeAcknowledge(
 			buffer,
 			{ type: 12, instance: 500 },
 			5048,
@@ -147,7 +131,7 @@ test.describe('ReadRangeAcknowledge', () => {
 			2,
 			2,
 		)
-		const result = ServicesMap.readRange.decodeAcknowledge(
+		const result = ReadRange.decodeAcknowledge(
 			buffer.buffer,
 			0,
 			buffer.offset,

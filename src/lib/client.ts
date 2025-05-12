@@ -6,7 +6,35 @@ import {
 import debugLib from 'debug'
 
 import Transport from './transport'
-import { ServicesMap } from './services'
+import ServicesMap, {
+	AddListElement,
+	AlarmAcknowledge,
+	AlarmSummary,
+	AtomicReadFile,
+	AtomicWriteFile,
+	CovNotify,
+	CreateObject,
+	DeleteObject,
+	DeviceCommunicationControl,
+	EventInformation,
+	EventNotifyData,
+	GetEnrollmentSummary,
+	IAm,
+	IHave,
+	PrivateTransfer,
+	ReadProperty,
+	ReadPropertyMultiple,
+	ReadRange,
+	RegisterForeignDevice,
+	ReinitializeDevice,
+	SubscribeCov,
+	SubscribeProperty,
+	TimeSync,
+	WhoIs,
+	WriteProperty,
+	WritePropertyMultiple,
+	ErrorService,
+} from './services'
 import * as baAsn1 from './asn1'
 import * as baApdu from './apdu'
 import * as baNpdu from './npdu'
@@ -283,7 +311,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		offset: number,
 		length: number,
 	) {
-		const result = ServicesMap.error.decode(buffer, offset)
+		const result = ErrorService.decode(buffer, offset)
 		if (!result) return debug('Couldn`t decode Error')
 		this._invokeCallback(
 			invokeId,
@@ -856,7 +884,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 				break
 
 			case BvlcResultPurpose.REGISTER_FOREIGN_DEVICE:
-				const decodeResult = ServicesMap.registerForeignDevice.decode(
+				const decodeResult = RegisterForeignDevice.decode(
 					buffer,
 					result.len,
 					buffer.length - result.len,
@@ -967,7 +995,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			UnconfirmedServiceChoice.WHO_IS,
 		)
 
-		ServicesMap.whoIs.encode(buffer, settings.lowLimit, settings.highLimit)
+		WhoIs.encode(buffer, settings.lowLimit, settings.highLimit)
 		this.sendBvlc(receiver, buffer)
 	}
 
@@ -986,7 +1014,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			PduType.UNCONFIRMED_REQUEST,
 			UnconfirmedServiceChoice.TIME_SYNCHRONIZATION,
 		)
-		ServicesMap.timeSync.encode(buffer, dateTime)
+		TimeSync.encode(buffer, dateTime)
 		this.sendBvlc(receiver, buffer)
 	}
 
@@ -1005,7 +1033,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			PduType.UNCONFIRMED_REQUEST,
 			UnconfirmedServiceChoice.UTC_TIME_SYNCHRONIZATION,
 		)
-		ServicesMap.timeSync.encode(buffer, dateTime)
+		TimeSync.encode(buffer, dateTime)
 		this.sendBvlc(receiver, buffer)
 	}
 
@@ -1083,7 +1111,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 		)
 
-		ServicesMap.readProperty.encode(
+		ReadProperty.encode(
 			buffer,
 			objectId.type,
 			objectId.instance,
@@ -1097,7 +1125,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 				return void (next as DataCallback<any>)(err)
 			}
 
-			const result = ServicesMap.readProperty.decodeAcknowledge(
+			const result = ReadProperty.decodeAcknowledge(
 				data.buffer,
 				data.offset,
 				data.length,
@@ -1178,7 +1206,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 		)
 
-		ServicesMap.writeProperty.encode(
+		WriteProperty.encode(
 			buffer,
 			objectId.type,
 			objectId.instance,
@@ -1253,14 +1281,14 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.readPropertyMultiple.encode(buffer, propertiesArray)
+		ReadPropertyMultiple.encode(buffer, propertiesArray)
 		this.sendBvlc(receiver, buffer)
 		this._addCallback(settings.invokeId, (err, data) => {
 			if (err) {
 				return void next(err)
 			}
 
-			const result = ServicesMap.readPropertyMultiple.decodeAcknowledge(
+			const result = ReadPropertyMultiple.decodeAcknowledge(
 				data.buffer,
 				data.offset,
 				data.length,
@@ -1326,7 +1354,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			settings.maxApdu,
 			settings.invokeId,
 		)
-		ServicesMap.writePropertyMultiple.encodeObject(buffer, values)
+		WritePropertyMultiple.encodeObject(buffer, values)
 		this.sendBvlc(receiver, buffer)
 		this._addCallback(settings.invokeId, (err, data) => {
 			next(err)
@@ -1377,7 +1405,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.covNotify.encode(
+		CovNotify.encode(
 			buffer,
 			subscribeId,
 			initiatingDeviceId,
@@ -1440,7 +1468,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.deviceCommunicationControl.encode(
+		DeviceCommunicationControl.encode(
 			buffer,
 			timeDuration,
 			enableDisable,
@@ -1492,7 +1520,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.reinitializeDevice.encode(buffer, state, settings.password)
+		ReinitializeDevice.encode(buffer, state, settings.password)
 		this.sendBvlc(receiver, buffer)
 		this._addCallback(settings.invokeId, (err, data) => {
 			next(err)
@@ -1540,19 +1568,13 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 		)
 		const blocks: number[][] = fileBuffer
-		ServicesMap.atomicWriteFile.encode(
-			buffer,
-			false,
-			objectId,
-			position,
-			blocks,
-		)
+		AtomicWriteFile.encode(buffer, false, objectId, position, blocks)
 		this.sendBvlc(receiver, buffer)
 		this._addCallback(settings.invokeId, (err, data) => {
 			if (err) {
 				return void next(err)
 			}
-			const result = ServicesMap.atomicWriteFile.decodeAcknowledge(
+			const result = AtomicWriteFile.decodeAcknowledge(
 				data.buffer,
 				data.offset,
 			)
@@ -1603,19 +1625,13 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.atomicReadFile.encode(
-			buffer,
-			true,
-			objectId,
-			position,
-			count,
-		)
+		AtomicReadFile.encode(buffer, true, objectId, position, count)
 		this.sendBvlc(receiver, buffer)
 		this._addCallback(settings.invokeId, (err, data) => {
 			if (err) {
 				return void next(err)
 			}
-			const result = ServicesMap.atomicReadFile.decodeAcknowledge(
+			const result = AtomicReadFile.decodeAcknowledge(
 				data.buffer,
 				data.offset,
 			)
@@ -1666,7 +1682,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.readRange.encode(
+		ReadRange.encode(
 			buffer,
 			objectId,
 			PropertyIdentifier.LOG_BUFFER,
@@ -1681,7 +1697,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			if (err) {
 				return void next(err)
 			}
-			const result = ServicesMap.readRange.decodeAcknowledge(
+			const result = ReadRange.decodeAcknowledge(
 				data.buffer,
 				data.offset,
 				data.length,
@@ -1730,7 +1746,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.subscribeCov.encode(
+		SubscribeCov.encode(
 			buffer,
 			subscribeId,
 			objectId,
@@ -1787,7 +1803,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.subscribeProperty.encode(
+		SubscribeProperty.encode(
 			buffer,
 			subscribeId,
 			objectId,
@@ -1834,7 +1850,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			PduType.UNCONFIRMED_REQUEST,
 			UnconfirmedServiceChoice.UNCONFIRMED_COV_NOTIFICATION,
 		)
-		ServicesMap.covNotify.encode(
+		CovNotify.encode(
 			buffer,
 			subscriberProcessId,
 			initiatingDeviceId,
@@ -1894,7 +1910,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.createObject.encode(buffer, objectId, values)
+		CreateObject.encode(buffer, objectId, values)
 		this.sendBvlc(receiver, buffer)
 		this._addCallback(
 			settings.invokeId,
@@ -1940,7 +1956,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.deleteObject.encode(buffer, objectId)
+		DeleteObject.encode(buffer, objectId)
 		this.sendBvlc(receiver, buffer)
 		this._addCallback(
 			settings.invokeId,
@@ -1991,7 +2007,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.addListElement.encode(
+		AddListElement.encode(
 			buffer,
 			objectId,
 			reference.id,
@@ -2048,7 +2064,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.addListElement.encode(
+		AddListElement.encode(
 			buffer,
 			objectId,
 			reference.id,
@@ -2112,7 +2128,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			if (err) {
 				return void next(err)
 			}
-			const result = ServicesMap.alarmSummary.decode(
+			const result = AlarmSummary.decode(
 				data.buffer,
 				data.offset,
 				data.length,
@@ -2177,7 +2193,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			if (err) {
 				return void next(err)
 			}
-			const result = ServicesMap.eventInformation.decode(
+			const result = EventInformation.decode(
 				data.buffer,
 				data.offset,
 				data.length,
@@ -2239,7 +2255,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.alarmAcknowledge.encode(
+		AlarmAcknowledge.encode(
 			buffer,
 			57,
 			objectId,
@@ -2303,12 +2319,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.privateTransfer.encode(
-			buffer,
-			vendorId,
-			serviceNumber,
-			data,
-		)
+		PrivateTransfer.encode(buffer, vendorId, serviceNumber, data)
 		this.sendBvlc(receiver, buffer)
 		this._addCallback(settings.invokeId, (err, data) => {
 			if (err) {
@@ -2340,12 +2351,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			PduType.UNCONFIRMED_REQUEST,
 			UnconfirmedServiceChoice.UNCONFIRMED_PRIVATE_TRANSFER,
 		)
-		ServicesMap.privateTransfer.encode(
-			buffer,
-			vendorId,
-			serviceNumber,
-			data,
-		)
+		PrivateTransfer.encode(buffer, vendorId, serviceNumber, data)
 		this.sendBvlc(receiver, buffer)
 	}
 
@@ -2399,7 +2405,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.getEnrollmentSummary.encode(
+		GetEnrollmentSummary.encode(
 			buffer,
 			acknowledgmentFilter,
 			(options as any).enrollmentFilter,
@@ -2413,7 +2419,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			if (err) {
 				return void next(err)
 			}
-			const result = ServicesMap.getEnrollmentSummary.decodeAcknowledge(
+			const result = GetEnrollmentSummary.decodeAcknowledge(
 				data.buffer,
 				data.offset,
 				data.length,
@@ -2443,7 +2449,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			PduType.UNCONFIRMED_REQUEST,
 			UnconfirmedServiceChoice.UNCONFIRMED_EVENT_NOTIFICATION,
 		)
-		ServicesMap.eventNotifyData.encode(buffer, eventNotification)
+		EventNotifyData.encode(buffer, eventNotification)
 		this.sendBvlc(receiver, buffer)
 	}
 
@@ -2489,7 +2495,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			0,
 			0,
 		)
-		ServicesMap.eventNotifyData.encode(buffer, eventNotification)
+		EventNotifyData.encode(buffer, eventNotification)
 		this.sendBvlc(receiver, buffer)
 		this._addCallback(settings.invokeId, (err, data) => {
 			if (err) {
@@ -2531,7 +2537,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 		const valueArray = Array.isArray(value) ? value : [value]
 
-		ServicesMap.readProperty.encodeAcknowledge(
+		ReadProperty.encodeAcknowledge(
 			buffer,
 			objectId,
 			property.id,
@@ -2564,7 +2570,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			ConfirmedServiceChoice.READ_PROPERTY_MULTIPLE,
 			invokeId,
 		)
-		ServicesMap.readPropertyMultiple.encodeAcknowledge(buffer, values)
+		ReadPropertyMultiple.encodeAcknowledge(buffer, values)
 		this.sendBvlc(receiver, buffer)
 	}
 
@@ -2588,7 +2594,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			PduType.UNCONFIRMED_REQUEST,
 			UnconfirmedServiceChoice.I_AM,
 		)
-		ServicesMap.iAm.encode(
+		IAm.encode(
 			buffer,
 			deviceId,
 			this._transport.getMaxPayload(),
@@ -2618,7 +2624,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			PduType.UNCONFIRMED_REQUEST,
 			UnconfirmedServiceChoice.I_HAVE,
 		)
-		ServicesMap.iHave.encode(buffer, deviceId, objectId, objectName)
+		IHave.encode(buffer, deviceId, objectId, objectName)
 		this.sendBvlc(receiver, buffer)
 	}
 
@@ -2662,7 +2668,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 			`error response on ${JSON.stringify(receiver)} service: ${JSON.stringify(service)} invokeId: ${invokeId} errorClass: ${errorClass} errorCode: ${errorCode}`,
 		)
 		trace(
-			`error message ${ServicesMap.error.buildMessage({ class: errorClass, code: errorCode })}`,
+			`error message ${ErrorService.buildMessage({ class: errorClass, code: errorCode })}`,
 		)
 		const buffer = this._getBuffer(
 			receiver && typeof receiver !== 'string'
@@ -2671,7 +2677,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		)
 		baNpdu.encode(buffer, NpduControlPriority.NORMAL_MESSAGE, receiver)
 		baApdu.encodeError(buffer, PduType.ERROR, service, invokeId)
-		ServicesMap.error.encode(buffer, errorClass, errorCode)
+		ErrorService.encode(buffer, errorClass, errorCode)
 		this.sendBvlc(receiver, buffer)
 	}
 

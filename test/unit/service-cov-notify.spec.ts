@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
+import { CovNotify } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer COVNotify unit', () => {
 	test('should successfully encode and decode', () => {
@@ -10,55 +10,44 @@ test.describe('bacnet - Services layer COVNotify unit', () => {
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		ServicesMap.covNotify.encode(
-			buffer,
-			7,
-			443,
-			{ type: 2, instance: 12 },
-			120,
-			[
-				{
-					property: { id: 81, index: 0xffffffff },
-					value: [
-						{ type: 0 },
-						{ type: 1, value: null },
-						{ type: 1, value: true },
-						{ type: 1, value: false },
-						{ type: 2, value: 1 },
-						{ type: 2, value: 1000 },
-						{ type: 2, value: 1000000 },
-						{ type: 2, value: 1000000000 },
-						{ type: 3, value: -1 },
-						{ type: 3, value: -1000 },
-						{ type: 3, value: -1000000 },
-						{ type: 3, value: -1000000000 },
-						{ type: 4, value: 0.1 },
-						{ type: 5, value: 100.121212 },
-						{ type: 6, value: [1, 2, 100, 200] },
-						{ type: 7, value: 'Test1234$' },
-						{ type: 8, value: { bitsUsed: 0, value: [] } },
-						{
-							type: 8,
-							value: { bitsUsed: 24, value: [0xaa, 0xaa, 0xaa] },
-						},
-						{ type: 9, value: 4 },
-						{ type: 10, value: date },
-						{ type: 11, value: time },
-					],
-					priority: 0,
-				},
-				{
-					property: { id: 82, index: 0 },
-					value: [{ type: 12, value: { type: 3, instance: 0 } }],
-					priority: 8,
-				},
-			],
-		)
-		const result = ServicesMap.covNotify.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		CovNotify.encode(buffer, 7, 443, { type: 2, instance: 12 }, 120, [
+			{
+				property: { id: 81, index: 0xffffffff },
+				value: [
+					{ type: 0 },
+					{ type: 1, value: null },
+					{ type: 1, value: true },
+					{ type: 1, value: false },
+					{ type: 2, value: 1 },
+					{ type: 2, value: 1000 },
+					{ type: 2, value: 1000000 },
+					{ type: 2, value: 1000000000 },
+					{ type: 3, value: -1 },
+					{ type: 3, value: -1000 },
+					{ type: 3, value: -1000000 },
+					{ type: 3, value: -1000000000 },
+					{ type: 4, value: 0.1 },
+					{ type: 5, value: 100.121212 },
+					{ type: 6, value: [1, 2, 100, 200] },
+					{ type: 7, value: 'Test1234$' },
+					{ type: 8, value: { bitsUsed: 0, value: [] } },
+					{
+						type: 8,
+						value: { bitsUsed: 24, value: [0xaa, 0xaa, 0xaa] },
+					},
+					{ type: 9, value: 4 },
+					{ type: 10, value: date },
+					{ type: 11, value: time },
+				],
+				priority: 0,
+			},
+			{
+				property: { id: 82, index: 0 },
+				value: [{ type: 12, value: { type: 3, instance: 0 } }],
+				priority: 8,
+			},
+		])
+		const result = CovNotify.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		result.values[0].value[12].value =
 			Math.floor(result.values[0].value[12].value * 1000) / 1000

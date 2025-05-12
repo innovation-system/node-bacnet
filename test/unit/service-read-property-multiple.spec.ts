@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
+import { ReadPropertyMultiple } from '../../src/lib/services'
 
 function removeLen(obj: any): any {
 	if (obj === null || typeof obj !== 'object') return obj
@@ -24,7 +24,7 @@ function removeLen(obj: any): any {
 test.describe('bacnet - Services layer ReadPropertyMultiple unit', () => {
 	test('should successfully encode and decode', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.readPropertyMultiple.encode(buffer, [
+		ReadPropertyMultiple.encode(buffer, [
 			{
 				objectId: { type: 51, instance: 1 },
 				properties: [
@@ -33,7 +33,7 @@ test.describe('bacnet - Services layer ReadPropertyMultiple unit', () => {
 				],
 			},
 		])
-		const result = ServicesMap.readPropertyMultiple.decode(
+		const result = ReadPropertyMultiple.decode(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -60,7 +60,7 @@ test.describe('ReadPropertyMultipleAcknowledge', () => {
 		const date = new Date(1, 1, 1)
 		const time = new Date(1, 1, 1)
 		time.setMilliseconds(990)
-		ServicesMap.readPropertyMultiple.encodeAcknowledge(buffer, [
+		ReadPropertyMultiple.encodeAcknowledge(buffer, [
 			{
 				objectId: { type: 9, instance: 50000 },
 				values: [
@@ -100,7 +100,7 @@ test.describe('ReadPropertyMultipleAcknowledge', () => {
 				],
 			},
 		])
-		const result = ServicesMap.readPropertyMultiple.decodeAcknowledge(
+		const result = ReadPropertyMultiple.decodeAcknowledge(
 			buffer.buffer,
 			0,
 			buffer.offset,
@@ -166,7 +166,7 @@ test.describe('ReadPropertyMultipleAcknowledge', () => {
 
 	test('should successfully encode and decode an error', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.readPropertyMultiple.encodeAcknowledge(buffer, [
+		ReadPropertyMultiple.encodeAcknowledge(buffer, [
 			{
 				objectId: { type: 9, instance: 50000 },
 				values: [
@@ -186,7 +186,7 @@ test.describe('ReadPropertyMultipleAcknowledge', () => {
 				],
 			},
 		])
-		const result = ServicesMap.readPropertyMultiple.decodeAcknowledge(
+		const result = ReadPropertyMultiple.decodeAcknowledge(
 			buffer.buffer,
 			0,
 			buffer.offset,

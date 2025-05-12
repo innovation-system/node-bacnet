@@ -3,7 +3,7 @@ import { ErrorClassName, ErrorCodeName } from '../enum'
 import { EncodeBuffer } from '../types'
 import { BacnetService } from './AbstractServices'
 
-export default class Error extends BacnetService {
+export default class ErrorService extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		errorClass: number,

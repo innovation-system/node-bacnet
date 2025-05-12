@@ -2,22 +2,13 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
+import { SubscribeCov } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer subscribeCov unit', () => {
 	test('should successfully encode and decode a cancelation request', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.subscribeCov.encode(
-			buffer,
-			10,
-			{ type: 3, instance: 1 },
-			true,
-		)
-		const result = ServicesMap.subscribeCov.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		SubscribeCov.encode(buffer, 10, { type: 3, instance: 1 }, true)
+		const result = SubscribeCov.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			cancellationRequest: true,
@@ -28,7 +19,7 @@ test.describe('bacnet - Services layer subscribeCov unit', () => {
 
 	test('should successfully encode and decode subscription request', (t) => {
 		const buffer = utils.getBuffer()
-		ServicesMap.subscribeCov.encode(
+		SubscribeCov.encode(
 			buffer,
 			11,
 			{ type: 3, instance: 2 },
@@ -36,11 +27,7 @@ test.describe('bacnet - Services layer subscribeCov unit', () => {
 			true,
 			5000,
 		)
-		const result = ServicesMap.subscribeCov.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = SubscribeCov.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			cancellationRequest: false,

@@ -2,8 +2,8 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
-import { ServicesMap } from '../../src/lib/services'
 import { TimeStamp } from '../../src'
+import { AlarmAcknowledge } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 	test('should successfully encode and decode with time timestamp', () => {
@@ -12,7 +12,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 		eventTime.setMilliseconds(990)
 		const ackTime = new Date(1, 1, 1)
 		ackTime.setMilliseconds(880)
-		ServicesMap.alarmAcknowledge.encode(
+		AlarmAcknowledge.encode(
 			buffer,
 			57,
 			{ type: 0, instance: 33 },
@@ -21,11 +21,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			{ value: eventTime, type: TimeStamp.TIME },
 			{ value: ackTime, type: TimeStamp.TIME },
 		)
-		const result = ServicesMap.alarmAcknowledge.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = AlarmAcknowledge.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			acknowledgedProcessId: 57,
@@ -44,7 +40,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 		const buffer = utils.getBuffer()
 		const eventTime = 5
 		const ackTime = 6
-		ServicesMap.alarmAcknowledge.encode(
+		AlarmAcknowledge.encode(
 			buffer,
 			57,
 			{ type: 0, instance: 33 },
@@ -53,11 +49,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			{ value: eventTime, type: TimeStamp.SEQUENCE_NUMBER },
 			{ value: ackTime, type: TimeStamp.SEQUENCE_NUMBER },
 		)
-		const result = ServicesMap.alarmAcknowledge.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = AlarmAcknowledge.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			acknowledgedProcessId: 57,
@@ -78,7 +70,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 		eventTime.setMilliseconds(990)
 		const ackTime = new Date(1, 1, 2)
 		ackTime.setMilliseconds(880)
-		ServicesMap.alarmAcknowledge.encode(
+		AlarmAcknowledge.encode(
 			buffer,
 			57,
 			{ type: 0, instance: 33 },
@@ -87,11 +79,7 @@ test.describe('bacnet - Services layer AlarmAcknowledge unit', () => {
 			{ value: eventTime, type: TimeStamp.DATETIME },
 			{ value: ackTime, type: TimeStamp.DATETIME },
 		)
-		const result = ServicesMap.alarmAcknowledge.decode(
-			buffer.buffer,
-			0,
-			buffer.offset,
-		)
+		const result = AlarmAcknowledge.decode(buffer.buffer, 0, buffer.offset)
 		delete result.len
 		assert.deepStrictEqual(result, {
 			acknowledgedProcessId: 57,

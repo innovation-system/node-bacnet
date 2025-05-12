@@ -11,7 +11,7 @@ import CovNotify from './CovNotify'
 import CreateObject from './CreateObject'
 import DeleteObject from './DeleteObject'
 import DeviceCommunicationControl from './DeviceCommunicationControl'
-import Error from './Error'
+import ErrorService from './Error'
 import EventInformation from './EventInformation'
 import EventNotifyData from './EventNotifyData'
 import GetEnrollmentSummary from './GetEnrollmentSummary'
@@ -46,7 +46,7 @@ export { CovNotify }
 export { CreateObject }
 export { DeleteObject }
 export { DeviceCommunicationControl }
-export { Error }
+export { ErrorService }
 export { EventInformation }
 export { EventNotifyData }
 export { GetEnrollmentSummary }
@@ -69,7 +69,10 @@ export { WriteProperty }
 export { WritePropertyMultiple }
 
 // Create and export ServicesMap
-export const ServicesMap = {
+const ServicesMap: Record<
+	string,
+	typeof BacnetService | typeof BacnetAckService
+> = {
 	addListElement: AddListElement,
 	alarmAcknowledge: AlarmAcknowledge,
 	alarmSummary: AlarmSummary,
@@ -80,7 +83,7 @@ export const ServicesMap = {
 	createObject: CreateObject,
 	deleteObject: DeleteObject,
 	deviceCommunicationControl: DeviceCommunicationControl,
-	error: Error,
+	error: ErrorService,
 	eventInformation: EventInformation,
 	eventNotifyData: EventNotifyData,
 	getEnrollmentSummary: GetEnrollmentSummary,
@@ -103,3 +106,5 @@ export const ServicesMap = {
 	writeProperty: WriteProperty,
 	writePropertyMultiple: WritePropertyMultiple,
 }
+
+export default ServicesMap
