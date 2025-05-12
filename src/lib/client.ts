@@ -83,6 +83,7 @@ import {
 	PropertyReference,
 	TypedValue,
 	BacnetService,
+	WritePropertyMultipleObject,
 } from './types'
 import { format } from 'util'
 import {
@@ -1305,25 +1306,18 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 	 */
 	writePropertyMultiple(
 		address: string,
-		values: any[],
+		values: WritePropertyMultipleObject[],
 		callback: ErrorCallback,
 	): void
 	writePropertyMultiple(
 		address: string,
-		values: any[],
+		values: WritePropertyMultipleObject[],
 		options: ServiceOptions,
 		callback: ErrorCallback,
 	): void
 	writePropertyMultiple(
 		receiver: string | { address: string; forwardedFrom?: string },
-		values: Array<{
-			objectId: BACNetObjectID
-			values: Array<{
-				property: PropertyReference
-				value: TypedValue[]
-				priority: number
-			}>
-		}>,
+		values: WritePropertyMultipleObject[],
 		options: ServiceOptions | ErrorCallback,
 		next?: ErrorCallback,
 	): void {

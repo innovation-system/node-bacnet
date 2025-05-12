@@ -574,3 +574,14 @@ export interface DeviceObjectResult {
 		values: PropertyResult[]
 	}>
 }
+
+export interface WritePropertyMultipleValue {
+	property: PropertyReference
+	value: BACNetAppData[]
+	priority: number
+}
+
+export interface WritePropertyMultipleObject {
+	objectId: BACNetObjectID
+	values: WritePropertyMultipleValue[]
+}

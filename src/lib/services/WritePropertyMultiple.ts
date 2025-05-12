@@ -5,20 +5,19 @@ import {
 	BACNetObjectID,
 	BACNetPropertyID,
 	BACNetAppData,
+	Tag,
+	WritePropertyMultipleValue,
+	Decode,
+	ObjectId,
+	WritePropertyMultipleObject,
 } from '../types'
 import { BacnetService } from './AbstractServices'
-
-interface BACNETWPM {
-	property: BACNetPropertyID
-	value: BACNetAppData[]
-	priority: number
-}
 
 export default class WritePropertyMultiple extends BacnetService {
 	public static encode(
 		buffer: EncodeBuffer,
 		objectId: BACNetObjectID,
-		values: BACNETWPM[],
+		values: WritePropertyMultipleValue[],
 	) {
 		baAsn1.encodeContextObjectId(
 			buffer,
@@ -46,8 +45,8 @@ export default class WritePropertyMultiple extends BacnetService {
 
 	public static decode(buffer: Buffer, offset: number, apduLen: number) {
 		let len = 0
-		let result: any
-		let decodedValue: any
+		let result: Tag
+		let decodedValue: Decode<number> | ObjectId
 		result = baAsn1.decodeTagNumberAndValue(buffer, offset + len)
 		len += result.len
 		if (result.tagNumber !== 0 || apduLen <= len) return undefined
@@ -141,7 +140,10 @@ export default class WritePropertyMultiple extends BacnetService {
 		}
 	}
 
-	public static encodeObject(buffer: EncodeBuffer, values: any[]) {
+	public static encodeObject(
+		buffer: EncodeBuffer,
+		values: WritePropertyMultipleObject[],
+	) {
 		values.forEach((object) =>
 			WritePropertyMultiple.encode(
 				buffer,
