@@ -27,19 +27,7 @@ export function invert<T extends Record<string, number>>(
 /**
  * Turn an enum into a string suitable for debugging.
  * If value is not found in the enum the value itself is returned as string
- *
- * @param {object} group
- *   Enum group, e.g. bacnet.enum.ConfirmedServiceChoice.
- *
- * @param {number} value
- *   Enum value, e.g. 1.  Note that this *must* be an integer value, so you may
- *   need to use parseInt().  Non-integer values will result in an exception.
- *
- * @param {boolean} [addNumberValue]
- *   Boolean if the numeric number should be appended or not, default is true
- *
- * @param {string} [undefinedFallbackValue]
- *   String to return if the given value is not found in the Enum object
+
  *
  * @example
  * const s = getEnumName(

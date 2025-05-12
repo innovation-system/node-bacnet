@@ -3,10 +3,6 @@
  * devices in a BACNET network.
  *
  * @event BACnetClient.iAm
- * @param {number} deviceId - The BACNET device-id of the detected device.
- * @param {number} maxApdu - The max APDU size the detected device supports.
- * @param {number} segmentation - The type of segmentation the detected device supports.
- * @param {number} vendorId - The BACNET vendor-id of the detected device.
  *
  * @example
  * import BACnetClient from "@innovation-system/node-bacnet";
