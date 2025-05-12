@@ -2,15 +2,12 @@
  * The iAm event represents the response to a whoIs request to detect all
  * devices in a BACNET network.
  *
- * @event bacnet.iAm
- * @param {number} deviceId - The BACNET device-id of the detected device.
- * @param {number} maxApdu - The max APDU size the detected device supports.
- * @param {number} segmentation - The type of segmentation the detected device supports.
- * @param {number} vendorId - The BACNET vendor-id of the detected device.
+ * @event BACnetClient.iAm
  *
  * @example
- * const bacnet = require('node-bacnet');
- * const client = new bacnet();
+ * import BACnetClient from "@innovation-system/node-bacnet";
+ *
+ * const client = new BACnetClient();
  *
  * client.on('iAm', (msg) => {
  *   console.log(

@@ -160,23 +160,18 @@ const confirmedServiceMap: BACnetEventsMap = {
 
 /**
  * To be able to communicate to BACNET devices, you have to initialize a new bacnet instance.
- * @class bacnet
- * @param {object=} this._settings - The options object used for parameterizing the bacnet.
- * @param {number=} [options.port=47808] - BACNET communication port for listening and sending.
- * @param {string=} options.interface - Specific BACNET communication interface if different from primary one.
- * @param {string=} [options.broadcastAddress=255.255.255.255] - The address used for broadcast messages.
- * @param {number=} [options.apduTimeout=3000] - The timeout in milliseconds until a transaction should be interpreted as error.
+ * @class BACnetClient
  * @example
- * const bacnet = require('node-bacnet');
+ * import BACnetClient from "@innovation-system/node-bacnet";
  *
- * const client = new bacnet({
- *   port: 47809,                          // Use BAC1 as communication port
+ * const client = new BACnetClient({
+ *   port: 47809,
  *   interface: '192.168.251.10',          // Listen on a specific interface
  *   broadcastAddress: '192.168.251.255',  // Use the subnet broadcast address
  *   apduTimeout: 6000                     // Wait twice as long for response
  * });
  */
-export default class Client extends TypedEventEmitter<BACnetClientEvents> {
+export default class BACnetClient extends TypedEventEmitter<BACnetClientEvents> {
 	private _settings: ClientOptions
 
 	private _transport: Transport
@@ -223,25 +218,12 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		this._transport.open()
 	}
 
-	/**
-	 *
-	 * @returns {number}
-	 * @private
-	 */
 	private _getInvokeId() {
 		const id = this._invokeCounter++
 		if (id >= 256) this._invokeCounter = 1
 		return id - 1
 	}
 
-	/**
-	 *
-	 * @param id
-	 * @param err
-	 * @param result
-	 * @returns {*}
-	 * @private
-	 */
 	private _invokeCallback(id: number, err: Error | null, result?: any): void {
 		const callback = this._invokeStore[id]
 		if (callback) {
@@ -281,12 +263,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		)
 	}
 
-	/**
-	 *
-	 * @param isForwarded
-	 * @returns {{offset: (number), buffer: *}}
-	 * @private
-	 */
 	private _getBuffer(isForwarded?: any) {
 		return Object.assign(
 			{},
@@ -299,15 +275,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		)
 	}
 
-	/**
-	 *
-	 * @param invokeId
-	 * @param buffer
-	 * @param offset
-	 * @param length
-	 * @returns {*}
-	 * @private
-	 */
 	private _processError(
 		invokeId: number,
 		buffer: Buffer,
@@ -324,12 +291,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		)
 	}
 
-	/**
-	 *
-	 * @param invokeId
-	 * @param reason
-	 * @private
-	 */
 	private _processAbort(invokeId: number, reason: number) {
 		this._invokeCallback(
 			invokeId,
@@ -337,16 +298,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		)
 	}
 
-	/**
-	 *
-	 * @param receiver
-	 * @param negative
-	 * @param server
-	 * @param originalInvokeId
-	 * @param sequencenumber
-	 * @param actualWindowSize
-	 * @private
-	 */
 	private _segmentAckResponse(
 		receiver: string | ReceiverAddress,
 		negative: boolean,
@@ -388,16 +339,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		)
 	}
 
-	/**
-	 *
-	 * @param msg
-	 * @param first
-	 * @param moreFollows
-	 * @param buffer
-	 * @param offset
-	 * @param length
-	 * @private
-	 */
 	private _performDefaultSegmentHandling(
 		msg: BACnetMessage,
 		first: boolean,
@@ -464,15 +405,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		}
 	}
 
-	/**
-	 *
-	 * @param msg
-	 * @param server
-	 * @param buffer
-	 * @param offset
-	 * @param length
-	 * @private
-	 */
 	private _processSegment(
 		msg: SegmentableMessage &
 			(ConfirmedServiceRequestMessage | ComplexAckMessage),
@@ -529,16 +461,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		)
 	}
 
-	/**
-	 *
-	 * @param serviceMap
-	 * @param content
-	 * @param buffer
-	 * @param offset
-	 * @param length
-	 * @returns {*}
-	 * @private
-	 */
 	private _processServiceRequest(
 		serviceMap: Record<number, keyof BACnetClientEvents>,
 		content: ServiceMessage,
@@ -637,13 +559,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		}
 	}
 
-	/**
-	 * @param buffer
-	 * @param offset
-	 * @param length
-	 * @param header
-	 * @private
-	 */
 	private _handlePdu(
 		buffer: Buffer,
 		offset: number,
@@ -783,14 +698,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		}
 	}
 
-	/**
-	 * @param buffer
-	 * @param offset
-	 * @param msgLength
-	 * @param header
-	 * @returns {void}
-	 * @private
-	 */
 	private _handleNpdu(
 		buffer: Buffer,
 		offset: number,
@@ -827,12 +734,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 		this._handlePdu(buffer, offset, msgLength, header)
 	}
 
-	/**
-	 * @param buffer
-	 * @param remoteAddress
-	 * @returns {void}
-	 * @private
-	 */
 	private _receiveData(buffer: Buffer, remoteAddress: string): void {
 		// Check data length
 		if (buffer.length < BVLC_HEADER_LENGTH) {
@@ -924,11 +825,11 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	private _receiveError(err: Error) {
 		/**
-		 * @event bacnet.error
-		 * @param {error} err - The error object thrown by the underlying transport layer.
+		 * @event BACnetClient.error
 		 * @example
-		 * const bacnet = require('node-bacnet');
-		 * const client = new bacnet();
+		 * import BACnetClient from "@innovation-system/node-bacnet";
+		 *
+		 * const client = new BACnetClient();
 		 *
 		 * client.on('error', (err) => {
 		 *   console.log('Error occurred: ', err);
@@ -940,9 +841,7 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * The whoIs command discovers all BACNET devices in a network.
-	 * @param receiver - IP address of the target device or address object
-	 * @param options - Options for the who-is request (low/high limit)
-	 * @fires bacnet.iAm
+	 * @fires BACnetClient.iAm
 	 */
 	public whoIs(
 		receiver?:
@@ -1004,8 +903,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * The timeSync command sets the time of a target device.
-	 * @param receiver - IP address or sender object of the target device
-	 * @param dateTime - The date and time to set on the target device
 	 */
 	timeSync(receiver: AddressParameter, dateTime: Date): void {
 		const buffer: EncodeBuffer = this._getBuffer(
@@ -1023,8 +920,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * The timeSyncUTC command sets the UTC time of a target device.
-	 * @param receiver - IP address or sender object of the target device
-	 * @param dateTime - The date and time to set on the target device
 	 */
 	timeSyncUTC(receiver: AddressParameter, dateTime: Date): void {
 		const buffer: EncodeBuffer = this._getBuffer(
@@ -1042,11 +937,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * The readProperty command reads a single property of an object from a device.
-	 * @param receiver - IP address or sender object of the target device
-	 * @param objectId - The BACNET object ID to read
-	 * @param propertyId - The BACNET property id in the specified object to read
-	 * @param options - Options for the read operation
-	 * @param next - The callback containing an error, in case of a failure and value object in case of success
 	 */
 	readProperty(
 		address: string,
@@ -1147,12 +1037,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * The writeProperty command writes a single property of an object to a device.
-	 * @param receiver - IP address or sender object of the target device
-	 * @param objectId - The BACNET object ID to write
-	 * @param propertyId - The BACNET property id in the specified object to write
-	 * @param values - A list of values to be written to the specified property
-	 * @param options - Options for the write operation
-	 * @param next - The callback containing an error, in case of a failure and value object in case of success
 	 */
 	writeProperty(
 		address: string,
@@ -2083,9 +1967,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Gets the alarm summary from a device.
-	 * @param receiver - IP address of the target device
-	 * @param options - Service options
-	 * @param next - Callback function
 	 */
 	getAlarmSummary(
 		receiver: string | { address: string; forwardedFrom?: string },
@@ -2140,10 +2021,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Gets event information from a device.
-	 * @param receiver - IP address of the target device
-	 * @param objectId - Object identifier
-	 * @param options - Service options
-	 * @param next - Callback function
 	 */
 	getEventInformation(
 		receiver: string | { address: string; forwardedFrom?: string },
@@ -2205,14 +2082,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Acknowledges an alarm.
-	 * @param receiver - IP address of the target device
-	 * @param objectId - Object identifier
-	 * @param eventState - Event state to acknowledge
-	 * @param ackText - Acknowledgement text
-	 * @param evTimeStamp - Event timestamp object with type and value properties
-	 * @param ackTimeStamp - Acknowledgement timestamp object with type and value properties
-	 * @param options - Service options
-	 * @param next - Callback function
 	 */
 	acknowledgeAlarm(
 		receiver: string | { address: string; forwardedFrom?: string },
@@ -2273,12 +2142,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Sends a confirmed private transfer.
-	 * @param receiver - IP address of the target device
-	 * @param vendorId - Vendor ID
-	 * @param serviceNumber - Service number
-	 * @param data - Data to transfer
-	 * @param options - Service options
-	 * @param next - Callback function
 	 */
 	confirmedPrivateTransfer(
 		receiver: string | { address: string; forwardedFrom?: string },
@@ -2329,10 +2192,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Sends an unconfirmed private transfer.
-	 * @param receiver - IP address of the target device
-	 * @param vendorId - Vendor ID
-	 * @param serviceNumber - Service number
-	 * @param data - Data to transfer
 	 */
 	unconfirmedPrivateTransfer(
 		receiver: string | { address: string; forwardedFrom?: string },
@@ -2355,10 +2214,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Gets enrollment summary from a device.
-	 * @param receiver - IP address of the target device
-	 * @param acknowledgmentFilter - Acknowledgment filter
-	 * @param options - Service options with additional filters
-	 * @param next - Callback function
 	 */
 	getEnrollmentSummary(
 		receiver: string | { address: string; forwardedFrom?: string },
@@ -2431,8 +2286,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Sends an unconfirmed event notification.
-	 * @param receiver - IP address of the target device
-	 * @param eventNotification - Event notification data
 	 */
 	unconfirmedEventNotification(
 		receiver: string | { address: string; forwardedFrom?: string },
@@ -2453,10 +2306,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Sends a confirmed event notification.
-	 * @param receiver - IP address of the target device
-	 * @param eventNotification - Event notification data
-	 * @param options - Service options
-	 * @param next - Callback function
 	 */
 	confirmedEventNotification(
 		receiver: string | { address: string; forwardedFrom?: string },
@@ -2505,12 +2354,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * The readPropertyResponse call sends a response with information about one of our properties.
-	 * @param receiver - IP address of the target device or receiver object
-	 * @param invokeId - ID of the original readProperty request
-	 * @param objectId - objectId from the original request
-	 * @param property - property being read, taken from the original request
-	 * @param value - property value to be returned
-	 * @param options - varying behaviour for special circumstances
 	 */
 	readPropertyResponse(
 		receiver: string | { address: string; forwardedFrom?: string },
@@ -2547,9 +2390,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Sends a response with information about multiple properties.
-	 * @param receiver - IP address of the target device or receiver object
-	 * @param invokeId - ID of the original readPropertyMultiple request
-	 * @param values - Array of property values to return
 	 */
 	readPropertyMultipleResponse(
 		receiver: string | { address: string; forwardedFrom?: string },
@@ -2574,10 +2414,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * The iAmResponse command is sent as a reply to a whoIs request.
-	 * @param receiver - address to send packet to, null for local broadcast
-	 * @param deviceId - Our device ID
-	 * @param segmentation - an enum.Segmentation value
-	 * @param vendorId - The numeric ID assigned to the organisation providing this application
 	 */
 	iAmResponse(
 		receiver: { address?: string; forwardedFrom?: string } | null,
@@ -2604,10 +2440,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Sends an iHave response.
-	 * @param receiver - IP address of the target device or receiver object
-	 * @param deviceId - Our device ID
-	 * @param objectId - The object ID that we have
-	 * @param objectName - The name of the object
 	 */
 	iHaveResponse(
 		receiver: { address?: string; forwardedFrom?: string } | null,
@@ -2628,9 +2460,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Sends a simple acknowledgement response.
-	 * @param receiver - IP address of the target device or receiver object
-	 * @param service - Service being acknowledged
-	 * @param invokeId - Original invoke ID
 	 */
 	simpleAckResponse(
 		receiver: { address?: string; forwardedFrom?: string } | string,
@@ -2649,11 +2478,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Sends an error response.
-	 * @param receiver - IP address of the target device or receiver object
-	 * @param service - Service that had an error
-	 * @param invokeId - Original invoke ID
-	 * @param errorClass - Error class code
-	 * @param errorCode - Specific error code
 	 */
 	errorResponse(
 		receiver: { address?: string; forwardedFrom?: string } | string,
@@ -2681,8 +2505,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 
 	/**
 	 * Sends a BACnet Virtual Link Control message.
-	 * @param receiver - IP address of the target device or receiver object
-	 * @param buffer - Buffer containing the message
 	 */
 	sendBvlc(
 		receiver: { address?: string; forwardedFrom?: string } | string | null,
@@ -2728,8 +2550,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 	/**
 	 * The resultResponse is a BVLC-Result message used to respond to certain events, such as BBMD registration.
 	 * This message cannot be wrapped for passing through a BBMD, as it is used as a BBMD control message.
-	 * @param receiver - IP address of the target device or receiver object
-	 * @param resultCode - Single value from BvlcResultFormat enum
 	 */
 	resultResponse(receiver: { address: string }, resultCode: number): void {
 		const buffer = this._getBuffer()
@@ -2752,7 +2572,6 @@ export default class Client extends TypedEventEmitter<BACnetClientEvents> {
 	/**
 	 * Helper function to take an array of enums and produce a bitstring suitable
 	 * for inclusion as a property.
-	 * @param items - Array of bit positions to set in the bitstring
 	 * @returns BACnet bitstring object
 	 */
 	static createBitstring(items: number[]): BACNetBitString {

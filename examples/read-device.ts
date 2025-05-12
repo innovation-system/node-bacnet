@@ -206,12 +206,6 @@ const debug = process.argv.includes('--debug')
 
 /**
  * Retrieve all properties manually because ReadPropertyMultiple is not available
- * @param address
- * @param objectId
- * @param callback
- * @param propList
- * @param result
- * @returns {*}
  */
 function getAllPropertiesManually(
 	address: string | { address: string; forwardedFrom?: string },
@@ -281,9 +275,6 @@ function getAllPropertiesManually(
 
 /**
  * Reads ou one bit out of an buffer
- * @param buffer
- * @param i
- * @param bit
  * @returns {number}
  */
 function readBit(buffer: Buffer | number[], i: number, bit: number): number {
@@ -292,10 +283,6 @@ function readBit(buffer: Buffer | number[], i: number, bit: number): number {
 
 /**
  * sets a bit in a buffer
- * @param buffer
- * @param i
- * @param bit
- * @param value
  */
 function setBit(
 	buffer: Buffer | number[],
@@ -312,9 +299,6 @@ function setBit(
 
 /**
  * Parses a Bitstring and returns array with all true values
- * @param buffer
- * @param bitsUsed
- * @param usedEnum
  * @returns {[]}
  */
 function handleBitString(
@@ -347,12 +331,6 @@ function handleBitString(
 
 /**
  * Parses a property value
- * @param address
- * @param objId
- * @param parentType
- * @param value
- * @param supportsMultiple
- * @param callback
  */
 function parseValue(
 	address: string | { address: string; forwardedFrom?: string },
@@ -536,11 +514,6 @@ function parseValue(
 
 /**
  * Parse an object structure
- * @param address
- * @param obj
- * @param parent
- * @param supportsMultiple
- * @param callback
  */
 function parseDeviceObject(
 	address: string | { address: string; forwardedFrom?: string },
@@ -722,8 +695,6 @@ function parseDeviceObject(
 let objectsDone = 0
 /**
  * Print result info object
- * @param deviceId
- * @param obj
  */
 function printResultObject(deviceId: number, obj: Record<string, any>): void {
 	objectsDone++

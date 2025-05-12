@@ -1,12 +1,12 @@
 import test from 'node:test'
 import assert from 'node:assert'
 
-import Client from '../../src/lib/client'
+import BACnetClient from '../../src/lib/client'
 import { ServicesSupported } from '../../src'
 
 test.describe('bacnet - client', () => {
 	test('should successfuly encode a bitstring > 32 bits', () => {
-		const result = Client.createBitstring([
+		const result = BACnetClient.createBitstring([
 			ServicesSupported.CONFIRMED_COV_NOTIFICATION,
 			ServicesSupported.READ_PROPERTY,
 			ServicesSupported.WHO_IS,
@@ -18,7 +18,7 @@ test.describe('bacnet - client', () => {
 	})
 
 	test('should successfuly encode a bitstring < 8 bits', () => {
-		const result = Client.createBitstring([
+		const result = BACnetClient.createBitstring([
 			ServicesSupported.GET_ALARM_SUMMARY,
 		])
 		assert.deepStrictEqual(result, {
@@ -28,7 +28,7 @@ test.describe('bacnet - client', () => {
 	})
 
 	test('should successfuly encode a bitstring of only one bit', () => {
-		const result = Client.createBitstring([
+		const result = BACnetClient.createBitstring([
 			ServicesSupported.ACKNOWLEDGE_ALARM,
 		])
 		assert.deepStrictEqual(result, {

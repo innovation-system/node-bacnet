@@ -1,14 +1,14 @@
 import test from 'node:test'
 import assert from 'node:assert'
 
-import Client from '../../src/lib/client'
+import BACnetClient from '../../src/lib/client'
 
 import { BACNetObjectID } from '../../src/lib/types'
 import { ApplicationTag } from '../../src'
 
 test.describe('bacnet - unconfirmedCOVNotification integration', () => {
 	test('should correctly send a telegram', () => {
-		const client = new Client({ apduTimeout: 200 })
+		const client = new BACnetClient({ apduTimeout: 200 })
 
 		const monitoredObjectId: BACNetObjectID = {
 			type: 2,

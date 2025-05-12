@@ -1,5 +1,5 @@
 import debugModule from 'debug'
-import Client from '../../src/lib/client'
+import BACnetClient from '../../src/lib/client'
 
 /**
  * Utility module for BACnet compliance tests
@@ -10,7 +10,7 @@ export const debug = debugModule('bacnet:test:compliance:debug')
 export const trace = debugModule('bacnet:test:compliance:trace')
 
 // Import the BACnet client
-export const bacnetClient = Client
+export const bacnetClient = BACnetClient
 
 // Test configuration values
 export const deviceUnderTest = 1234

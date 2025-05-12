@@ -1,6 +1,6 @@
-import Client from './lib/client'
+import BACnetClient from './lib/client'
 
 export * from './lib/enum'
 
-export default Client
+export default BACnetClient
 export * from './lib/types'

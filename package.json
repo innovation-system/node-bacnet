@@ -28,7 +28,7 @@
     "docker:stop": "docker compose down",
     "docker:logs": "docker compose logs -f",
     "docker:restart": "npm run docker:stop && npm run docker:start",
-    "docs": "typedoc --out docs --entryPoint '\"client\"' --excludeExternals --excludeNotExported --excludePrivate src/lib/client.ts",
+    "docs": "typedoc --out docs src/index.ts --excludeExternals --excludePrivate",
     "emulator:start": "node --require esbuild-register emulator/bacnet-device-emulator.ts",
     "release": "read -p 'GITHUB_TOKEN: ' GITHUB_TOKEN && export GITHUB_TOKEN=$GITHUB_TOKEN && release-it"
   },
@@ -114,6 +114,7 @@
     "prettier": "^3.2.5",
     "release-it": "^18.1.2",
     "ts-node": "^10.9.2",
+    "typedoc": "^0.28.4",
     "typescript": "^5.8.3"
   },
   "files": [
