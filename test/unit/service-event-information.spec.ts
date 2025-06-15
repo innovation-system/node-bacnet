@@ -3,6 +3,7 @@ import assert from 'node:assert'
 
 import * as utils from './utils'
 import { EventInformation } from '../../src/lib/services'
+import { EventState, NotifyType } from '../../src'
 
 test.describe('bacnet - Services layer EventInformation unit', () => {
 	test('should successfully encode and decode', (t) => {
@@ -18,10 +19,10 @@ test.describe('bacnet - Services layer EventInformation unit', () => {
 			[
 				{
 					objectId: { type: 0, instance: 32 },
-					eventState: 12,
+					eventState: EventState.NORMAL,
 					acknowledgedTransitions: { value: [14], bitsUsed: 6 },
 					eventTimeStamps: [date1, date2, date3],
-					notifyType: 5,
+					notifyType: NotifyType.EVENT,
 					eventEnable: { value: [15], bitsUsed: 7 },
 					eventPriorities: [2, 3, 4],
 				},
@@ -37,13 +38,13 @@ test.describe('bacnet - Services layer EventInformation unit', () => {
 						type: 0,
 						instance: 32,
 					},
-					eventState: 12,
+					eventState: EventState.NORMAL,
 					acknowledgedTransitions: {
 						bitsUsed: 6,
 						value: [14],
 					},
 					eventTimeStamps: [date1, date2, date3],
-					notifyType: 5,
+					notifyType: NotifyType.EVENT,
 					eventEnable: {
 						bitsUsed: 7,
 						value: [15],

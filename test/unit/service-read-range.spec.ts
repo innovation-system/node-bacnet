@@ -3,14 +3,14 @@ import assert from 'node:assert'
 
 import * as utils from './utils'
 import { ReadRange } from '../../src/lib/services'
-import { ReadRangeType } from '../../src'
+import { ObjectType, ReadRangeType } from '../../src'
 
 test.describe('bacnet - Services layer ReadRange unit', () => {
 	test('should successfully encode and decode by position', (t) => {
 		const buffer = utils.getBuffer()
 		ReadRange.encode(
 			buffer,
-			{ type: 61, instance: 35 },
+			{ type: ObjectType.DEVICE, instance: 35 },
 			85,
 			0xffffffff,
 			ReadRangeType.BY_POSITION,
@@ -22,7 +22,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 		delete result.len
 		assert.deepStrictEqual(result, {
 			count: 0,
-			objectId: { type: 61, instance: 35 },
+			objectId: { type: ObjectType.DEVICE, instance: 35 },
 			position: 10,
 			property: {
 				index: 0xffffffff,
@@ -37,7 +37,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 		const buffer = utils.getBuffer()
 		ReadRange.encode(
 			buffer,
-			{ type: 61, instance: 35 },
+			{ type: ObjectType.DEVICE, instance: 35 },
 			12,
 			2,
 			ReadRangeType.BY_SEQUENCE_NUMBER,
@@ -49,7 +49,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 		delete result.len
 		assert.deepStrictEqual(result, {
 			count: 0,
-			objectId: { type: 61, instance: 35 },
+			objectId: { type: ObjectType.DEVICE, instance: 35 },
 			position: 10,
 			property: {
 				index: 2,
@@ -64,7 +64,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 		const buffer = utils.getBuffer()
 		ReadRange.encode(
 			buffer,
-			{ type: 61, instance: 35 },
+			{ type: ObjectType.DEVICE, instance: 35 },
 			85,
 			0xffffffff,
 			ReadRangeType.BY_SEQUENCE_NUMBER,
@@ -76,7 +76,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 		delete result.len
 		assert.deepStrictEqual(result, {
 			count: 1111,
-			objectId: { type: 61, instance: 35 },
+			objectId: { type: ObjectType.DEVICE, instance: 35 },
 			position: 11,
 			property: {
 				index: 0xffffffff,
@@ -93,7 +93,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 		date.setMilliseconds(990)
 		ReadRange.encode(
 			buffer,
-			{ type: 61, instance: 35 },
+			{ type: ObjectType.DEVICE, instance: 35 },
 			85,
 			0xffffffff,
 			ReadRangeType.BY_TIME_REFERENCE_TIME_COUNT,
@@ -105,7 +105,7 @@ test.describe('bacnet - Services layer ReadRange unit', () => {
 		delete result.len
 		assert.deepStrictEqual(result, {
 			count: -1111,
-			objectId: { type: 61, instance: 35 },
+			objectId: { type: ObjectType.DEVICE, instance: 35 },
 			position: undefined,
 			property: {
 				index: 0xffffffff,

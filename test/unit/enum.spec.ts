@@ -7,7 +7,7 @@ test.describe('bacnet - ENUM tests', () => {
 	test('enum get name of BOOLEAN should be defined with 1', () => {
 		assert.strictEqual(
 			bacnetEnum.getEnumName(bacnetEnum.ApplicationTag, 1, false),
-			bacnetEnum.ApplicationTagName[1],
+			bacnetEnum.ApplicationTag[1],
 		)
 	})
 

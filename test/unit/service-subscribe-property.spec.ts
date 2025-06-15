@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert'
 
 import * as utils from './utils'
+import { ObjectType, PropertyIdentifier } from '../../src'
 import { SubscribeProperty } from '../../src/lib/services'
 
 test.describe('bacnet - Services layer SubscribeProperty unit', () => {
@@ -10,11 +11,11 @@ test.describe('bacnet - Services layer SubscribeProperty unit', () => {
 		SubscribeProperty.encode(
 			buffer,
 			7,
-			{ type: 148, instance: 362 },
+			{ type: ObjectType.DEVICE, instance: 362 },
 			true,
 			false,
 			1,
-			{ id: 85, index: 0xffffffff },
+			{ id: PropertyIdentifier.PRESENT_VALUE, index: 0xffffffff },
 			true,
 			1,
 		)
@@ -27,11 +28,11 @@ test.describe('bacnet - Services layer SubscribeProperty unit', () => {
 			lifetime: 0,
 			monitoredObjectId: {
 				instance: 362,
-				type: 148,
+				type: ObjectType.DEVICE,
 			},
 			monitoredProperty: {
 				index: 4294967295,
-				id: 85,
+				id: PropertyIdentifier.PRESENT_VALUE,
 			},
 			subscriberProcessId: 7,
 		})
@@ -42,11 +43,11 @@ test.describe('bacnet - Services layer SubscribeProperty unit', () => {
 		SubscribeProperty.encode(
 			buffer,
 			8,
-			{ type: 149, instance: 363 },
+			{ type: ObjectType.DEVICE, instance: 363 },
 			false,
 			true,
 			2,
-			{ id: 86, index: 3 },
+			{ id: PropertyIdentifier.PRIORITY, index: 3 },
 			false,
 			10,
 		)
@@ -59,11 +60,11 @@ test.describe('bacnet - Services layer SubscribeProperty unit', () => {
 			lifetime: 2,
 			monitoredObjectId: {
 				instance: 363,
-				type: 149,
+				type: ObjectType.DEVICE,
 			},
 			monitoredProperty: {
 				index: 3,
-				id: 86,
+				id: PropertyIdentifier.PRIORITY,
 			},
 			subscriberProcessId: 8,
 		})

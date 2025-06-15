@@ -1,5 +1,5 @@
 import * as baAsn1 from '../asn1'
-import { ErrorClassName, ErrorCodeName } from '../enum'
+import { ErrorClass, ErrorCode } from '../enum'
 import { EncodeBuffer } from '../types'
 import { BacnetService } from './AbstractServices'
 
@@ -39,9 +39,9 @@ export default class ErrorService extends BacnetService {
 		code: number
 	}): string {
 		return (
-			`BacnetError Class: ${ErrorClassName[result.class]} ` +
+			`BacnetError Class: ${ErrorClass[result.class]} ` +
 			`(${result.class}) ` +
-			`Code: ${ErrorCodeName[result.code]} (${result.code})`
+			`Code: ${ErrorCode[result.code]} (${result.code})`
 		)
 	}
 }

@@ -1,3 +1,5 @@
+import { ApplicationTag, EventState, EventType, NotifyType, ObjectType, PropertyIdentifier, TimeStamp } from "./enum"
+
 export interface EncodeBuffer {
 	buffer: Buffer
 	offset: number
@@ -19,12 +21,12 @@ export interface ReceiverAddress {
 export type AddressParameter = string | ReceiverAddress
 
 export interface PropertyReference {
-	id: number
+	id: PropertyIdentifier
 	index?: number
 }
 
 export interface TypedValue {
-	type: number
+	type: ApplicationTag
 	value: any
 }
 
@@ -36,12 +38,12 @@ export interface TransportSettings {
 }
 
 export interface BACNetObjectID {
-	type: number
+	type: ObjectType
 	instance: number
 }
 
 export interface BACNetPropertyID {
-	id: number
+	id: PropertyIdentifier
 	index: number
 }
 
@@ -76,10 +78,10 @@ export interface BACNetAlarm {
 
 export interface BACNetEvent {
 	objectId: BACNetObjectID
-	eventState: number
+	eventState: EventState
 	acknowledgedTransitions: BACNetBitString
 	eventTimeStamps: Date[]
-	notifyType: number
+	notifyType: NotifyType
 	eventEnable: BACNetBitString
 	eventPriorities: number[]
 }
@@ -92,7 +94,7 @@ export interface BACNetDevObjRef {
 }
 
 export interface BACNetAppData {
-	type: number
+	type: ApplicationTag
 	value: any
 	encoding?: number
 }
@@ -104,16 +106,16 @@ export interface BACNetPropertyState {
 
 export interface BACNetEventInformation {
 	objectId: BACNetObjectID
-	eventState: number
+	eventState: EventState
 	acknowledgedTransitions: BACNetBitString
 	eventTimeStamps: any[]
-	notifyType: number
+	notifyType: NotifyType
 	eventEnable: BACNetBitString
 	eventPriorities: number[]
 }
 
 export interface BACNetTimestamp {
-	type: number
+	type: TimeStamp
 	value: any
 }
 
@@ -130,13 +132,13 @@ export interface Tag {
 
 export interface ObjectId {
 	len: number
-	objectType: number
+	objectType: ObjectType
 	instance: number
 }
 
 export interface ApplicationData {
 	len: number
-	type: number
+	type: ApplicationTag
 	value: any
 	encoding?: number
 }
@@ -189,7 +191,7 @@ export interface Calendar {
 
 export interface AppData {
 	len: number
-	type: number
+	type: ApplicationTag
 	value: any
 	encoding?: number
 }
@@ -330,18 +332,18 @@ export type DataCallback<T> = (err?: Error, result?: T) => void
 export interface DecodeAcknowledgeSingleResult {
 	len: number
 	objectId: {
-		type: number
+		type: ObjectType
 		instance: number
 	}
 	property: {
-		id: number
+		id: PropertyIdentifier
 		index: number
 	}
 	values: ApplicationData[]
 }
 
 export interface ReadAccessProperty {
-	id: number
+	id: PropertyIdentifier
 	index: number
 	value: ApplicationData[]
 }
@@ -492,9 +494,9 @@ export interface EventNotificationPayload extends BasicServicePayload {
 	timeStamp: BACNetTimestamp
 	notificationClass: number
 	priority: number
-	eventType: number
+	eventType: EventType
 	messageText?: string
-	notifyType: number
+	notifyType: NotifyType
 	ackRequired: boolean
 	fromState: number
 	toState: number
@@ -503,7 +505,7 @@ export interface EventNotificationPayload extends BasicServicePayload {
 
 export interface ReadRangePayload extends BasicServicePayload {
 	objectId: BACNetObjectID
-	propertyId: number
+	propertyId: PropertyIdentifier
 	position: number
 	count: number
 	values: BACNetAppData[]
@@ -520,7 +522,7 @@ export interface ObjectOperationPayload extends BasicServicePayload {
 
 export interface ListElementOperationPayload extends BasicServicePayload {
 	objectId: BACNetObjectID
-	propertyId: number
+	propertyId: PropertyIdentifier
 	arrayIndex: number
 	listOfElements: BACNetAppData[]
 }
@@ -563,7 +565,7 @@ export interface BacnetService {
 }
 
 export interface PropertyResult {
-	id: number
+	id: PropertyIdentifier
 	index: number
 	value: ApplicationData[]
 }

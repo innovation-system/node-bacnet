@@ -40,6 +40,7 @@ import Bacnet, {
 	BACnetMessage,
 	DeviceObjectResult,
 	PropertyResult,
+	getEnumValues,
 } from '../src'
 import * as process from 'process'
 
@@ -159,8 +160,8 @@ ObjectTypeSpecificPropertyIdentifierToEnumMap[ObjectType.LOAD_CONTROL][
 ] = ShedState
 
 // For Objects we read out All properties if cli parameter --all is provided
-const propSubSet = process.argv.includes('--all')
-	? Object.values(PropertyIdentifier)
+const propSubSet: PropertyIdentifier[] = process.argv.includes('--all')
+	? getEnumValues(PropertyIdentifier)
 	: [
 			/* normally supported from all devices */
 			PropertyIdentifier.OBJECT_IDENTIFIER,
