@@ -16,6 +16,7 @@ import {
 	type DeviceStatus,
 	type Segmentation,
 	type Reliability,
+	type BinaryPV,
 } from './enum'
 
 export interface EncodeBuffer {
@@ -165,6 +166,7 @@ export interface ApplicationTagValueTypeMap {
 		| DeviceStatus
 		| Segmentation
 		| Reliability
+		| BinaryPV
 	[ApplicationTag.DATE]: Date
 	[ApplicationTag.TIME]: Date
 	[ApplicationTag.OBJECTIDENTIFIER]: BACNetObjectID
