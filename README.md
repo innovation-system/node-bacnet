@@ -30,7 +30,7 @@ Run the following command
 
 ## 2. <a name='Docs'></a>Docs
 
-Documentation is available [here](https://innovation-system.github.io/node-bacnet).
+Documentation is available [here](https://bacnet-js.github.io/node-bacnet/).
 
 ## 3. <a name='Examples'></a>Examples
 
