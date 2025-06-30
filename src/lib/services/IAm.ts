@@ -5,7 +5,7 @@
  * @event BACnetClient.iAm
  *
  * @example
- * import BACnetClient from "@innovation-system/node-bacnet";
+ * import BACnetClient from "@bacnet-js/client";
  *
  * const client = new BACnetClient();
  *

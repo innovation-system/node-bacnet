@@ -1,5 +1,5 @@
 {
-  "name": "@innovation-system/node-bacnet",
+  "name": "@bacnet-js/client",
   "version": "2.1.3",
   "description": "A BACnet® protocol stack written in pure TypeScript.",
   "main": "./dist/index.js",
@@ -58,7 +58,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/innovation-system/node-bacnet.git"
+    "url": "git+https://github.com/bacnet-js/client.git"
   },
   "keywords": [
     "bacnet",
@@ -92,10 +92,10 @@
   "engines": {
     "node": ">= 20"
   },
-  "homepage": "https://github.com/innovation-system/node-bacnet/",
+  "homepage": "https://github.com/bacnet-js/client/",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/innovation-system/node-bacnet/issues"
+    "url": "https://github.com/bacnet-js/client/issues"
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^10.0.0",

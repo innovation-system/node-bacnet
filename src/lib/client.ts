@@ -162,7 +162,7 @@ const confirmedServiceMap: BACnetEventsMap = {
  * To be able to communicate to BACNET devices, you have to initialize a new bacnet instance.
  * @class BACnetClient
  * @example
- * import BACnetClient from "@innovation-system/node-bacnet";
+ * import BACnetClient from "@bacnet-js/client";
  *
  * const client = new BACnetClient({
  *   port: 47809,
@@ -827,7 +827,7 @@ export default class BACnetClient extends TypedEventEmitter<BACnetClientEvents> 
 		/**
 		 * @event BACnetClient.error
 		 * @example
-		 * import BACnetClient from "@innovation-system/node-bacnet";
+		 * import BACnetClient from "@bacnet-js/client";
 		 *
 		 * const client = new BACnetClient();
 		 *
