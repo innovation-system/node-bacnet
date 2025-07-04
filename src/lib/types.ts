@@ -152,7 +152,7 @@ export interface ApplicationTagValueTypeMap {
 	[ApplicationTag.SIGNED_INTEGER]: number
 	[ApplicationTag.REAL]: number
 	[ApplicationTag.DOUBLE]: number
-	[ApplicationTag.OCTET_STRING]: any
+	[ApplicationTag.OCTET_STRING]: number[]
 	[ApplicationTag.CHARACTER_STRING]: string
 	[ApplicationTag.BIT_STRING]:
 		| StatusFlagsBitString
@@ -170,27 +170,27 @@ export interface ApplicationTagValueTypeMap {
 	[ApplicationTag.DATE]: Date
 	[ApplicationTag.TIME]: Date
 	[ApplicationTag.OBJECTIDENTIFIER]: BACNetObjectID
-	[ApplicationTag.EMPTYLIST]: any
-	[ApplicationTag.WEEKNDAY]: any
-	[ApplicationTag.DATERANGE]: any
-	[ApplicationTag.DATETIME]: any
+	[ApplicationTag.EMPTYLIST]: unknown[]
+	[ApplicationTag.WEEKNDAY]: CalendarWeekDay
+	[ApplicationTag.DATERANGE]: CalendarDateRange
+	[ApplicationTag.DATETIME]: Date
 	[ApplicationTag.TIMESTAMP]: BACNetTimestamp
-	[ApplicationTag.ERROR]: any
+	[ApplicationTag.ERROR]: BACnetError
 	[ApplicationTag.DEVICE_OBJECT_PROPERTY_REFERENCE]: DeviceObjPropertyRef
 	[ApplicationTag.DEVICE_OBJECT_REFERENCE]: BACNetDevObjRef
-	[ApplicationTag.OBJECT_PROPERTY_REFERENCE]: any
-	[ApplicationTag.DESTINATION]: any
+	[ApplicationTag.OBJECT_PROPERTY_REFERENCE]: DeviceObjPropertyRef
+	[ApplicationTag.DESTINATION]: BACNetAddress
 	[ApplicationTag.RECIPIENT]: BACNetRecipient
 	[ApplicationTag.COV_SUBSCRIPTION]: BACNetCovSubscription
-	[ApplicationTag.CALENDAR_ENTRY]: any
-	[ApplicationTag.WEEKLY_SCHEDULE]: any
-	[ApplicationTag.SPECIAL_EVENT]: any
-	[ApplicationTag.READ_ACCESS_SPECIFICATION]: any
-	[ApplicationTag.READ_ACCESS_RESULT]: any
-	[ApplicationTag.LIGHTING_COMMAND]: any
-	[ApplicationTag.CONTEXT_SPECIFIC_DECODED]: any
-	[ApplicationTag.CONTEXT_SPECIFIC_ENCODED]: any
-	[ApplicationTag.LOG_RECORD]: any
+	[ApplicationTag.CALENDAR_ENTRY]: Calendar
+	[ApplicationTag.WEEKLY_SCHEDULE]: unknown
+	[ApplicationTag.SPECIAL_EVENT]: unknown
+	[ApplicationTag.READ_ACCESS_SPECIFICATION]: ReadAccessSpec
+	[ApplicationTag.READ_ACCESS_RESULT]: ReadAccessDecode
+	[ApplicationTag.LIGHTING_COMMAND]: unknown
+	[ApplicationTag.CONTEXT_SPECIFIC_DECODED]: unknown
+	[ApplicationTag.CONTEXT_SPECIFIC_ENCODED]: number[]
+	[ApplicationTag.LOG_RECORD]: unknown
 }
 
 export interface BACNetPropertyState {
