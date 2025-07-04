@@ -1,7 +1,12 @@
 import test from 'node:test'
 import assert from 'node:assert'
 
-import { ApplicationTag, BACNetAppData, CalendarWeekDay, CalendarDateRange } from '../../src'
+import {
+	ApplicationTag,
+	BACNetAppData,
+	CalendarWeekDay,
+	CalendarDateRange,
+} from '../../src'
 
 test.describe('ApplicationData types', () => {
 	test('should correctly type OCTET_STRING as number[]', () => {
@@ -9,7 +14,7 @@ test.describe('ApplicationData types', () => {
 			type: ApplicationTag.OCTET_STRING,
 			value: [0x01, 0x02, 0x03, 0x04],
 		}
-		
+
 		assert.strictEqual(octetStringData.type, ApplicationTag.OCTET_STRING)
 		assert.ok(Array.isArray(octetStringData.value))
 		assert.strictEqual(octetStringData.value[0], 0x01)
@@ -20,7 +25,7 @@ test.describe('ApplicationData types', () => {
 			type: ApplicationTag.BOOLEAN,
 			value: true,
 		}
-		
+
 		assert.strictEqual(booleanData.type, ApplicationTag.BOOLEAN)
 		assert.strictEqual(typeof booleanData.value, 'boolean')
 		assert.strictEqual(booleanData.value, true)
@@ -31,7 +36,7 @@ test.describe('ApplicationData types', () => {
 			type: ApplicationTag.EMPTYLIST,
 			value: [],
 		}
-		
+
 		assert.strictEqual(emptyListData.type, ApplicationTag.EMPTYLIST)
 		assert.ok(Array.isArray(emptyListData.value))
 		assert.strictEqual(emptyListData.value.length, 0)
@@ -47,7 +52,7 @@ test.describe('ApplicationData types', () => {
 				wday: 1,
 			} as CalendarWeekDay,
 		}
-		
+
 		assert.strictEqual(weekDayData.type, ApplicationTag.WEEKNDAY)
 		assert.strictEqual(typeof weekDayData.value, 'object')
 		assert.strictEqual(weekDayData.value.month, 1)
@@ -68,7 +73,7 @@ test.describe('ApplicationData types', () => {
 				},
 			} as CalendarDateRange,
 		}
-		
+
 		assert.strictEqual(dateRangeData.type, ApplicationTag.DATERANGE)
 		assert.strictEqual(typeof dateRangeData.value, 'object')
 		assert.strictEqual(dateRangeData.value.len, 16)
@@ -79,7 +84,7 @@ test.describe('ApplicationData types', () => {
 			type: ApplicationTag.DATETIME,
 			value: new Date('2024-01-01T12:00:00Z'),
 		}
-		
+
 		assert.strictEqual(dateTimeData.type, ApplicationTag.DATETIME)
 		assert.ok(dateTimeData.value instanceof Date)
 		assert.strictEqual(dateTimeData.value.getFullYear(), 2024)
@@ -97,7 +102,7 @@ test.describe('ApplicationData types', () => {
 				],
 			} as unknown,
 		}
-		
+
 		assert.strictEqual(complexData.type, ApplicationTag.WEEKLY_SCHEDULE)
 		assert.strictEqual(typeof complexData.value, 'object')
 	})
