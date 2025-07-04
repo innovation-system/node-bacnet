@@ -191,6 +191,164 @@ type BACnetMessage =
 - ESBuild for fast testing compilation
 - TypeDoc for API documentation generation
 
+## Git Workflow & Quality Standards
+
+### Conventional Commits
+Follow **Conventional Commits** specification for all commit messages and PR titles:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+**Types:**
+- `feat`: New feature implementation
+- `fix`: Bug fix  
+- `docs`: Documentation changes
+- `style`: Code style/formatting (no logic changes)
+- `refactor`: Code refactoring (no feature/bug changes)
+- `test`: Adding or modifying tests
+- `chore`: Build process, dependencies, tooling
+- `perf`: Performance improvements
+- `ci`: CI/CD configuration changes
+
+**Examples:**
+```
+feat: add SubscribeCovProperty service implementation
+fix: resolve memory leak in invoke callback cleanup  
+test: add comprehensive bitstring encoding tests
+docs: update installation and usage examples
+refactor: simplify UDP socket management
+```
+
+**Scopes (when applicable):**
+- `client`, `transport`, `services`, `asn1`, `enum`, `types`
+- `apdu`, `npdu`, `bvlc` for protocol layers
+- Specific service names: `readProperty`, `covNotify`, etc.
+
+### Pull Request Requirements
+
+#### **Linting Compliance** 
+- **MUST fix all ESLint errors** before PR approval
+- Run `npm run lint:fix` to auto-fix formatting issues
+- Zero tolerance for linting violations in merged code
+- If auto-fix doesn't resolve issues, **manually fix the code**
+
+#### **Test Coverage Requirements**
+- **ALL new code MUST have corresponding tests**
+- Existing tests MUST pass (`npm run test:all`)
+- **If tests fail, fix the code implementation, not the tests**
+- Minimum coverage expectations:
+  - New services: Unit tests + integration tests  
+  - New utilities: Unit tests with edge cases
+  - Bug fixes: Regression tests
+  - Protocol changes: Compliance tests
+
+#### **Code Quality Checklist**
+Before creating PR, ensure:
+- [ ] `npm run lint` passes with zero errors
+- [ ] `npm run test:all` passes completely  
+- [ ] New functionality has comprehensive tests
+- [ ] No `console.log` or debugging code remains
+- [ ] TypeScript compiles without errors (`npm run build`)
+- [ ] Documentation updated for public API changes
+
+### Testing Strategy for New Code
+
+#### **Test-First Development**
+When implementing new BACnet services:
+
+1. **Write failing tests first** that describe expected behavior
+2. **Implement minimal code** to make tests pass
+3. **Refactor** while keeping tests green
+4. **Add edge case tests** for error conditions
+
+#### **Required Test Types**
+
+**Unit Tests** (`test/unit/`):
+```typescript
+// Test individual functions in isolation
+describe('encodeContextUnsigned', () => {
+  it('should encode small values in single byte', () => {
+    const buffer = getBuffer()
+    encodeContextUnsigned(buffer, 0, 42)
+    expect(buffer.buffer[buffer.offset - 2]).toBe(0x08) // context tag
+    expect(buffer.buffer[buffer.offset - 1]).toBe(42)   // value
+  })
+})
+```
+
+**Integration Tests** (`test/integration/`):
+```typescript  
+// Test complete service workflows
+describe('ReadProperty Service', () => {
+  it('should read present value from analog input', async () => {
+    const client = new BACnetClient()
+    const result = await readPropertyPromise(
+      '192.168.1.100',
+      { type: ObjectType.ANALOG_INPUT, instance: 1 },
+      PropertyIdentifier.PRESENT_VALUE
+    )
+    expect(result.values).toHaveLength(1)
+    expect(result.values[0].type).toBe(ApplicationTag.REAL)
+  })
+})
+```
+
+**Compliance Tests** (`test/compliance/`):
+```typescript
+// Test protocol compliance with BACnet standard
+describe('ASHRAE 135 Compliance', () => {
+  it('should encode object identifier according to 20.2.14', () => {
+    const buffer = getBuffer()
+    encodeApplicationObjectId(buffer, ObjectType.DEVICE, 123456)
+    // Verify exact byte sequence matches standard
+    expect(buffer.buffer.slice(0, 6)).toEqual(
+      Buffer.from([0xC4, 0x02, 0x00, 0x00, 0x1E, 0x40])
+    )
+  })
+})
+```
+
+#### **Coverage Requirements by Component**
+
+- **Core Services** (ReadProperty, WriteProperty, etc.): 95%+ coverage
+- **Protocol Encoding/Decoding**: 100% coverage with edge cases  
+- **Network Transport**: 90%+ coverage including error conditions
+- **Utilities & Helpers**: 85%+ coverage
+- **Type Guards & Validators**: 100% coverage
+
+### Continuous Integration Expectations
+
+When Copilot suggests code changes:
+
+1. **Auto-fix linting issues** using ESLint rules
+2. **Ensure backward compatibility** for public APIs
+3. **Write corresponding tests** for new functionality
+4. **Update TypeScript definitions** when adding new types
+5. **Verify no breaking changes** in existing test suite
+
+### Code Review Standards
+
+**Before suggesting code, verify:**
+- Follows established architecture patterns
+- Includes proper error handling  
+- Has appropriate logging/debugging
+- Maintains type safety throughout
+- Includes JSDoc documentation for public APIs
+- Follows BACnet protocol specifications exactly
+
+**Red flags that require immediate attention:**
+- Failing tests after code changes
+- ESLint errors or warnings
+- Missing test coverage for new code paths
+- Breaking changes without deprecation notices
+- Network operations without timeout handling
+- Buffer operations without bounds checking
+
 ## Common Patterns to Follow
 
 ### Service Method Signatures
@@ -230,6 +388,7 @@ this._addCallback(invokeId, (err, data) => {
 - Implement rate limiting for broadcast messages  
 - Sanitize string inputs for encoding
 - Handle malformed packets gracefully
+- Support BACnet/SC security features when available
 
 ---
 
