@@ -45,8 +45,9 @@ export interface PropertyReference {
 }
 
 /**
- * TODO: when the times comes, drop the default value for the `Tag`
- * paramter to enforce strong typing throughout the entire library.
+ * TODO: when the time comes, drop the default value for the `Tag`
+ * parameter to enforce strong typing throughout the entire library.
+ * This would be a breaking change requiring major version bump.
  */
 export interface TypedValue<
 	Tag extends ApplicationTag = ApplicationTag,
@@ -125,6 +126,7 @@ export interface BACNetDevObjRef {
 /**
  * TODO: when the time comes, drop the default value for the `Tag` generic
  *       parameter to enforce type safety everywhere throughout the library.
+ *       This would be a breaking change requiring major version bump.
  */
 export interface BACNetAppData<
 	Tag extends ApplicationTag = ApplicationTag,
